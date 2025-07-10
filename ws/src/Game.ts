@@ -1,78 +1,76 @@
-import { WebSocket } from "ws";
 import { Chess, Move, Square } from "chess.js";
-import { GAME_OVER, MOVE } from "./messages";
+import { randomUUID } from "crypto";
 import { User } from ".";
+import { connectionManager } from "./connectionManager";
+import { GAME_OVER, INIT_GAME, MOVE } from "./messages";
+
+type GAME_RESULT = "WHITE_WINS" | "BLACK_WINS" | "DRAW";
 
 export class Game {
-  //this class create room for two players
-  public player1: WebSocket;
-  public User1: User;
-  public player2: WebSocket;
-  public User2: User;
+  public RoomId: string;
+  public player1Id: string;
+  public player2Id: string | null;
+  public result: GAME_RESULT | null = null;
   public board: Chess;
-  private startTime: Date;
+  private moveCount = 0;  
+  private startTime = new Date(Date.now());
 
-  constructor(
-    player1: WebSocket,
-    User1: User,
-    player2: WebSocket,
-    User2: User
-  ) {
-    this.player1 = player1;
-    this.player2 = player2;
-    this.User1 = User1;
-    this.User2 = User2;
+  constructor(player1Id: string, player2Id: string | null, RoomId?: string) {
+    this.RoomId = RoomId ?? randomUUID();
+    this.player1Id = player1Id;
+    this.player2Id = player2Id;
     this.board = new Chess();
-    this.startTime = new Date();
-    this.player1.send(
+  }
+
+  PushSecondPlayer(user:User)
+  {
+    this.player2Id=user.userId;
+    const Players = connectionManager.getPlayersInfo(this.RoomId);
+
+    const WhitePlayer=Players?.find((user)=> user.userId !== this.player2Id)
+    const BlackPlayer=Players?.find((user)=> user.userId === this.player2Id)
+    
+    connectionManager.sendMessageToAll(
+      this.RoomId,
       JSON.stringify({
-        type: "init_game",
-        payload: {
-          User: User1,
-          Opponent: User2,
-          color: "white",
-        },
+        type:INIT_GAME,
+        payload:{
+          RoomId:this.RoomId,
+          WhitePlayer: WhitePlayer,
+          BlackPlayer: BlackPlayer,
+          fen: this.board.fen(),
+        }
       })
-    );
-    this.player2.send(
-      JSON.stringify({
-        type: "init_game",
-        payload: {
-          Opponent: User1,
-          User: User2,
-          color: "black",
-        },
-      })
+    )
+  }
+
+  isPromoting(chess: Chess, from: Square, to: Square) {
+    const piece = chess.get(from);
+
+    if (!piece || piece.type !== "p") return false;
+
+    // White pawn reaching 8th rank or black pawn reaching 1st
+    return (
+      (piece.color === "w" && to.endsWith("8")) ||
+      (piece.color === "b" && to.endsWith("1"))
     );
   }
 
-isPromoting(chess: Chess, from: Square, to: Square) {
-  const piece = chess.get(from);
+  //Making Moves on the WS
 
-  if (!piece || piece.type !== 'p') return false;
-
-  // White pawn reaching 8th rank or black pawn reaching 1st
-  return (
-    (piece.color === 'w' && to.endsWith('8')) ||
-    (piece.color === 'b' && to.endsWith('1'))
-  );
-}
-
-  makeMove(socket: WebSocket, move: Move) {
-    console.log("color turn :", this.board.turn());
-
+  async makeMove(user: User, move: Move) {
+    //checking turns
     const isWhiteTurn = this.board.turn() === "w";
-    console.log(isWhiteTurn);
+    if (isWhiteTurn && user.userId !== this.player1Id) return;
 
-    if (isWhiteTurn && socket !== this.player1) {
-      console.log("early return 1");
-      return;
-    }
-    if (!isWhiteTurn && socket !== this.player2) {
-      console.log("early return 2");
+    if (!isWhiteTurn && user.userId !== this.player2Id) return;
+
+    if (this.result) {
+      console.log("Trying to move after game completion...!!!");
       return;
     }
 
+    //promoting logic
     try {
       const promote = this.isPromoting(this.board, move.from, move.to);
 
@@ -85,38 +83,22 @@ isPromoting(chess: Chess, from: Square, to: Square) {
       console.error("Error while making move", e);
       return;
     }
+    
+    //notify both player about their moves 
+    connectionManager.sendMessageToAll(this.RoomId,JSON.stringify({type: MOVE,move: move}))
 
-    this.player1.send(
-      JSON.stringify({
-        type: MOVE,
-        move: move,
-      })
-    );
-    this.player2.send(
-      JSON.stringify({
-        type: MOVE,
-        move: move,
-      })
-    );
+    //endGame logic 
+        if (this.board.isGameOver()) {
+      const winner = this.board.isDraw()
+      ? 'DRAW'
+      : this.board.turn() === 'b'
+        ? 'WHITE_WINS'
+        : 'BLACK_WINS';
 
-    if (this.board.isGameOver()) {
-      const winner = socket === this.player1 ? "white" : "black";
-
-      this.player1.send(
-        JSON.stringify({
-          type: GAME_OVER,
-          payload: { winner },
-        })
-      );
-
-      this.player2.send(
-        JSON.stringify({
-          type: GAME_OVER,
-          payload: { winner },
-        })
-      );
-
-      return;
+    connectionManager.sendMessageToAll(this.RoomId,JSON.stringify({type: GAME_OVER, payload: { winner }}))
     }
+
+    this.moveCount++;
+
   }
 }

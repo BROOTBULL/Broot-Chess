@@ -53,6 +53,11 @@ class ConnectionManager {
       user.socket.send(message);
     });
   }
+
+  getPlayersInfo(roomId:string)
+  {
+    return this.roomUserMap.get(roomId)
+  }
 }
 
 export const connectionManager = ConnectionManager.getInstance()
