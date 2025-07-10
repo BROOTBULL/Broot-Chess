@@ -1,0 +1,43 @@
+next
+-> check how to upload
+-> add buttons to do more stuff like back one move
+-> upload moves to db
+-> uplaod game to db
+-> upload game id and user id connections for reload and reconnections
+-> ui for played games and their whole game history
+-> intigrate stockfish and levels
+-> invite friend in shared room
+-> recent matchs
+-> random chess quots
+-> piece png changes
+-> theme change
+-> add sounds
+-> bkchodi bhii
+
+
+-> today i m making a page which like homepage for signin players it will include
+    -> shw profile picture 
+    -> logout btn
+    -> playOnline button
+    -> setting
+    -> reached level and rating
+    -> friends
+    -> recently played ppl 
+    -> history of all matches
+    -> profile button 
+    -> play bot ---in future
+
+-> in main game page things i shoud include 
+    -> chat box
+    -> theme change 
+    -> move history
+    -> save to play later
+    -> resign button 
+    -> take back
+    -> react button 
+    -> vdocall if i will have time to iclude it 
+    -> time game type ...rapid blits unlimited 
+
+-> next game page
+
+

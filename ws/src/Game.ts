@@ -1,0 +1,122 @@
+import { WebSocket } from "ws";
+import { Chess, Move, Square } from "chess.js";
+import { GAME_OVER, MOVE } from "./messages";
+import { User } from ".";
+
+export class Game {
+  //this class create room for two players
+  public player1: WebSocket;
+  public User1: User;
+  public player2: WebSocket;
+  public User2: User;
+  public board: Chess;
+  private startTime: Date;
+
+  constructor(
+    player1: WebSocket,
+    User1: User,
+    player2: WebSocket,
+    User2: User
+  ) {
+    this.player1 = player1;
+    this.player2 = player2;
+    this.User1 = User1;
+    this.User2 = User2;
+    this.board = new Chess();
+    this.startTime = new Date();
+    this.player1.send(
+      JSON.stringify({
+        type: "init_game",
+        payload: {
+          User: User1,
+          Opponent: User2,
+          color: "white",
+        },
+      })
+    );
+    this.player2.send(
+      JSON.stringify({
+        type: "init_game",
+        payload: {
+          Opponent: User1,
+          User: User2,
+          color: "black",
+        },
+      })
+    );
+  }
+
+isPromoting(chess: Chess, from: Square, to: Square) {
+  const piece = chess.get(from);
+
+  if (!piece || piece.type !== 'p') return false;
+
+  // White pawn reaching 8th rank or black pawn reaching 1st
+  return (
+    (piece.color === 'w' && to.endsWith('8')) ||
+    (piece.color === 'b' && to.endsWith('1'))
+  );
+}
+
+  makeMove(socket: WebSocket, move: Move) {
+    console.log("color turn :", this.board.turn());
+
+    const isWhiteTurn = this.board.turn() === "w";
+    console.log(isWhiteTurn);
+
+    if (isWhiteTurn && socket !== this.player1) {
+      console.log("early return 1");
+      return;
+    }
+    if (!isWhiteTurn && socket !== this.player2) {
+      console.log("early return 2");
+      return;
+    }
+
+    try {
+      const promote = this.isPromoting(this.board, move.from, move.to);
+
+      this.board.move({
+        from: move.from,
+        to: move.to,
+        ...(promote ? { promotion: "q" } : {}),
+      });
+    } catch (e) {
+      console.error("Error while making move", e);
+      return;
+    }
+
+    this.player1.send(
+      JSON.stringify({
+        type: MOVE,
+        move: move,
+      })
+    );
+    this.player2.send(
+      JSON.stringify({
+        type: MOVE,
+        move: move,
+      })
+    );
+
+    if (this.board.isGameOver()) {
+      const winner = socket === this.player1 ? "white" : "black";
+
+      this.player1.send(
+        JSON.stringify({
+          type: GAME_OVER,
+          payload: { winner },
+        })
+      );
+
+      this.player2.send(
+        JSON.stringify({
+          type: GAME_OVER,
+          payload: { winner },
+        })
+      );
+
+      return;
+    }
+  }
+}
