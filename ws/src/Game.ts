@@ -2,9 +2,10 @@ import { Chess, Move, Square } from "chess.js";
 import { randomUUID } from "crypto";
 import { User } from ".";
 import { connectionManager } from "./connectionManager";
-import { GAME_OVER, INIT_GAME, MOVE } from "./messages";
+import { GAME_OVER, INIT_GAME, MOVE, GAME_ENDED } from "./messages";
 
 type GAME_RESULT = "WHITE_WINS" | "BLACK_WINS" | "DRAW";
+type GAME_STATUS = 'IN_PROGRESS' | 'COMPLETED' | 'ABANDONED' | 'TIME_UP' | 'PLAYER_EXIT';
 
 export class Game {
   public RoomId: string;
@@ -100,5 +101,23 @@ export class Game {
 
     this.moveCount++;
 
+  }
+
+  async exitGame(user : User) {
+    this.endGame('PLAYER_EXIT', user.userId === this.player2Id ? 'WHITE_WINS' : 'BLACK_WINS');
+  }
+
+  async endGame(status: GAME_STATUS, result: GAME_RESULT) {
+
+    connectionManager.sendMessageToAll(
+      this.RoomId,
+      JSON.stringify({
+        type: GAME_ENDED,
+        payload: {
+          result,
+          status
+        },
+      }),
+    );
   }
 }

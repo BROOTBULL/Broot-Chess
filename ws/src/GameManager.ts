@@ -1,5 +1,5 @@
 import { WebSocket } from "ws";
-import { INIT_GAME, MOVE ,GAME_ADDED,GAME_ALERT} from "./messages";
+import { INIT_GAME, MOVE ,GAME_ADDED,GAME_ALERT,EXIT_GAME} from "./messages";
 import { User } from ".";
 import { connectionManager } from "./connectionManager";
 import { Game } from "./Game";
@@ -21,6 +21,10 @@ export class GameManager {
 
     this.users.push(user); // just to count online users remove offline users and
     this.addHandler(user); //as soon as this trigger a eventListener is attached to the socket that listen to all message till connections is closed from frontend ...ws.close()
+  }
+
+    removeGame(gameId: string) {
+    this.games = this.games.filter((game) => game.RoomId !== gameId);
   }
 
   removeUser(socket: WebSocket) {
@@ -77,18 +81,27 @@ export class GameManager {
         waitingGame.PushSecondPlayer(user)
 
         }
+      }
 
       if (message.type === MOVE) {
-        const game = this.games.find(
-          (game) => game.player1 === socket || game.player2 === socket
-        ); // it looks for that game where it can find the current socket in either of the player.. and make move in that socket
+        const gameId=message.payload.gameId;
+        const game = this.games.find((game) => game.RoomId === gameId); // it looks for that game where it can find the current game in Game array.. and make move in that
         if (game) {
-          //game class has 4 properties p1,p2 sockets and board with date
           console.log(message);
-
-          game.makeMove(socket, message.move);
+          game.makeMove(user, message.move);//game take user and move and move using socket inside the user 
         }
       }
-    });
+
+      if (message.type === EXIT_GAME){
+        const gameId = message.payload.gameId;
+        const game = this.games.find((game) => game.RoomId === gameId);
+
+        if (game) {
+          game.exitGame(user);
+          this.removeGame(game.RoomId)
+        }
+      }
+    
+  })
   }
 }
