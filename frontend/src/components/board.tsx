@@ -7,6 +7,7 @@ export const ChessBoard = ({
   setBoard,
   chess,
   color,
+  roomId
 }: {
   color: string;
   chess: Chess;
@@ -25,6 +26,7 @@ export const ChessBoard = ({
     color: Color;
   } | null)[][];
   socket: WebSocket;
+  roomId:string;
 }) => {
     const MOVE = "move";
     
@@ -53,10 +55,13 @@ function handleSquareClick(clickedSquare: Square) {
       socket.send(
         JSON.stringify({
           type: MOVE,
+          payload:{
+          gameId:roomId,
           move: {
             from,
             to: clickedSquare,
           },
+          }
         })
       );
     } else {

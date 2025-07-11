@@ -26,7 +26,7 @@ const RedirectIfAuth = ({ children }: { children: ReactNode }) => {
 
 function App() {
   const location = useLocation();
-  const { loading } = useChessContext(); // Optional: show spinner while auth check runs
+  const { loading} = useChessContext(); // Optional: show spinner while auth check runs
 
   if (loading) {
     return <div>Loading...</div>; // Replace with spinner or splash screen
@@ -38,9 +38,8 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/signup" element={<RedirectIfAuth><SignUpPage /></RedirectIfAuth>} />
         <Route path="/login" element={<RedirectIfAuth><LogInPage /></RedirectIfAuth>} />
-
         <Route path="/home" element={<RequireAuth><HomePage /></RequireAuth>} />
-        <Route path="/game" element={<RequireAuth><ChessGame /></RequireAuth>} />
+        <Route path={`/game`} element={<RequireAuth><ChessGame /></RequireAuth>} />
       </Routes>
     </AnimatePresence>
   );

@@ -23,6 +23,8 @@ interface ChessContextType {
   setGameStarted:React.Dispatch<React.SetStateAction<boolean>>
   connecting:boolean;
   setConnecting:React.Dispatch<React.SetStateAction<boolean>>
+  roomId:string;
+  setRoomId:React.Dispatch<React.SetStateAction<string>>
 }
 
 type GameType="blitz"|"rapid"|"daily"|"";
@@ -31,6 +33,7 @@ export const ChessContext = createContext<ChessContextType | undefined>(undefine
 
 export const ContextProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [roomId,setRoomId]=useState<string>("randomRoomId")
   const [Opponent, setOpponent] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [connecting, setConnecting] = useState<boolean>(false);
@@ -42,7 +45,8 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
       try {
         const res = await axios.get("/auth/checkAuth");
         if (res.data.isAuthanticated) {
-          setUser(res.data.UserDetails);        
+          setUser(res.data.UserDetails); 
+                 
         } else {
           setUser(null);
         }
@@ -58,7 +62,7 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <ChessContext.Provider value={{ user, setUser, loading,gameType,setGameType ,gameStarted,setGameStarted,connecting,setConnecting,Opponent,setOpponent}}>
+    <ChessContext.Provider value={{ user, setUser, loading,gameType,setGameType ,gameStarted,setGameStarted,connecting,setConnecting,Opponent,setOpponent,roomId,setRoomId}}>
       {children}
     </ChessContext.Provider>
   );

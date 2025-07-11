@@ -11,7 +11,7 @@ export const NewGame = ({setActiveTab,socket}:Props) => {
 
   const INIT_GAME = "init_game";
 
-  const { user, gameType, setGameType,connecting,setConnecting} = useChessContext();
+  const { gameType, setGameType,connecting,setConnecting} = useChessContext();
 
   function handleStartGame()
   {

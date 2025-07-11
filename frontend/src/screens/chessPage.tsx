@@ -47,9 +47,11 @@ const ChessGame = () => {
     setGameStarted,
     setConnecting,
     Opponent,
-    setOpponent
+    setOpponent,
+    roomId,
+    setRoomId
   } = useChessContext();
-  const { username, rating, profile } = user!;
+  const { username, rating, profile} = user!;
 
   const [activeTab, setActiveTab] = useState<Tab>("newgame");
 
@@ -63,23 +65,28 @@ const ChessGame = () => {
     } else {
       socket.onmessage = (e) => {
         const message = JSON.parse(e.data);
+        const payload =message.payload;
         console.log("message recieved:", message);
 
         switch (message.type) {
           case INIT_GAME:
             {
               const newGame = new Chess(); 
+              const isUser= payload.WhitePlayer.userId===user?.id;
+
               setChess(newGame);
               setBoard(newGame.board());
               setConnecting(false);
               setGameStarted(true)
-              setOpponent(message.payload.Opponent);
+              setOpponent(isUser?payload.BlackPlayer:payload.WhitePlayer);
+              setRoomId(payload.RoomId)
               console.log(
                 "Game initialized ! You are : ",
-                message.payload.color
+                payload.color,
+                "roomId:",payload.RoomId
               );
-            }
-            setColor(message.payload.color);
+              setColor(isUser?"white":"black")
+             }
             break;
           case MOVE:
             {
@@ -102,7 +109,7 @@ const ChessGame = () => {
             }
             break;
           case GAME_OVER:
-            console.log("Player left! GAME OVER:", message.payload);
+            console.log("Player left! GAME OVER:",payload);
             setGameStarted(false)
             chess.reset();
             break;
@@ -176,6 +183,7 @@ const ChessGame = () => {
               chess={chess}
               socket={socket}
               color={color}
+              roomId={roomId}
             />
             <PlayerInfo
               userName={username}

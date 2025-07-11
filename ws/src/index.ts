@@ -53,18 +53,20 @@ wss.on("connection", function connection(ws, req) {
     ws.close(4001, "Missing token");
     return;
   }
-  console.log("token:", token);
+  // console.log("token:", token);
 
   let user: User;
   try {
     user = extractAuthUser(token, ws);
+    console.log("user: ",user);
+    
   } catch (err) {
     console.error("🔴 Invalid token:", err);
     ws.close(4002, "Invalid token");
     return;
   }
 
-  gameManager.addUser(user, ws); //that ws is added in the room as player or pending player
+  gameManager.addUser(user); //that ws is added in the room as player or pending player
 
   ws.on("error", console.error);
 
@@ -84,7 +86,7 @@ wss.on("connection", function connection(ws, req) {
 
 const extractAuthUser = (token: string, ws: WebSocket): User => {
   const decoded = jwt.verify(token, JWT_SECRET) as userJwtClaims;
-  console.log("decoded: ", decoded);
+  // console.log("decoded: ", decoded);
 
   return new User(ws, decoded);
 };

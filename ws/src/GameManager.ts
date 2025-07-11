@@ -40,10 +40,14 @@ export class GameManager {
   private async addHandler(user: User) {
     user.socket.on("message", (data) => {
       const message = JSON.parse(data.toString());
+      console.log("message in gameManger",message);
+      
 
       if (message.type === INIT_GAME) {
 
         if (!this.pendingGameId) {
+          console.log("no game room with player waiting");
+          
           const game = new Game(user.userId, null);
           this.games.push(game)
           this.pendingGameId=game.RoomId;
@@ -58,6 +62,8 @@ export class GameManager {
         }
         else
         {
+          console.log("game room available with player waiting",this.pendingGameId);
+          
           const waitingGame=this.games.find((game)=> game.RoomId === this.pendingGameId);
         if (!waitingGame) {
             console.error('Pending game not found?');
@@ -88,7 +94,7 @@ export class GameManager {
         const game = this.games.find((game) => game.RoomId === gameId); // it looks for that game where it can find the current game in Game array.. and make move in that
         if (game) {
           console.log(message);
-          game.makeMove(user, message.move);//game take user and move and move using socket inside the user 
+          game.makeMove(user, message.payload.move);//game take user and move and move using socket inside the user 
         }
       }
 

@@ -18,7 +18,7 @@ export const GameButtons = () => {
       </div>
       <div
        className="bg-zinc-800 playButton h-18 flex flex-row items-center justify-center cursor-pointer px-4 shadow-md/50  "
-       onClick={()=>navigate("/game")}>
+       onClick={()=>navigate(`/game`)}>
         <img
           className="size-6 m-1 "
           src="../../public/media/pawn.png"
