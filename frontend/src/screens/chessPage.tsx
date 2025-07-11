@@ -36,6 +36,8 @@ const ChessGame = () => {
   const [color, setColor] = useState("white");
   const [time, setTime] = useState(5);
   const [setting, setSetting] = useState(false);
+  const [moves,setMoves]=useState<string[]>([]) 
+
 
   type Tab = "newgame" | "history" | "friends" | "play";
 
@@ -90,7 +92,10 @@ const ChessGame = () => {
             break;
           case MOVE:
             {
-              const move = message.move as Move;
+              const move = payload.move as Move;
+              console.log("move.to:",move.to); 
+              setMoves((prev)=>[...prev,move.to])
+
               try {
             if (isPromoting(chess, move.from, move.to)) {
               chess.move({
@@ -129,7 +134,7 @@ const ChessGame = () => {
       case "friends":
         return <Friends />;
       case "play":
-        return <Play />;
+        return <Play moves={moves}/>;
       default:
         return null;
     }

@@ -85,7 +85,7 @@ export class GameManager {
 
         connectionManager.addUserRoomMap(user,waitingGame.RoomId)
         waitingGame.PushSecondPlayer(user)
-
+        this.pendingGameId=null
         }
       }
 

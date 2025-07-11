@@ -58,7 +58,7 @@ wss.on("connection", function connection(ws, req) {
   let user: User;
   try {
     user = extractAuthUser(token, ws);
-    console.log("user: ",user);
+    // console.log("user: ",user);
     
   } catch (err) {
     console.error("🔴 Invalid token:", err);

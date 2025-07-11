@@ -86,7 +86,7 @@ export class Game {
     }
     
     //notify both player about their moves 
-    connectionManager.sendMessageToAll(this.RoomId,JSON.stringify({type: MOVE,move: move}))
+    connectionManager.sendMessageToAll(this.RoomId,JSON.stringify({type: MOVE,payload:{user:user,move: move}}))
 
     //endGame logic 
         if (this.board.isGameOver()) {
