@@ -15,20 +15,19 @@ import { Play } from "../components/playBox";
 export const INIT_GAME = "init_game";
 export const MOVE = "move";
 export const GAME_OVER = "game_over";
+export const GAME_ENDED = "game_ended";
 
 export function isPromoting(chess: Chess, from: Square, to: Square) {
   const piece = chess.get(from);
 
-  if (!piece || piece.type !== 'p') return false;
+  if (!piece || piece.type !== "p") return false;
 
   // White pawn reaching 8th rank or black pawn reaching 1st
   return (
-    (piece.color === 'w' && to.endsWith('8')) ||
-    (piece.color === 'b' && to.endsWith('1'))
+    (piece.color === "w" && to.endsWith("8")) ||
+    (piece.color === "b" && to.endsWith("1"))
   );
 }
-
-
 
 const ChessGame = () => {
   const [chess, setChess] = useState(new Chess());
@@ -36,8 +35,7 @@ const ChessGame = () => {
   const [color, setColor] = useState("white");
   const [time, setTime] = useState(5);
   const [setting, setSetting] = useState(false);
-  const [moves,setMoves]=useState<string[]>([]) 
-
+  const [moves, setMoves] = useState<string[]>([]);
 
   type Tab = "newgame" | "history" | "friends" | "play";
 
@@ -51,15 +49,31 @@ const ChessGame = () => {
     Opponent,
     setOpponent,
     roomId,
-    setRoomId
+    setRoomId,
   } = useChessContext();
-  const { username, rating, profile} = user!;
+  const { username, rating, profile } = user!;
 
   const [activeTab, setActiveTab] = useState<Tab>("newgame");
+  const [gameEnded,setGameEnded]=useState(false)
+  const [playerWon,setplayerWon]=useState<string|undefined>()
 
   const socket = useSocket(); //we are getting socket from customhook which is connected to backend
   axios.defaults.withCredentials = true;
   axios.defaults.baseURL = "http://localhost:3000";
+
+  useEffect(() => {
+      if(gameEnded){
+    const handleClick = () => {
+      setGameEnded(false);
+    };
+
+    document.addEventListener("click", handleClick);
+
+    return () => {
+      document.removeEventListener("click", handleClick);
+    };
+  }
+  }, []);
 
   useEffect(() => {
     if (!socket) {
@@ -67,61 +81,68 @@ const ChessGame = () => {
     } else {
       socket.onmessage = (e) => {
         const message = JSON.parse(e.data);
-        const payload =message.payload;
+        const payload = message.payload;
         console.log("message recieved:", message);
 
         switch (message.type) {
           case INIT_GAME:
             {
-              const newGame = new Chess(); 
-              const isUser= payload.WhitePlayer.userId===user?.id;
+              const newGame = new Chess();
+              const isUser = payload.WhitePlayer.userId === user?.id;
 
               setChess(newGame);
               setBoard(newGame.board());
               setConnecting(false);
-              setGameStarted(true)
-              setOpponent(isUser?payload.BlackPlayer:payload.WhitePlayer);
-              setRoomId(payload.RoomId)
+              setGameStarted(true);
+              setOpponent(isUser ? payload.BlackPlayer : payload.WhitePlayer);
+              setRoomId(payload.RoomId);
               console.log(
                 "Game initialized ! You are : ",
                 payload.color,
-                "roomId:",payload.RoomId
+                "roomId:",
+                payload.RoomId
               );
-              setColor(isUser?"white":"black")
-             }
+              setColor(isUser ? "white" : "black");
+            }
             break;
           case MOVE:
             {
               const move = payload.move as Move;
-              console.log("move.to:",move.to); 
-              setMoves((prev)=>[...prev,move.to])
+              setMoves((prev) => [...prev, move.to]);
 
               try {
-            if (isPromoting(chess, move.from, move.to)) {
-              chess.move({
-                from: move.from,
-                to: move.to,
-                promotion: 'q',
-              });
-            } else {
-              chess.move({ from: move.from, to: move.to });
-            }
-          } catch (error) {
-            console.log('Error', error);
-          }
+                if (isPromoting(chess, move.from, move.to)) {
+                  chess.move({
+                    from: move.from,
+                    to: move.to,
+                    promotion: "q",
+                  });
+                } else {
+                  chess.move({ from: move.from, to: move.to });
+                }
+              } catch (error) {
+                console.log("Error", error);
+              }
               setBoard(chess.board());
               console.log("Move made :", move);
             }
             break;
+          case GAME_ENDED:
+            console.log("Player left! GAME OVER:", payload);
+            setGameStarted(false);
+            setGameEnded(true)
+            setplayerWon(payload.result===color?username:Opponent?.name)
+            chess.reset();
+            break;
           case GAME_OVER:
-            console.log("Player left! GAME OVER:",payload);
-            setGameStarted(false)
+            console.log("Player left! GAME OVER:", payload);
+            setGameStarted(false);
             chess.reset();
             break;
         }
       };
     }
-  }, [socket,chess]);
+  }, [socket, chess]);
 
   function renderComponent() {
     switch (activeTab) {
@@ -134,7 +155,7 @@ const ChessGame = () => {
       case "friends":
         return <Friends />;
       case "play":
-        return <Play moves={moves}/>;
+        return <Play moves={moves} socket={socket} />;
       default:
         return null;
     }
@@ -176,6 +197,38 @@ const ChessGame = () => {
           </div>
 
           <div className="flex items-center mx-auto flex-col w-full lg:w-[70%] lg:h-full max-w-[630px] lg:self-end h-full ">
+
+            <div className={`absolute w-[82%] aspect-square z-50 rounded-lg p-1 justify-center items-center backdrop-blur-[2px] ${gameEnded?"flex":"hidden"}`}>
+              <div className={`w-50 h-55 z-50 flex bg-zinc-800 rounded-lg p-1 flex-col `}>
+                <div className="text-lg text-zinc-200 font-bold mt-5 text-center">
+                  {playerWon}  WON
+                </div>
+                <div className="flex flex-row justify-center items-center">
+                  <div className="flex flex-col">
+                    <img
+                      className="size-18"
+                      src={Opponent?.profile || "../../public/media/userW.png"}
+                      alt=""
+                    />
+                    <div className="text-[10px] text-center text-zinc-300 font-bold">
+                      {Opponent?.name || "Opponent"}
+                    </div>
+                  </div>
+                  <div className="text-lg text-zinc-200 font-bold mt-2">VS</div>
+                  <div className="flex flex-col">
+                    <img
+                      className="size-18"
+                      src={profile || "../../public/media/userW.png"}
+                      alt=""
+                    />
+                    <div className="text-[10px] text-center text-zinc-300 font-bold">
+                      {username}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <PlayerInfo
               userName={Opponent?.name || "Opponent"}
               rating={Opponent?.rating || 500}

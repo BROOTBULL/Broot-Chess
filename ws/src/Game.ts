@@ -104,10 +104,10 @@ export class Game {
   }
 
   async exitGame(user : User) {
-    this.endGame('PLAYER_EXIT', user.userId === this.player2Id ? 'WHITE_WINS' : 'BLACK_WINS');
+    this.endGame('PLAYER_EXIT', user.userId === this.player2Id ? 'white' : 'black');
   }
 
-  async endGame(status: GAME_STATUS, result: GAME_RESULT) {
+  async endGame(status: GAME_STATUS, result: string) {
 
     connectionManager.sendMessageToAll(
       this.RoomId,

@@ -164,7 +164,7 @@ export const Header3 = () => {
           >
             <div className="nav flex flex-row items-center hover:ml-4 rounded-3xl xl:w-35 duration-300 m-1 cursor-pointer">
               <img
-                className="size-10 lg:m-3 xl:m-2 xl:size-7 xl:ml-3 duration-300"
+                className="img size-10 lg:m-3 xl:m-2 xl:size-7 xl:ml-3 duration-300"
                 src="../../public/media/profile.png"
                 alt=""
               />
@@ -172,7 +172,7 @@ export const Header3 = () => {
             </div>
             <div className="nav flex flex-row items-center hover:ml-4 rounded-3xl xl:w-35 duration-300 m-1 cursor-pointer">
               <img
-                className="size-10 lg:m-3 xl:m-2 xl:size-7 xl:ml-3 duration-300"
+                className="img size-10 lg:m-3 xl:m-2 xl:size-7 xl:ml-3 duration-300"
                 src="../../public/media/play.png"
                 alt=""
               />
@@ -180,7 +180,7 @@ export const Header3 = () => {
             </div>
             <div className="nav flex flex-row items-center hover:ml-4 rounded-3xl xl:w-35 duration-300 m-1 cursor-pointer">
               <img
-                className="size-10 lg:m-3 xl:m-2 xl:size-7 xl:ml-3 duration-300"
+                className="img size-10 lg:m-3 xl:m-2 xl:size-7 xl:ml-3 duration-300"
                 src="../../public/media/home.png"
                 alt=""
               />
@@ -188,7 +188,7 @@ export const Header3 = () => {
             </div>
             <div className="nav flex flex-row items-center hover:ml-4 rounded-3xl xl:w-35 duration-300 m-1 cursor-pointer">
               <img
-                className="size-10 lg:m-3 xl:m-2 xl:size-7 xl:ml-3 duration-300"
+                className="img size-10 lg:m-3 xl:m-2 xl:size-7 xl:ml-3 duration-300"
                 src="../../public/media/social.png"
                 alt=""
               />
@@ -196,7 +196,7 @@ export const Header3 = () => {
             </div>
             <div className="nav flex flex-row items-center hover:ml-4 rounded-3xl xl:w-35 duration-300 m-1 cursor-pointer">
               <img
-                className="size-10 lg:m-3 xl:m-2 xl:size-7 xl:ml-3 duration-300"
+                className="img size-10 lg:m-3 xl:m-2 xl:size-7 xl:ml-3 duration-300"
                 src="../../public/media/assets.png"
                 alt=""
               />
