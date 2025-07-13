@@ -89,14 +89,14 @@ export class Game {
     connectionManager.sendMessageToAll(this.RoomId,JSON.stringify({type: MOVE,payload:{user:user,move: move}}))
 
     //endGame logic 
-        if (this.board.isGameOver()) {
+    if (this.board.isGameOver()) {
       const winner = this.board.isDraw()
       ? 'DRAW'
       : this.board.turn() === 'b'
         ? 'WHITE_WINS'
         : 'BLACK_WINS';
-
-    connectionManager.sendMessageToAll(this.RoomId,JSON.stringify({type: GAME_OVER, payload: { winner }}))
+    
+    this.endGame('COMPLETED', this.board.turn()==="b" ? 'white' : 'black');
     }
 
     this.moveCount++;
@@ -120,4 +120,6 @@ export class Game {
       }),
     );
   }
+
+
 }

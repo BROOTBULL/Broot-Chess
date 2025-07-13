@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef} from "react";
 import { useChessContext } from "./contextHook";
 
 export const useSocket = () => {
   const WS_URL = "ws://localhost:8080";
-  const [socket, setSocket] = useState<WebSocket | null>(null);
+  const {socket, setSocket} = useChessContext()
   const isOpen = useRef(false); // useRef to persist across renders
   const {user}=useChessContext();
 

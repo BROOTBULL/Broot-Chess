@@ -5,3 +5,6 @@ export const GAME_ADDED="game_added";
 export const GAME_ALERT="game_alert"
 export const EXIT_GAME="exit_game"
 export const GAME_ENDED="game_ended"
+export const RECONNECTION="reconnect"
+export const GAME_JOINED="game_joined"
+export const CHAT="chat"

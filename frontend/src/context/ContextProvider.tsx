@@ -4,11 +4,11 @@ import axios from "axios";
 export interface User {
   id: string;
   username: string;
-  name:string;
+  name: string;
   email: string;
   rating: number;
-  profile:string;
-  token:string
+  profile: string;
+  token: string;
 }
 
 interface ChessContextType {
@@ -17,36 +17,47 @@ interface ChessContextType {
   Opponent: User | null;
   setOpponent: React.Dispatch<React.SetStateAction<User | null>>;
   loading: boolean;
-  gameType:GameType;
-  setGameType:React.Dispatch<React.SetStateAction<GameType>>;
-  gameStarted:boolean;
-  setGameStarted:React.Dispatch<React.SetStateAction<boolean>>
-  connecting:boolean;
-  setConnecting:React.Dispatch<React.SetStateAction<boolean>>
-  roomId:string;
-  setRoomId:React.Dispatch<React.SetStateAction<string>>
+  gameType: GameType;
+  setGameType: React.Dispatch<React.SetStateAction<GameType>>;
+  gameStarted: boolean;
+  setGameStarted: React.Dispatch<React.SetStateAction<boolean>>;
+  connecting: boolean;
+  setConnecting: React.Dispatch<React.SetStateAction<boolean>>;
+  roomId: string | undefined;
+  setRoomId: React.Dispatch<React.SetStateAction<string | undefined>>;
+  socket: WebSocket|null;
+  setSocket: React.Dispatch<React.SetStateAction<WebSocket | null>>;
+  Messages:Message[]
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+
 }
 
-type GameType="blitz"|"rapid"|"daily"|"";
+type GameType = "blitz" | "rapid" | "daily" | "";
+type Message = { type: string; message: string };
 
-export const ChessContext = createContext<ChessContextType | undefined>(undefined);
+
+export const ChessContext = createContext<ChessContextType | undefined>(
+  undefined
+);
 
 export const ContextProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [roomId,setRoomId]=useState<string>("randomRoomId")
+  const [roomId, setRoomId] = useState<string | undefined>(undefined);
   const [Opponent, setOpponent] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [connecting, setConnecting] = useState<boolean>(false);
-  const [gameType,setGameType]=useState<GameType>("")
+  const [gameType, setGameType] = useState<GameType>("");
   const [gameStarted, setGameStarted] = useState(false);
+  const [socket, setSocket] = useState<WebSocket | null>(null);
+  const [Messages, setMessages] = useState<Message[]>([]);
+
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
         const res = await axios.get("/auth/checkAuth");
         if (res.data.isAuthanticated) {
-          setUser(res.data.UserDetails); 
-                 
+          setUser(res.data.UserDetails);
         } else {
           setUser(null);
         }
@@ -61,9 +72,26 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
     checkAuth();
   }, []);
 
+
   return (
-    <ChessContext.Provider value={{ user, setUser, loading,gameType,setGameType ,gameStarted,setGameStarted,connecting,setConnecting,Opponent,setOpponent,roomId,setRoomId}}>
-      {children}
-    </ChessContext.Provider>
+    <ChessContext.Provider value={{
+    user,
+    setUser,
+    loading,
+    gameType,
+    setGameType,
+    gameStarted,
+    setGameStarted,
+    connecting,
+    setConnecting,
+    Opponent,
+    setOpponent,
+    roomId,
+    setRoomId,
+    socket,
+    setSocket,
+    Messages,
+    setMessages
+  }}>{children}</ChessContext.Provider>
   );
 };

@@ -103,6 +103,7 @@ function handleSquareClick(clickedSquare: Square) {
       if (from) setFrom(null);
       chess.move({ from, to: draggedTo });
       setBoard(chess.board());
+      
     }
 }
 

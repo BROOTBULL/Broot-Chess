@@ -16,6 +16,9 @@ export const INIT_GAME = "init_game";
 export const MOVE = "move";
 export const GAME_OVER = "game_over";
 export const GAME_ENDED = "game_ended";
+export const RECONNECT = "reconnect";
+export const GAME_JOINED="game_joined"
+export const CHAT = "chat";
 
 export function isPromoting(chess: Chess, from: Square, to: Square) {
   const piece = chess.get(from);
@@ -50,29 +53,31 @@ const ChessGame = () => {
     setOpponent,
     roomId,
     setRoomId,
+    setMessages
   } = useChessContext();
   const { username, rating, profile } = user!;
 
   const [activeTab, setActiveTab] = useState<Tab>("newgame");
-  const [gameEnded,setGameEnded]=useState(false)
-  const [playerWon,setplayerWon]=useState<string|undefined>()
+  const [gameEnded, setGameEnded] = useState(false);
+  const [playerWon, setplayerWon] = useState<string | undefined>();
+  const [gameStatus, setGameStatus] = useState<string | null>();
 
   const socket = useSocket(); //we are getting socket from customhook which is connected to backend
   axios.defaults.withCredentials = true;
   axios.defaults.baseURL = "http://localhost:3000";
 
   useEffect(() => {
-      if(gameEnded){
-    const handleClick = () => {
-      setGameEnded(false);
-    };
+    if (gameEnded) {
+      const handleClick = () => {
+        setGameEnded(false);
+      };
 
-    document.addEventListener("click", handleClick);
+      document.addEventListener("click", handleClick);
 
-    return () => {
-      document.removeEventListener("click", handleClick);
-    };
-  }
+      return () => {
+        document.removeEventListener("click", handleClick);
+      };
+    }
   }, []);
 
   useEffect(() => {
@@ -96,6 +101,15 @@ const ChessGame = () => {
               setGameStarted(true);
               setOpponent(isUser ? payload.BlackPlayer : payload.WhitePlayer);
               setRoomId(payload.RoomId);
+
+              //Room Id in localStorage logic with expiary
+              const rmid = payload.RoomId;
+              const expiryTime = Date.now() + 15 * 60 * 1000; // 15 minutes in ms
+              localStorage.setItem(
+                "roomData",
+                JSON.stringify({ rmid, expiryTime })
+              );
+
               console.log(
                 "Game initialized ! You are : ",
                 payload.color,
@@ -123,24 +137,87 @@ const ChessGame = () => {
               } catch (error) {
                 console.log("Error", error);
               }
-              setBoard(chess.board());
+              setBoard(chess.board());//chess.board give a big function that handles how whole board looks it basically used for updating the board ui
               console.log("Move made :", move);
             }
             break;
-          case GAME_ENDED:
-            console.log("Player left! GAME OVER:", payload);
-            setGameStarted(false);
-            setGameEnded(true)
-            setplayerWon(payload.result===color?username:Opponent?.name)
-            chess.reset();
+          case GAME_JOINED:
+            {
+              console.log("i got triggred joined game");
+              
+              const isUser = payload.WhitePlayer.userId === user?.id;
+              setActiveTab("play")
+              setConnecting(false);
+              setGameStarted(true);
+              setOpponent(isUser ? payload.BlackPlayer : payload.WhitePlayer);
+              setRoomId(payload.RoomId);
+
+              console.log(
+                "Game Rejoined successfully ! You are : ",
+                payload.color,
+                "roomId:",
+                payload.RoomId
+              );
+              setColor(isUser ? "white" : "black");
+
+            }
             break;
-          case GAME_OVER:
-            console.log("Player left! GAME OVER:", payload);
-            setGameStarted(false);
-            chess.reset();
+          case GAME_ENDED:
+            {
+              let wonBy;
+              setGameStarted(false);
+              setGameEnded(true);
+              setplayerWon(
+                payload.result === color ? username : Opponent?.name
+              );
+              switch (payload.status) {
+                case "PLAYER_EXIT":
+                  wonBy = "Resigantion";
+                  break;
+                case "COMPLETED":
+                  wonBy =
+                    message.payload.result !== "DRAW" ? "CheckMate" : "Draw";
+                  console.log(wonBy, "!!! GAME OVER:", payload);
+                  break;
+                case "TIME_OUT":
+                  wonBy = "TimeOut";
+                  break;
+              }
+              setGameStatus(wonBy);
+              localStorage.removeItem("roomData");
+              setRoomId(undefined);
+              chess.reset();
+            }
+            break;
+          case CHAT:
+            console.log(payload.message);    
+            setMessages((prev)=>[...prev,payload.message])
             break;
         }
       };
+    }
+    //empty localstorage afte 1 min
+    const stored = localStorage.getItem("roomData");
+    const data = stored ? JSON.parse(stored) : null;
+    if (data && data.expiryTime!==0) {
+      if (Date.now() > data.expiryTime) {
+        localStorage.removeItem("roomData");
+        console.log("localstorage roomId expired");
+      } else {
+        console.log("localstorage roomId is : ", data.rmid);
+      }
+    }
+    //Reconnection if no RoomId in Localstorage
+    if (roomId !== data?.rmid) {
+      console.log("Reconnection triggered!!!");
+      socket.send(
+        JSON.stringify({
+          type: RECONNECT,
+          payload: {
+            roomId:data.rmid,
+          },
+        })
+      );
     }
   }, [socket, chess]);
 
@@ -176,7 +253,7 @@ const ChessGame = () => {
 
   return (
     <>
-      {console.log()}
+      {console.log("RoomId : ", roomId)}
 
       <div className="absolute flex flex-col lg:flex-row md:h-full md:w-full -z-12 ">
         <div className=" flex flex-col lg:flex-row justify-between bg-gradient-to-r  from-zinc-200 to-zinc-100 backdrop-blur-md h-fit w-full lg:w-[60%] md:h-full p-5 -z-10  ">
@@ -197,14 +274,29 @@ const ChessGame = () => {
           </div>
 
           <div className="flex items-center mx-auto flex-col w-full lg:w-[70%] lg:h-full max-w-[630px] lg:self-end h-full ">
-
-            <div className={`absolute w-[82%] aspect-square z-50 rounded-lg p-1 justify-center items-center backdrop-blur-[2px] ${gameEnded?"flex":"hidden"}`}>
-              <div className={`w-50 h-55 z-50 flex bg-zinc-800 rounded-lg p-1 flex-col `}>
-                <div className="text-lg text-zinc-200 font-bold mt-5 text-center">
-                  {playerWon}  WON
+            <div
+              className={`absolute w-[82%] aspect-square z-50 rounded-lg p-1 justify-center items-center backdrop-blur-[2px] ${
+                gameEnded ? "flex" : "hidden"
+              }`}
+            >
+              <div
+                className={`w-55 h-60 z-50 flex bg-zinc-800 rounded-lg p-1 flex-col `}
+              >
+                <div className="text-2xl text-zinc-200 font-bold mt-5 text-center">
+                  {playerWon} Won
+                  <div className="text-[12px] text-zinc-400 font-bold text-center">
+                    by {gameStatus}
+                  </div>
                 </div>
-                <div className="flex flex-row justify-center items-center">
+                <div className="flex flex-row justify-center items-center mt-3">
                   <div className="flex flex-col">
+                    <img
+                      className={`absolute size-7 drop-shadow-sm/90 -rotate-25 ${
+                        playerWon === username ? "hidden" : ""
+                      }`}
+                      src="./media/won.png"
+                      alt=""
+                    />
                     <img
                       className="size-18"
                       src={Opponent?.profile || "../../public/media/userW.png"}
@@ -217,6 +309,13 @@ const ChessGame = () => {
                   <div className="text-lg text-zinc-200 font-bold mt-2">VS</div>
                   <div className="flex flex-col">
                     <img
+                      className={`absolute size-7 drop-shadow-sm/90 -rotate-25 ${
+                        playerWon === username ? "" : "hidden"
+                      }`}
+                      src="./media/won.png"
+                      alt=""
+                    />
+                    <img
                       className="size-18"
                       src={profile || "../../public/media/userW.png"}
                       alt=""
@@ -225,6 +324,15 @@ const ChessGame = () => {
                       {username}
                     </div>
                   </div>
+                </div>
+                <div
+                  onClick={() => {
+                    setActiveTab("newgame");
+                    setGameEnded(false);
+                  }}
+                  className="text-lg text-zinc-200 font-bold m-3 rounded-md text-center bg-zinc-700 w-[80%] flex mx-auto justify-center p-2"
+                >
+                  New Game
                 </div>
               </div>
             </div>
