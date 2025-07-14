@@ -26,7 +26,7 @@ export const ChessBoard = ({
     color: Color;
   } | null)[][];
   socket: WebSocket;
-  roomId:string;
+  roomId:string|undefined;
 }) => {
     const MOVE = "move";
     

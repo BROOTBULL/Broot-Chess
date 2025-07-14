@@ -20,7 +20,7 @@ export const LevelLoader = () => {
     : 0;
 
   return (
-    <div className="flex flex-col h-fit w-full  self-end p-3 md:p-5 my-1 bg-zinc-800 shadow-lg/50">
+    <div className="flex flex-col h-fit w-full  self-end p-3 md:p-4 my-1 bg-zinc-800 shadow-lg/50">
       <span className="text-zinc-300 text-[10px] md:text-[14px] flex items-center ">
         {currentTrophy && (
           <img
@@ -31,7 +31,7 @@ export const LevelLoader = () => {
         )}
         {rating}
       </span>
-      <div className={`bg-zinc-300 h-3 md:h-4 rounded-full my-1`}>
+      <div className={`bg-zinc-300 h-3 rounded-full my-1`}>
         <div
           className="h-full rounded-full bg-emerald-500 "
           style={{ width: `${Ptg}%` }}

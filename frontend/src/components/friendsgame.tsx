@@ -2,7 +2,7 @@ export const FriendsGame = () => {
   function handleChallenge() {}
   return (
     <div className="lg:w-[50%] w-full h-fit my-4 ring-1 ring-zinc-400">
-      <div className="flex justify-between m-2 font-bold">
+      <div className="flex justify-between m-2 my-1 font-bold">
         <span className=" text-zinc-700 text-md lg:text-2xl cursor-default">
           Friends
         </span>
@@ -10,7 +10,7 @@ export const FriendsGame = () => {
           See all
         </span>
       </div>
-      <div className="flex flex-row ring-1 md:gap-1 ring-zinc-400 overflow-x-auto overflow-hidden scroll-smooth ">
+      <div className={`flex flex-row ring-1 md:gap-1 ring-zinc-400 overflow-x-auto custom-scroll-w overflow-hidden scroll-smooth `}>
         <div className="min-w-[120px] md:min-w-[180px] flex flex-col bg-zinc-400 items-center shadow-md/50 p-2 m-2">
           <img
             className="size-15 md:size-45 drop-shadow-md "

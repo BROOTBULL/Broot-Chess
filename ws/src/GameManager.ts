@@ -153,9 +153,7 @@ export class GameManager {
       const game = this.games.find((game) => game.RoomId === roomId);
       if(game){
       const Players=connectionManager.getPlayersInfo(roomId)
-      const myInfo=Players?.find(
-            (u) => u.userId === user.userId
-          );
+      const myInfo=user;
       const opponentInfo=Players?.find(
             (u) => u.userId !== user.userId
           );

@@ -11,13 +11,14 @@ import { NewGame } from "../components/newGamebox";
 import { History } from "../components/historyBox";
 import { Friends } from "../components/friendsBox";
 import { Play } from "../components/playBox";
+import { AnimatePresence, motion } from "motion/react";
 
 export const INIT_GAME = "init_game";
 export const MOVE = "move";
 export const GAME_OVER = "game_over";
 export const GAME_ENDED = "game_ended";
 export const RECONNECT = "reconnect";
-export const GAME_JOINED="game_joined"
+export const GAME_JOINED = "game_joined";
 export const CHAT = "chat";
 
 export function isPromoting(chess: Chess, from: Square, to: Square) {
@@ -53,7 +54,7 @@ const ChessGame = () => {
     setOpponent,
     roomId,
     setRoomId,
-    setMessages
+    setMessages,
   } = useChessContext();
   const { username, rating, profile } = user!;
 
@@ -66,19 +67,25 @@ const ChessGame = () => {
   axios.defaults.withCredentials = true;
   axios.defaults.baseURL = "http://localhost:3000";
 
-  useEffect(() => {
-    if (gameEnded) {
-      const handleClick = () => {
-        setGameEnded(false);
-      };
+  // useEffect(() => {
+  //   if (gameEnded) {
+  //     const handleClick = () => {
+  //       setGameEnded(false);
+  //     };
 
-      document.addEventListener("click", handleClick);
+  //     document.addEventListener("click", handleClick);
 
-      return () => {
-        document.removeEventListener("click", handleClick);
-      };
-    }
-  }, []);
+  //     return () => {
+  //       document.removeEventListener("click", handleClick);
+  //     };
+  //   }
+  // }, []);
+
+  function handleClose()
+  {
+    setGameEnded(false)
+    setActiveTab("newgame")
+  }
 
   useEffect(() => {
     if (!socket) {
@@ -137,29 +144,21 @@ const ChessGame = () => {
               } catch (error) {
                 console.log("Error", error);
               }
-              setBoard(chess.board());//chess.board give a big function that handles how whole board looks it basically used for updating the board ui
-              console.log("Move made :", move);
+              setBoard(chess.board()); //chess.board give a big function that handles how whole board looks it basically used for updating the board ui
             }
             break;
           case GAME_JOINED:
             {
-              console.log("i got triggred joined game");
-              
               const isUser = payload.WhitePlayer.userId === user?.id;
-              setActiveTab("play")
+              setActiveTab("play");
               setConnecting(false);
               setGameStarted(true);
               setOpponent(isUser ? payload.BlackPlayer : payload.WhitePlayer);
               setRoomId(payload.RoomId);
 
-              console.log(
-                "Game Rejoined successfully ! You are : ",
-                payload.color,
-                "roomId:",
-                payload.RoomId
-              );
+              console.log("Game Rejoined successfully..!!!");
+              console.log("roomId:", payload.RoomId);
               setColor(isUser ? "white" : "black");
-
             }
             break;
           case GAME_ENDED:
@@ -190,8 +189,8 @@ const ChessGame = () => {
             }
             break;
           case CHAT:
-            console.log(payload.message);    
-            setMessages((prev)=>[...prev,payload.message])
+            console.log(payload.message);
+            setMessages((prev) => [...prev, payload.message]);
             break;
         }
       };
@@ -199,12 +198,10 @@ const ChessGame = () => {
     //empty localstorage afte 1 min
     const stored = localStorage.getItem("roomData");
     const data = stored ? JSON.parse(stored) : null;
-    if (data && data.expiryTime!==0) {
+    if (data && data.expiryTime !== 0) {
       if (Date.now() > data.expiryTime) {
         localStorage.removeItem("roomData");
         console.log("localstorage roomId expired");
-      } else {
-        console.log("localstorage roomId is : ", data.rmid);
       }
     }
     //Reconnection if no RoomId in Localstorage
@@ -214,7 +211,7 @@ const ChessGame = () => {
         JSON.stringify({
           type: RECONNECT,
           payload: {
-            roomId:data.rmid,
+            roomId: data.rmid,
           },
         })
       );
@@ -253,7 +250,7 @@ const ChessGame = () => {
 
   return (
     <>
-      {console.log("RoomId : ", roomId)}
+      {console.log()}
 
       <div className="absolute flex flex-col lg:flex-row md:h-full md:w-full -z-12 ">
         <div className=" flex flex-col lg:flex-row justify-between bg-gradient-to-r  from-zinc-200 to-zinc-100 backdrop-blur-md h-fit w-full lg:w-[60%] md:h-full p-5 -z-10  ">
@@ -274,13 +271,18 @@ const ChessGame = () => {
           </div>
 
           <div className="flex items-center mx-auto flex-col w-full lg:w-[70%] lg:h-full max-w-[630px] lg:self-end h-full ">
-            <div
-              className={`absolute w-[82%] aspect-square z-50 rounded-lg p-1 justify-center items-center backdrop-blur-[2px] ${
-                gameEnded ? "flex" : "hidden"
-              }`}
+           <AnimatePresence>
+            {
+             gameEnded &&
+             <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -30 }}
+              transition={{ duration: 0.2 }}
+              className={`absolute w-[82%] aspect-square z-50 rounded-lg p-1 justify-center items-center backdrop-blur-[2px] flex`}
             >
               <div
-                className={`w-55 h-60 z-50 flex bg-zinc-800 rounded-lg p-1 flex-col `}
+                className={`w-55 h-60 z-50 flex bg-zinc-800 rounded-lg p-1 flex-col`}
               >
                 <div className="text-2xl text-zinc-200 font-bold mt-5 text-center">
                   {playerWon} Won
@@ -288,10 +290,13 @@ const ChessGame = () => {
                     by {gameStatus}
                   </div>
                 </div>
+              <img 
+              onClick={handleClose}
+              className="absolute size-7 flex z-50 self-end rotate-45 invert cursor-pointer hover:drop-shadow-[0px_0px_2px] hover:drop-shadow-zinc-500" src="./media/closeOption.png" alt="" />
                 <div className="flex flex-row justify-center items-center mt-3">
                   <div className="flex flex-col">
                     <img
-                      className={`absolute size-7 drop-shadow-sm/90 -rotate-25 ${
+                      className={`absolute size-7 drop-shadow-sm/90 -rotate-25 heartbeat ${
                         playerWon === username ? "hidden" : ""
                       }`}
                       src="./media/won.png"
@@ -309,7 +314,7 @@ const ChessGame = () => {
                   <div className="text-lg text-zinc-200 font-bold mt-2">VS</div>
                   <div className="flex flex-col">
                     <img
-                      className={`absolute size-7 drop-shadow-sm/90 -rotate-25 ${
+                      className={`absolute size-7 drop-shadow-sm/90 -rotate-25 heartbeat ${
                         playerWon === username ? "" : "hidden"
                       }`}
                       src="./media/won.png"
@@ -330,12 +335,13 @@ const ChessGame = () => {
                     setActiveTab("newgame");
                     setGameEnded(false);
                   }}
-                  className="text-lg text-zinc-200 font-bold m-3 rounded-md text-center bg-zinc-700 w-[80%] flex mx-auto justify-center p-2"
+                  className="text-lg text-zinc-200 font-bold m-3 rounded-md text-center bg-emerald-900 w-[80%] flex mx-auto justify-center p-2 cursor-pointer playButton"
                 >
                   New Game
                 </div>
               </div>
-            </div>
+            </motion.div>}
+           </AnimatePresence>
 
             <PlayerInfo
               userName={Opponent?.name || "Opponent"}

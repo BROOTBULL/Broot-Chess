@@ -126,3 +126,21 @@ html, body {
   scrollbar-width: thin;
   scrollbar-color: #424242  rgb(28, 28, 28);
 }
+.custom-scroll-w {
+  scrollbar-width: thin;
+  scrollbar-color: #919191  rgb(210, 210, 210);
+}
+
+
+@keyframes heartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+.heartbeat {
+  animation: heartbeat 0.6s ease-in-out infinite;
+}
