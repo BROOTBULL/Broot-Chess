@@ -6,7 +6,7 @@ import { useChessContext } from "../hooks/contextHook";
 
 
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = "http://localhost:3000";// next to do --> cookies ,login, reload store details 
+axios.defaults.baseURL = "http://localhost:3000";
 
 const SignUpPage = () => {
   const navigate = useNavigate();

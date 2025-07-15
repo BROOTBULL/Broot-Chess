@@ -3,9 +3,20 @@ import { randomUUID } from "crypto";
 import { User } from ".";
 import { connectionManager } from "./connectionManager";
 import { GAME_OVER, INIT_GAME, MOVE, GAME_ENDED } from "./messages";
+import { createGameInDb } from "./API_Routes";
 
 type GAME_RESULT = "WHITE_WINS" | "BLACK_WINS" | "DRAW";
 type GAME_STATUS = 'IN_PROGRESS' | 'COMPLETED' | 'ABANDONED' | 'TIME_UP' | 'PLAYER_EXIT';
+type timeControl =  "CLASSICAL" | "RAPID" | "BLITZ" ;
+export type gamedata ={
+      id:string,
+      timeControl:timeControl,
+      status:GAME_STATUS,
+      startAt:string|Date,
+      currentFen:string,
+      whitePlayerId:string,
+      blackPlayerId:string
+}
 
 export class Game {
   public RoomId: string;
@@ -27,9 +38,21 @@ export class Game {
   {
     this.player2Id=user.userId;
     const Players = connectionManager.getPlayersInfo(this.RoomId);
+    this.startTime=new Date(Date.now());
 
     const WhitePlayer=Players?.find((user)=> user.userId !== this.player2Id)
     const BlackPlayer=Players?.find((user)=> user.userId === this.player2Id)
+    const gameData={
+      id:this.RoomId,
+      timeControl:"CLASSICAL" as timeControl,
+      status:"IN_PROGRESS" as GAME_STATUS,
+      startAt:this.startTime,
+      currentFen:"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      whitePlayerId:this.player1Id,
+      blackPlayerId:this.player2Id
+    }
+
+    createGameInDb(gameData)
     
     connectionManager.sendMessageToAll(
       this.RoomId,
@@ -43,7 +66,9 @@ export class Game {
         }
       })
     )
+
   }
+
 
   isPromoting(chess: Chess, from: Square, to: Square) {
     const piece = chess.get(from);

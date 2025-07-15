@@ -44,3 +44,7 @@ next
 
 exit room button
 implementing reconnections form server 
+
+
+axios.defaults.withCredentials = true;
+axios.defaults.baseURL = "http://localhost:3000";

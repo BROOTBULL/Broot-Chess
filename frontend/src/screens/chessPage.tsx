@@ -250,7 +250,7 @@ const ChessGame = () => {
 
   return (
     <>
-      {console.log()}
+      {console.log(chess.fen())}
 
       <div className="absolute flex flex-col lg:flex-row md:h-full md:w-full -z-12 ">
         <div className=" flex flex-col lg:flex-row justify-between bg-gradient-to-r  from-zinc-200 to-zinc-100 backdrop-blur-md h-fit w-full lg:w-[60%] md:h-full p-5 -z-10  ">

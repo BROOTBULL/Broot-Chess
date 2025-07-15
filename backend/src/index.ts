@@ -6,6 +6,7 @@ import dotenv from "dotenv"
 import { initPassport } from "./passport";
 import passport from "passport";
 import authRoute from "./auth/auth"
+import gameRoute from "./auth/gameData";
 
 const app=express();
 
@@ -24,15 +25,21 @@ initPassport();
 
 app.use(passport.initialize());  //It sets up the middleware so Passport can start handling authentication, use strategies like Google
 app.use(passport.authenticate("session"));  //tells Passport to use session-based authentication ,reads session cookie
-app.use(
-  cors({
-    origin: process.env.ALLOWED_HOST,
-    methods: 'GET,POST,PUT,DELETE',
-    credentials: true,
-  }),
-);
+const allowedOrigins = (process.env.ALLOWED_HOST || "").split(",");
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: 'GET,POST,PUT,DELETE',
+  credentials: true,
+}));
 
 app.use('/auth', authRoute);
+app.use("/gameData",gameRoute)
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

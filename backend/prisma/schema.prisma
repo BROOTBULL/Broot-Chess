@@ -41,6 +41,7 @@ model Game {
   timeControl   TimeControl
   startingFen   String     @default("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1") // default value for the startingFen
   currentFen    String?
+  fenHistory    String[]
   startAt       DateTime   @default(now())
   endAt         DateTime?
   moves         Move[]
@@ -58,8 +59,6 @@ model Move {
   from        String
   to          String
   comments    String?
-  before      String
-  after       String
   timeTaken   Int?     @default(0)
   createdAt   DateTime @default(now())
   san         String?   
