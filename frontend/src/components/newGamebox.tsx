@@ -4,9 +4,11 @@ type Tab = "newgame" | "history" | "friends" | "play";
 type Props = {
   setActiveTab: React.Dispatch<React.SetStateAction<Tab>>;
   socket:WebSocket;
+  gameAlert:string|undefined;
+  setGameAlert: React.Dispatch<React.SetStateAction<string|undefined>>;
 };
 
-export const NewGame = ({setActiveTab,socket}:Props) => {
+export const NewGame = ({setActiveTab,socket,gameAlert,setGameAlert}:Props) => {
 
 
   const INIT_GAME = "init_game";
@@ -21,15 +23,16 @@ export const NewGame = ({setActiveTab,socket}:Props) => {
                   type: INIT_GAME,
                 })
               );
-              setConnecting(true);
               setActiveTab("play")
+              setConnecting(true);
+              setGameAlert(undefined)
   }
 
   return (
     <>
       <div className="bg-zinc-700 w-full min-h-[400px] h-full flex flex-col gap-3 p-3">
         <div className="bg-zinc-900 p-3">
-          <div className="flex flex-row gap-2">
+          <div className="flex flex-row gap-2 mb-2">
             <div
               onClick={() => setGameType("blitz")}
               className={` h-12 ${
@@ -72,13 +75,14 @@ export const NewGame = ({setActiveTab,socket}:Props) => {
               <span className={` text-zinc-200 text-lg `}>Daily</span>
             </div>
           </div>
+            {gameAlert&&<div className="text-red-500 text-sm w-full text-center h-5">{gameAlert+" Try again.."}</div>}
           <div
             onClick={()=>handleStartGame()}
             className={`${
               gameType === ""
                 ? "bg-zinc-700 text-zinc-400 pointer-events-none"
                 : "bg-emerald-900 text-zinc-200 "
-            } duration-200 h-18 flex flex-row items-center justify-center cursor-pointer px-4 shadow-md/50 mt-5 `}
+            } duration-200 h-18 flex flex-row items-center justify-center cursor-pointer px-4 shadow-md/50 mt-3`}
           >
             <span className={`font-serif font-bold text-3xl drop-shadow-sm`}>
               Start Game

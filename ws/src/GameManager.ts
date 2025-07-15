@@ -7,11 +7,13 @@ import {
   EXIT_GAME,
   RECONNECTION,
   GAME_JOINED,
-  CHAT
+  CHAT,
+  GAME_NOT_FOUND
 } from "./messages";
 import { User } from ".";
 import { connectionManager } from "./connectionManager";
 import { Game } from "./Game";
+import { getGameFromDb } from "./API_Routes";
 
 export class GameManager {
   private games: Game[]; //game is defined like games:type  where array of Room (where Room is a class name Game).... like x:number[] x is the array of number
@@ -47,7 +49,7 @@ export class GameManager {
   }
 
   private async addHandler(user: User) {
-    user.socket.on("message", (data) => {
+    user.socket.on("message", async(data) => {
       const message = JSON.parse(data.toString());
       console.log("message in gameManger", message);
 
@@ -81,6 +83,12 @@ export class GameManager {
           }
 
           if (user.userId === waitingGame.player1Id) {
+            user.socket.send(JSON.stringify({
+                type: GAME_ALERT,
+                payload: {
+                  message: "Trying to Connect with yourself?",
+                }
+              }))
             connectionManager.sendMessageToAll(
               waitingGame.RoomId,
               JSON.stringify({
@@ -90,6 +98,8 @@ export class GameManager {
                 },
               })
             );
+            this.removeGame(this.pendingGameId)
+            this.pendingGameId=null;
             return;
           }
 
@@ -121,29 +131,41 @@ export class GameManager {
       if (message.type === RECONNECTION) {
         
         const gameId = message.payload.roomId;
-        const game = this.games.find((game) => game.RoomId === gameId);
-        if (game) {
-          
-          const Players = connectionManager.getPlayersInfo(game.RoomId);
-          const WhitePlayer = Players?.find(
-            (user) => user.userId !== game?.player2Id
+
+        const gameDB =await getGameFromDb(gameId)
+        console.log("Game Recieved in Game Manager :",gameDB);
+
+        if (!gameDB) {
+          user.socket.send(
+            JSON.stringify({
+              type: GAME_NOT_FOUND,
+            }),
           );
-          const BlackPlayer = Players?.find(
-            (user) => user.userId === game?.player2Id
-          );
+          return;
+        }
+        const gameWS = this.games.find((game) => game.RoomId === gameId);
+
+        if(!gameWS)
+        {
+           const game = new Game(
+            gameDB.whitePlayerId,
+            gameDB.blackPlayerId,
+            gameDB.id
+           );
+          this.games.push(game);
+        }
           
           user.socket.send(
             JSON.stringify({
               type: GAME_JOINED,
               payload: {
-                RoomId: game.RoomId,
-                WhitePlayer: WhitePlayer,
-                BlackPlayer: BlackPlayer,
-                fen: game.board.fen(),
+                RoomId: gameDB.id,
+                WhitePlayer: gameDB.whitePlayer,
+                BlackPlayer: gameDB.blackPlayer,
+                fen: gameDB.currentFen,
               },
             })
           );
-        }
         connectionManager.addUserRoomMap(user,gameId)
       }
       

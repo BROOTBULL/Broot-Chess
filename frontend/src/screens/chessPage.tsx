@@ -20,6 +20,7 @@ export const GAME_ENDED = "game_ended";
 export const RECONNECT = "reconnect";
 export const GAME_JOINED = "game_joined";
 export const CHAT = "chat";
+export const GAME_ALERT="game_alert"
 
 export function isPromoting(chess: Chess, from: Square, to: Square) {
   const piece = chess.get(from);
@@ -40,6 +41,7 @@ const ChessGame = () => {
   const [time, setTime] = useState(5);
   const [setting, setSetting] = useState(false);
   const [moves, setMoves] = useState<string[]>([]);
+  
 
   type Tab = "newgame" | "history" | "friends" | "play";
 
@@ -62,6 +64,7 @@ const ChessGame = () => {
   const [gameEnded, setGameEnded] = useState(false);
   const [playerWon, setplayerWon] = useState<string | undefined>();
   const [gameStatus, setGameStatus] = useState<string | null>();
+  const [gameAlert,setGameAlert]=useState<string|undefined>();
 
   const socket = useSocket(); //we are getting socket from customhook which is connected to backend
   axios.defaults.withCredentials = true;
@@ -101,7 +104,6 @@ const ChessGame = () => {
             {
               const newGame = new Chess();
               const isUser = payload.WhitePlayer.userId === user?.id;
-
               setChess(newGame);
               setBoard(newGame.board());
               setConnecting(false);
@@ -149,7 +151,8 @@ const ChessGame = () => {
             break;
           case GAME_JOINED:
             {
-              const isUser = payload.WhitePlayer.userId === user?.id;
+              const isUser = payload.WhitePlayer.id === user?.id;
+              console.log(payload.WhitePlayer.id," is not equal to ", user?.id);
               setActiveTab("play");
               setConnecting(false);
               setGameStarted(true);
@@ -189,9 +192,15 @@ const ChessGame = () => {
             }
             break;
           case CHAT:
-            console.log(payload.message);
             setMessages((prev) => [...prev, payload.message]);
             break;
+          case GAME_ALERT:
+            setConnecting(false);
+            setActiveTab("newgame")
+            setGameAlert(payload.message)
+            break;
+            
+          
         }
       };
     }
@@ -222,7 +231,7 @@ const ChessGame = () => {
     switch (activeTab) {
       case "newgame":
         return (
-          socket && <NewGame setActiveTab={setActiveTab} socket={socket} />
+          socket && <NewGame setGameAlert={setGameAlert} gameAlert={gameAlert} setActiveTab={setActiveTab} socket={socket} />
         );
       case "history":
         return <History />;
@@ -250,7 +259,8 @@ const ChessGame = () => {
 
   return (
     <>
-      {console.log(chess.fen())}
+      {console.log("my name :",username," Opponent name : ",Opponent?.name)
+      }
 
       <div className="absolute flex flex-col lg:flex-row md:h-full md:w-full -z-12 ">
         <div className=" flex flex-col lg:flex-row justify-between bg-gradient-to-r  from-zinc-200 to-zinc-100 backdrop-blur-md h-fit w-full lg:w-[60%] md:h-full p-5 -z-10  ">
