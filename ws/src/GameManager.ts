@@ -13,7 +13,7 @@ import {
 import { User } from ".";
 import { connectionManager } from "./connectionManager";
 import { Game } from "./Game";
-import { getGameFromDb } from "./API_Routes";
+import { getGameFromDb, saveMessageInDb } from "./API_Routes";
 
 export class GameManager {
   private games: Game[]; //game is defined like games:type  where array of Room (where Room is a class name Game).... like x:number[] x is the array of number
@@ -162,6 +162,8 @@ export class GameManager {
                 RoomId: gameDB.id,
                 WhitePlayer: gameDB.whitePlayer,
                 BlackPlayer: gameDB.blackPlayer,
+                moves:gameDB.moves,
+                chat:gameDB.chat,
                 fen: gameDB.currentFen,
               },
             })
@@ -174,22 +176,14 @@ export class GameManager {
       const roomId=message.payload.roomId;
       const game = this.games.find((game) => game.RoomId === roomId);
       if(game){
-      const Players=connectionManager.getPlayersInfo(roomId)
-      const myInfo=user;
-      const opponentInfo=Players?.find(
-            (u) => u.userId !== user.userId
-          );
-      myInfo?.socket.send(JSON.stringify({type:CHAT,payload:{
-        message:message.payload.message
-      }}))
-      opponentInfo?.socket.send(JSON.stringify({type:CHAT,payload:{
-        message:{
-          type:"recieved",
-          message:message.payload.message.message
-        }
-      }}))  
+        await saveMessageInDb(roomId,message.payload.message)
+        connectionManager.sendMessageToAll(roomId,JSON.stringify({
+          type:CHAT,
+          payload:{
+          message:message.payload.message
+          }
+        }))
       }
-
      }
     });
   }

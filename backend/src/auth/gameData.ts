@@ -1,7 +1,10 @@
 import { Router,Request,Response } from "express";
 import prisma from "../db";
 
+type Move={to:string,from:string}
 const gameRoute =Router()
+type message = { sender: string; message: string };
+
 
 gameRoute.post("/savegame",async (req:Request,res:Response)=>{
 try {
@@ -49,7 +52,8 @@ gameRoute.get("/getgame",async (req:Request,res:Response)=>{
         },
         include:{
             whitePlayer:true,
-            blackPlayer:true
+            blackPlayer:true,
+            moves:true
         }
     })
     if(game)
@@ -67,4 +71,69 @@ gameRoute.get("/getgame",async (req:Request,res:Response)=>{
 })
 
 
+gameRoute.post("/saveMessage",async (req:Request,res:Response)=>{
+try {
+    const gameId=req.body.gameId as string;
+    const message=req.body.message as message;
+
+    const gameData=await prisma.game.findUnique({
+          where: { id: gameId },
+          select: { chat: true }
+    });
+    const messages=(gameData?.chat as message[]) ?? []
+    messages.push(message);
+    const gameDataUpdate=await prisma.game.update({
+          where: { id: gameId },
+          data:{
+            chat:messages
+          }
+    });
+
+
+    console.log("Massages saved in Db Successfully!!",gameDataUpdate);
+    res.status(200).send({message:"Messages saved in DataBase successfully..!!"})
+    
+} catch (error) {
+    res.status(400).send({error:error,message:"game not saved...!!!"})
+}
+})
+
+
+gameRoute.post("/saveMoves",async (req:Request,res:Response)=>{
+try {
+    const gameId=req.body.gameId as string;
+    const moveCount=req.body.moveCount as number;
+    const move=req.body.move as Move;
+    const fen=req.body.fen as string;
+
+    const movesSaved=await prisma.$transaction([
+      prisma.move.create({
+        data: {
+          gameId: gameId,
+          moveNumber: moveCount + 1,
+          from: move.from,
+          to: move.to,
+        },
+      }),
+      prisma.game.update({
+        data: {
+          currentFen:fen,
+          fenHistory:{
+            push:fen
+          }
+        },
+        where: {
+          id: gameId,
+        },
+      }),
+    ]);
+
+
+    console.log("Moves saved in Db Successfully!!",movesSaved);
+    res.status(200).send({message:"Moves saved in DataBase successfully..!!"})
+    
+} catch (error) {
+    res.status(400).send({error:error,message:"game not saved...!!!"})
+}
+})
 export default gameRoute;

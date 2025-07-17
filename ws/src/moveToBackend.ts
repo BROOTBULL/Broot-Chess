@@ -1,6 +1,6 @@
 import axios from "axios";
 
-class MoveQueue {
+export class MoveQueue {
   private queue: any[] = [];
   private isProcessing = false;
 

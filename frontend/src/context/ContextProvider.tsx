@@ -33,7 +33,7 @@ interface ChessContextType {
 }
 
 type GameType = "blitz" | "rapid" | "daily" | "";
-type Message = { type: string; message: string };
+type Message = { sender: string; message: string };
 
 
 export const ChessContext = createContext<ChessContextType | undefined>(

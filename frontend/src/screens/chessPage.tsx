@@ -158,6 +158,12 @@ const ChessGame = () => {
               setGameStarted(true);
               setOpponent(isUser ? payload.BlackPlayer : payload.WhitePlayer);
               setRoomId(payload.RoomId);
+              setMessages(payload.chat)
+              chess.load(payload.fen)
+              const newBoard=chess.board()
+              setBoard(newBoard);
+              const moveTo=(payload.moves as Move[]).map((move)=>move.to)
+              setMoves(moveTo)
 
               console.log("Game Rejoined successfully..!!!");
               console.log("roomId:", payload.RoomId);
@@ -266,14 +272,27 @@ const ChessGame = () => {
         <div className=" flex flex-col lg:flex-row justify-between bg-gradient-to-r  from-zinc-200 to-zinc-100 backdrop-blur-md h-fit w-full lg:w-[60%] md:h-full p-5 -z-10  ">
           <div className="flex flex-row lg:flex-col justify-between">
             <img
-              className="h-10 lg:h-13 lg:w-8 xl:h-20 xl:w-13 w-6 ml-1 drop-shadow-lg/40 cursor-pointer "
+              className="h-10 lg:h-13 lg:w-8 xl:h-20 xl:w-12 w-6 ml-2 drop-shadow-lg/40 cursor-pointer "
               onClick={() => navigate("/")}
               src="/media/Broot.png"
               alt="Broot"
             />
+            <div className="flex flex-row lg:flex-col ml-1">
+              <div className="nav size-fit p-2 rounded-full cursor-pointer duration-200">
+                <img className="img size-8" src="./media/profile.png" alt="" />
+              </div>
+              <div 
+              onClick={()=>navigate("/home")}
+              className="nav size-fit p-2 rounded-full cursor-pointer duration-200">
+                <img className="img size-8" src="./media/home.png" alt="" />
+              </div>
+              <div className="nav size-fit p-2 rounded-full cursor-pointer duration-200">
+                <img className="img size-8" src="./media/social.png" alt="" />
+              </div>
+            </div>
             <img
               id="setting"
-              className="h-5 w-5 p-1  md:h-10 md:w-10 transition duration-400 cursor-pointer "
+              className="h-5 w-5 p-1 ml-1 md:h-10 md:w-10 transition duration-400 cursor-pointer "
               onClick={handleSetting}
               src="/media/setting.png"
               alt=""

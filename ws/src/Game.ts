@@ -3,7 +3,7 @@ import { randomUUID } from "crypto";
 import { User } from ".";
 import { connectionManager } from "./connectionManager";
 import { GAME_OVER, INIT_GAME, MOVE, GAME_ENDED } from "./messages";
-import { createGameInDb } from "./API_Routes";
+import { createGameInDb, saveMovesInDb } from "./API_Routes";
 
 type GAME_RESULT = "WHITE_WINS" | "BLACK_WINS" | "DRAW";
 type GAME_STATUS = 'IN_PROGRESS' | 'COMPLETED' | 'ABANDONED' | 'TIME_UP' | 'PLAYER_EXIT';
@@ -109,6 +109,10 @@ export class Game {
       console.error("Error while making move", e);
       return;
     }
+    this.moveCount++;
+
+
+    await saveMovesInDb(this.RoomId,move,this.board.fen(),this.moveCount)
     
     //notify both player about their moves 
     connectionManager.sendMessageToAll(this.RoomId,JSON.stringify({type: MOVE,payload:{user:user,move: move}}))
@@ -124,7 +128,6 @@ export class Game {
     this.endGame('COMPLETED', this.board.turn()==="b" ? 'white' : 'black');
     }
 
-    this.moveCount++;
 
   }
 

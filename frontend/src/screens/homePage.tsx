@@ -30,7 +30,6 @@ const HomePage = () => {
             </div>
               <Stats />
           </div>
-
         </div>
       </div>
     </>

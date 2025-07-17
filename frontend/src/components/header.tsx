@@ -137,6 +137,10 @@ export const Header3 = () => {
   const [optionDisplay, setOptionDisplay] = useState<boolean>(false);
   const navigate=useNavigate();
   const {setUser}=useChessContext()
+  const activetab = window.location.pathname.split('/').filter(Boolean).pop();
+  
+
+
 
   function handleOptionButton() {
     setOptionDisplay(!optionDisplay);
@@ -162,15 +166,17 @@ export const Header3 = () => {
           <div
             className={`bg-gradient-to-r from-zinc-300 to-zinc-100 xl:bg-none xl:shadow-none shadow-[0_15px_25px_rgba(0,0,0,0.25)] rounded-r-3xl w-fit z-10 flex-col duration-300 flex pl-5 h-fit`}
           >
-            <div className="nav flex flex-row items-center hover:ml-4 rounded-3xl xl:w-35 duration-300 m-1 cursor-pointer">
+            <div className={`${activetab==="profile"?"active":""} nav flex flex-row items-center hover:ml-4 rounded-3xl xl:w-35 duration-300 m-1 cursor-pointer`}>
               <img
                 className="img size-10 lg:m-3 xl:m-2 xl:size-7 xl:ml-3 duration-300"
-                src="../../public/media/profile.png"
+                src={`../../public/media/profile.png`}
                 alt=""
               />
               <div className="hidden xl:flex">Profile</div>
             </div>
-            <div className="nav flex flex-row items-center hover:ml-4 rounded-3xl xl:w-35 duration-300 m-1 cursor-pointer">
+            <div 
+            onClick={()=>navigate("/game")}
+            className={`${activetab==="game"?"active":""} nav flex flex-row items-center hover:ml-4 rounded-3xl xl:w-35 duration-300 m-1 cursor-pointer`}>
               <img
                 className="img size-10 lg:m-3 xl:m-2 xl:size-7 xl:ml-3 duration-300"
                 src="../../public/media/play.png"
@@ -178,23 +184,28 @@ export const Header3 = () => {
               />
               <div className="hidden xl:flex">Play</div>
             </div>
-            <div className="nav flex flex-row items-center hover:ml-4 rounded-3xl xl:w-35 duration-300 m-1 cursor-pointer">
+            <div 
+            onClick={()=>navigate("/home")}
+            className={`${activetab==="home"?"active":""} nav flex flex-row items-center hover:ml-4 rounded-3xl xl:w-35 duration-300 m-1 cursor-pointer`}>
               <img
                 className="img size-10 lg:m-3 xl:m-2 xl:size-7 xl:ml-3 duration-300"
                 src="../../public/media/home.png"
                 alt=""
               />
-              <div className="hidden xl:flex">Home</div>
+              <div className="hidden xl:flex ">Home</div>
             </div>
-            <div className="nav flex flex-row items-center hover:ml-4 rounded-3xl xl:w-35 duration-300 m-1 cursor-pointer">
+            <div 
+            onClick={()=>navigate("/social")}
+            className={`${activetab==="social"?"active":""} nav flex flex-row items-center hover:ml-4 rounded-3xl xl:w-35 duration-300 m-1 cursor-pointer`}>
               <img
                 className="img size-10 lg:m-3 xl:m-2 xl:size-7 xl:ml-3 duration-300"
                 src="../../public/media/social.png"
                 alt=""
               />
-              <div className="hidden xl:flex">Social</div>
+              <div 
+              className="hidden xl:flex">Social</div>
             </div>
-            <div className="nav flex flex-row items-center hover:ml-4 rounded-3xl xl:w-35 duration-300 m-1 cursor-pointer">
+            <div className={`${activetab==="assets"?"active":""} nav flex flex-row items-center hover:ml-4 rounded-3xl xl:w-35 duration-300 m-1 cursor-pointer`}>
               <img
                 className="img size-10 lg:m-3 xl:m-2 xl:size-7 xl:ml-3 duration-300"
                 src="../../public/media/assets.png"
@@ -218,7 +229,7 @@ export const Header3 = () => {
         >
           <div className="nav flex flex-row m-3 mb-0 items-center h-10 w-[90%] rounded-lg font-[500] text-lg text-zinc-800">
             <img
-              className="h-6 w-6 m-2"
+              className="img h-6 w-6 m-2"
               src="../../public/media/theme.png"
               alt=""
             />
@@ -228,7 +239,7 @@ export const Header3 = () => {
           onClick={()=>handleLogout()}
           className="nav flex flex-row m-3 mt-0 items-center h-10 w-[90%] rounded-lg font-[500] text-lg text-zinc-800">
             <img
-              className="h-6 w-6 m-2"
+              className="h-6 w-6 m-2 img"
               src="../../public/media/logout.png"
               alt=""
             />

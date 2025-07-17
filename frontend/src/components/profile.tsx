@@ -5,8 +5,8 @@ export const Profile=()=>{
 
     return(<>
       <div className="flex flex-row items-center Profile h-fit w-full mb-2 py-1 ">
-          <div className="Profile bg-zinc-800 size-13 p-1 ">
-            <img src="../../public/media/chessboard.png" alt="" />
+          <div className="Profile bg-zinc-800 size-15 p-1 rounded-md">
+            <img className="rounded-sm" src={user?.profile?user?.profile:"../../public/media/chessboard.png"} alt="" />
           </div>
           <span className="font-serif text-zinc-800 text-2xl p-2 font-[900]">{user?.name}</span>
         </div>

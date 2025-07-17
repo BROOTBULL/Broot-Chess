@@ -94,8 +94,15 @@ html, body {
     padding-left: 30px;
 }
 
-
-
+.nav.active
+{
+  background-color: black;
+  color: rgb(229, 229, 229);
+}
+.nav.active .img
+{
+  filter: invert(1) brightness(2) contrast(2);
+}
 
 .nav:hover
 {

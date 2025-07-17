@@ -1,8 +1,11 @@
 import axios from "axios";
 import { gamedata } from "./Game";
+import { Move } from "chess.js";
 
 axios.defaults.withCredentials=true;
 axios.defaults.baseURL="http://localhost:3000"
+type message = { sender: string; message: string };
+
 
 export const createGameInDb=async(gameData:gamedata)=>{
 
@@ -68,3 +71,27 @@ export const getGameFromDb=async(gameId:string)=>{
 //     lastLogin: null
 //   }
 // }
+
+export const saveMessageInDb=async(gameId:string,message:message)=>{
+
+    try {
+
+        const saveMessage=await axios.post("/gameData/saveMessage",{gameId:gameId,message:message})
+        console.log(saveMessage.data.message);
+        
+    } catch (error) {
+        console.log(error);
+    }  
+}
+
+export const saveMovesInDb=async(gameId:string,move:Move,fen:string,moveCount:number)=>{
+
+    try {
+
+        const saveMoves=await axios.post("/gameData/saveMoves",{gameId:gameId,move:move,fen:fen,moveCount:moveCount})
+        console.log(saveMoves.data.message);
+        
+    } catch (error) {
+        console.log(error);
+    }  
+}

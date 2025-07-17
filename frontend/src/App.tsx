@@ -7,6 +7,7 @@ import LogInPage from "./screens/logIn";
 import { ReactNode } from "react";
 import { useChessContext } from "./hooks/contextHook";
 import LandingPage from "./screens/LandingPage";
+import Socials from "./screens/socials";
 
 // 1. Route guard for authenticated users
 const RequireAuth = ({ children }: { children: ReactNode }) => {
@@ -40,6 +41,7 @@ function App() {
         <Route path="/login" element={<RedirectIfAuth><LogInPage /></RedirectIfAuth>} />
         <Route path="/home" element={<RequireAuth><HomePage /></RequireAuth>} />
         <Route path={`/game`} element={<RequireAuth><ChessGame /></RequireAuth>} />
+        <Route path={`/social`} element={<RequireAuth><Socials/></RequireAuth>} />
       </Routes>
     </AnimatePresence>
   );

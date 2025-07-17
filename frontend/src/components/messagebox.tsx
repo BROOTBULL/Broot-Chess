@@ -4,8 +4,9 @@ import EmojiPicker from "emoji-picker-react";
 import { motion } from "motion/react";
 
 export const MessageBox = ({fullscreen}:{fullscreen:boolean}) => {
-  const sent = "sent";
   const CHAT = "chat";
+  const{user}=useChessContext()
+  const sender=user?.id
 
   const [text, setText] = useState("");
   const { roomId, socket, Messages } = useChessContext();
@@ -20,7 +21,7 @@ export const MessageBox = ({fullscreen}:{fullscreen:boolean}) => {
 
   function handleSend(e) {
     e.preventDefault();
-    const message = { type: sent, message: text };
+    const message = { sender:sender , message: text };
     socket?.send(
       JSON.stringify({
         type: CHAT,
@@ -36,10 +37,10 @@ export const MessageBox = ({fullscreen}:{fullscreen:boolean}) => {
 
   return (
     <>
-      {console.log()}
+      {}
       <div className="flex flex-col items-center   bg-radial-[at_50%_50%] from-zinc-900 to-zinc-950 to-85%   text-sm font-[500] h-60 ">
         <div className="flex flex-col w-full h-full p-2 shadow-md/40 scroll-smooth overflow-auto custom-scroll gap-3">
-          {Messages.map((mesg, i) => (
+          {Messages?.map((mesg, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 10 }}
@@ -47,7 +48,7 @@ export const MessageBox = ({fullscreen}:{fullscreen:boolean}) => {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.25 }}
               className={` ${
-                mesg.type === sent
+                user?.id === mesg.sender
                   ? "self-end  bg-zinc-700"
                   : "self-start bg-zinc-500"
               } h-fit w-fit flex  p-2 rounded-2xl max-w-70 `}
