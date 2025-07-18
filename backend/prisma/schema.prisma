@@ -26,7 +26,7 @@ model User {
   gamesAsBlack  Game[]   @relation("GamesAsBlack")
   createdAt     DateTime @default(now())
   lastLogin     DateTime?
-  messages      Json?
+  messages      Message[] @relation("message")
 
   //friendship
   sentRequests      FriendRequest[] @relation("SentRequests")
@@ -34,6 +34,18 @@ model User {
 
   @@index([rating])
 }
+
+model Message{
+  id            String @id @default(uuid())
+  senderId      String
+  receiverId    String
+  messageType   MessageType
+  message       String
+  sender        User @relation("message",fields: [senderId],references: [id])
+
+  @@index([receiverId])
+}
+
 
 model FriendRequest {
   id          String   @id @default(uuid())
@@ -111,6 +123,13 @@ enum AuthProvider {
   GITHUB
   GUEST
 }
+
+enum MessageType {
+ MESSAGE
+ REQUEST
+ CHALLENGE
+}
+
 
 enum RequestStatus {
   PENDING

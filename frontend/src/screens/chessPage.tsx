@@ -286,7 +286,9 @@ const ChessGame = () => {
               className="nav size-fit p-2 rounded-full cursor-pointer duration-200">
                 <img className="img size-8" src="./media/home.png" alt="" />
               </div>
-              <div className="nav size-fit p-2 rounded-full cursor-pointer duration-200">
+              <div 
+              onClick={()=>navigate("/social")}
+              className="nav size-fit p-2 rounded-full cursor-pointer duration-200">
                 <img className="img size-8" src="./media/social.png" alt="" />
               </div>
             </div>

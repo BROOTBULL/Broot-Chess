@@ -5,11 +5,10 @@ import { motion } from "motion/react";
 
 export const MessageBox = ({fullscreen}:{fullscreen:boolean}) => {
   const CHAT = "chat";
-  const{user}=useChessContext()
-  const sender=user?.id
 
   const [text, setText] = useState("");
-  const { roomId, socket, Messages } = useChessContext();
+  const { user,roomId, socket, Messages } = useChessContext();
+  const sender=user?.id
   const [emojiBox, setEmojiBox] = useState(false);
   const bottomRef = useRef<HTMLDivElement | null>(null);
 

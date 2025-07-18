@@ -1,0 +1,54 @@
+import axios from "axios";
+import { useChessContext } from "../hooks/contextHook";
+import { useEffect, useState } from "react";
+import { Player } from "../screens/socials";
+export type Status =
+  | "Request_Sent"
+  | "friends"
+  | "Request_Received"
+  | "Friend_Request"; // we are talking about player who recieved our req   ...so on behave of his prospective he recieved req or sent req
+
+export const SearchedPlayer = ({ player }: { player: Player }) => {
+  const { user } = useChessContext();
+  const [status, setStatus] = useState<Status>("Friend_Request");
+
+  useEffect(()=>{
+    if (player.sentRequests.length > 0) {
+    setStatus(player.sentRequests[0].status === "PENDING" ? "Request_Received" : "friends");
+    } else if (player.receivedRequests.length > 0) {
+    setStatus(player.receivedRequests[0].status === "PENDING" ? "Request_Sent" : "friends");
+    }
+  },[])
+
+  if(status==="Request_Received")
+    return(<div 
+            onClick={()=>handleRequest(player.id,status)}
+            className="bg-emerald-900 p-2 text-white text-[12px] m-1 rounded-sm cursor-pointer hover:bg-emerald-800 duration-200">
+            Accept
+          </div>)
+
+  async function handleRequest(playerId: string, status: Status) {
+    if (status === "Request_Sent" || status === "friends") return;
+    const response = await axios.post("/social/reqPlayer", {
+      senderId: user?.id,
+      receiverId: playerId,
+    });
+    console.log(response.data.message);
+    setStatus(response.data.status)
+  }
+  return (
+    <div
+      onClick={() => handleRequest(player.id, status)}
+      className={`hover:bg-zinc-700 cursor-pointer p-1 interact-btn rounded-md flex justify-center duration-200 `}
+    >
+      <img
+        className={`size-8 ${status === "Request_Sent" ? "brightness-50" : ""}`}
+        src={`./media/${status}.png`}
+        alt=""
+      />
+      <div className="bg-zinc-700 absolute text-[11px] p-1 text-zinc-300 opacity-0 rounded-sm interact mt-10 duration-200 transition-opacity delay-200">
+        {status}
+      </div>
+    </div>
+  );
+};

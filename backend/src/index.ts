@@ -7,6 +7,7 @@ import { initPassport } from "./passport";
 import passport from "passport";
 import authRoute from "./auth/auth"
 import gameRoute from "./auth/gameData";
+import interactionRoute from "./auth/userInteraction";
 
 const app=express();
 
@@ -40,6 +41,7 @@ app.use(cors({
 
 app.use('/auth', authRoute);
 app.use("/gameData",gameRoute)
+app.use("/social",interactionRoute)
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
