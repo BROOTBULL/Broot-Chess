@@ -115,8 +115,13 @@ interactionRoute.post("/reqPlayer", async(req: Request, res: Response) => {
             senderId:senderId,
             receiverId:receiverId,
             status:"PENDING"
+        },
+        include:{
+          sender:true,receiver:true
         }
       });
+      console.log(requested);
+      
       res.status(200)
         .send({ message: "Friend Request sent Successfully...!!", requested : requested ,status:"Request_Sent"});
 }
@@ -175,7 +180,7 @@ interactionRoute.get("/friends", async(req: Request, res: Response) => {
     console.log("Error happend while getting Friends",error);
     res.status(400).send({ message: "Something went wrong..!!", error: error });
   }
-});
+})
 
 
 
@@ -188,7 +193,7 @@ interactionRoute.post("/message", async(req: Request, res: Response) => {
 
     console.log("igot triggered message",user);
     
-    const sentMessage = await prisma.messages.create({
+    const sentMessage = await prisma.message.create({
       data:{
         receiverId:receiverId,
         senderId:user.id,
@@ -205,7 +210,7 @@ interactionRoute.post("/message", async(req: Request, res: Response) => {
      console.error("Friend request error:", error); // 👈 Add this
     res.status(400).send({ message: "Something went wrong..!!", error: error });
   }
-});
+})
 
 
 interactionRoute.get("/getmessage", async(req: Request, res: Response) => {
@@ -214,7 +219,7 @@ interactionRoute.get("/getmessage", async(req: Request, res: Response) => {
 
     console.log("igot triggered getmessage ");
     
-    const MyMessageBox =await prisma.messages.findMany({
+    const MyMessageBox =await prisma.message.findMany({
       where:{
        receiverId:receiverId
       }
@@ -238,7 +243,81 @@ interactionRoute.get("/getmessage", async(req: Request, res: Response) => {
      console.error("Friend request error:", error); // 👈 Add this
     res.status(400).send({ message: "Something went wrong..!!", error: error });
   }
+})
+
+
+interactionRoute.post("/deletemessage", async(req: Request, res: Response) => {
+  try {
+    const messageId = req.body.messageId as string;
+
+    console.log("igot triggered deletemessage ");
+    
+    const deletedMessage = await prisma.message.delete({
+      where: { id: messageId },
+    });
+
+    res.status(200).send({ message: "Message deleted successfully", deleted: deletedMessage });
+  } catch (error) {
+    console.error("Delete message error:", error);
+    res.status(500).send({ message: "Failed to delete message", error });
+  }
+})
+
+interactionRoute.post("/deletefriend", async (req: Request, res: Response) => {
+  try {
+    const userId = req.body.userId as string;
+    const friendId = req.body.friendId as string;
+
+    // Find the accepted FriendRequest between the two users
+    const existingFriend = await prisma.friendRequest.findFirst({
+      where: {
+        status: "ACCEPTED",
+        OR: [
+          { senderId: userId, receiverId: friendId },
+          { senderId: friendId, receiverId: userId },
+        ],
+      },
+    });
+
+    if (existingFriend) {
+          // Delete the friend connection
+    await prisma.friendRequest.delete({
+      where: { id: existingFriend.id },
+    });
+
+    res.status(200).send({ message: "Friend deleted successfully" });
+    }
+    else
+    res.status(400).send({ message: "No Connection found..!!" });
+
+  } catch (error) {
+    console.error("Error deleting friend:", error);
+    res.status(500).send({ message: "Failed to delete friend", error });
+  }
 });
+
+
+
+
+
+
+
+// interactionRoute.post("/deletemessage", async(req: Request, res: Response) => {
+// try {
+//     const messageId = req.body.messageId as string;
+
+//     if (!messageId) {
+//       return res.status(400).send({ message: "Message ID is required" });
+//     }
+
+
+
+
+// })
+
+export default interactionRoute;
+
+
 
 // seen message logic
 
@@ -276,4 +355,3 @@ interactionRoute.get("/getmessage", async(req: Request, res: Response) => {
 // });
 
 
-export default interactionRoute;

@@ -22,7 +22,7 @@ class ConnectionManager {
       ...(this.roomUserMap.get(roomId) || []),
       user,
     ]);
-    this.userToRoom.set(user.userId, roomId);
+    this.userToRoom.set(user.userId, roomId);//user.userId is key and roomid is value so id one player send multiple roomId or init multiple time only last count 
   }
 
   removeUserRoomMap(user: User) {
@@ -57,6 +57,11 @@ class ConnectionManager {
   getPlayersInfo(roomId:string)
   {
     return this.roomUserMap.get(roomId)
+  }
+
+  getmapInfo()
+  {
+    return this.roomUserMap
   }
 }
 

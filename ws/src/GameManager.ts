@@ -8,7 +8,8 @@ import {
   RECONNECTION,
   GAME_JOINED,
   CHAT,
-  GAME_NOT_FOUND
+  GAME_NOT_FOUND,
+  JOINROOM
 } from "./messages";
 import { User } from ".";
 import { connectionManager } from "./connectionManager";
@@ -52,15 +53,24 @@ export class GameManager {
     user.socket.on("message", async(data) => {
       const message = JSON.parse(data.toString());
       console.log("message in gameManger", message);
+      console.log(connectionManager.getmapInfo());
+      
 
       if (message.type === INIT_GAME) {
         if (!this.pendingGameId) {
-          console.log("no game room with player waiting");
+          console.log("no game room with player waiting");          
 
           const game = new Game(user.userId, null);
           this.games.push(game);
-          this.pendingGameId = game.RoomId;
+          if(!message.private)
+          {
+            this.pendingGameId = game.RoomId
+          }
+          console.log("game created..!!",game.RoomId);
+          
+
           connectionManager.addUserRoomMap(user, game.RoomId);
+          console.log("game added in map:",connectionManager.getmapInfo());
           connectionManager.sendMessageToAll(
             game.RoomId,
             JSON.stringify({
@@ -128,9 +138,19 @@ export class GameManager {
         }
       }
 
-      if (message.type === RECONNECTION) {
+      if (message.type === RECONNECTION || message.type === JOINROOM) {
         
         const gameId = message.payload.roomId;
+
+        const gameWS = this.games.find((game) => game.RoomId === gameId);
+
+        if(gameWS&&!gameWS.player2Id)
+        {
+          connectionManager.addUserRoomMap(user,gameId)
+          await gameWS.PushSecondPlayer(user)
+          return;
+        }
+        
 
         const gameDB =await getGameFromDb(gameId)
         console.log("Game Recieved in Game Manager :",gameDB);
@@ -143,7 +163,6 @@ export class GameManager {
           );
           return;
         }
-        const gameWS = this.games.find((game) => game.RoomId === gameId);
 
         if(!gameWS)
         {

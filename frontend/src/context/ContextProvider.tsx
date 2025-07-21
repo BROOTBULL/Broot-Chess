@@ -25,20 +25,22 @@ interface ChessContextType {
   setConnecting: React.Dispatch<React.SetStateAction<boolean>>;
   roomId: string | undefined;
   setRoomId: React.Dispatch<React.SetStateAction<string | undefined>>;
-  socket: WebSocket|null;
+  socket: WebSocket | null;
   setSocket: React.Dispatch<React.SetStateAction<WebSocket | null>>;
-  Messages:Message[]
-  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
-
+  Messages: Message[];
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>
+  activeTab: Tab;
+  setActiveTab: React.Dispatch<React.SetStateAction<Tab>>
+  color: string;
+  setColor: React.Dispatch<React.SetStateAction<string>>
 }
 
 type GameType = "blitz" | "rapid" | "daily" | "";
 type Message = { sender: string; message: string };
+  type Tab = "newgame" | "history" | "friends" | "play";
 
 
-export const ChessContext = createContext<ChessContextType | undefined>(
-  undefined
-);
+export const ChessContext = createContext<ChessContextType | undefined>(undefined);
 
 export const ContextProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -50,8 +52,34 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
   const [gameStarted, setGameStarted] = useState(false);
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [Messages, setMessages] = useState<Message[]>([]);
+  const [activeTab, setActiveTab] = useState<Tab>("newgame");
+  const [color, setColor] = useState("white");
 
 
+
+  // ✅ WebSocket connection logic here directly
+  useEffect(() => {
+    if (!user) return;
+
+    const ws = new WebSocket(`ws://localhost:8080?token=${user.token}`);
+
+    ws.onopen = () => {
+      console.log("✅ WebSocket connected");
+      setSocket(ws);
+    };
+
+    ws.onclose = () => {
+      console.log("❌ WebSocket disconnected");
+      setSocket(null);
+    };
+
+    return () => {
+      console.log("🔌 Closing WebSocket...");
+      ws.close();
+    };
+  }, [user]);
+
+  // ✅ Auth check on mount
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -68,30 +96,36 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     };
-
     checkAuth();
   }, []);
 
-
   return (
-    <ChessContext.Provider value={{
-    user,
-    setUser,
-    loading,
-    gameType,
-    setGameType,
-    gameStarted,
-    setGameStarted,
-    connecting,
-    setConnecting,
-    Opponent,
-    setOpponent,
-    roomId,
-    setRoomId,
-    socket,
-    setSocket,
-    Messages,
-    setMessages
-  }}>{children}</ChessContext.Provider>
+    <ChessContext.Provider
+      value={{
+        user,
+        setUser,
+        Opponent,
+        setOpponent,
+        loading,
+        gameType,
+        setGameType,
+        gameStarted,
+        setGameStarted,
+        connecting,
+        setConnecting,
+        roomId,
+        setRoomId,
+        socket,
+        setSocket,
+        Messages,
+        setMessages,
+        activeTab, 
+        setActiveTab,
+        color,
+        setColor
+      }}
+    >
+      {children}
+    </ChessContext.Provider>
   );
 };

@@ -10,6 +10,7 @@ import { Trasition } from "../transition";
 import { GameButtons } from "../components/gameButtons";
 
 const HomePage = () => {
+
   return (
     <>
       <div className=" flex w-full bg-gradient-to-r from-zinc-300 to-zinc-100 ">
@@ -21,14 +22,14 @@ const HomePage = () => {
           <LevelLoader />
           <div className="flex flex-col lg:flex-row md:gap-5 md:my-5">
             <FriendsGame />
-            <GameButtons/>
+            <GameButtons />
           </div>
           <div className="flex flex-col lg:flex-row gap-5 w-full ">
             <div className="flex flex-col w-full lg:w-[60%]">
               <RecentGame />
               <GameHistory />
             </div>
-              <Stats />
+            <Stats />
           </div>
         </div>
       </div>

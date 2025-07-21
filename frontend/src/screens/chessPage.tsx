@@ -3,7 +3,6 @@ import { ChessBoard } from "../components/board";
 import { PlayerInfo } from "../components/playerInfos";
 import { Trasition } from "../transition";
 import { Chess, Move, Square } from "chess.js";
-import { useSocket } from "../hooks/sockets";
 import axios from "axios";
 import { useChessContext } from "../hooks/contextHook";
 import { useNavigate } from "react-router-dom";
@@ -21,6 +20,9 @@ export const RECONNECT = "reconnect";
 export const GAME_JOINED = "game_joined";
 export const CHAT = "chat";
 export const GAME_ALERT="game_alert"
+export const GAME_ADDED="game_added"
+
+export const StartFen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
 
 export function isPromoting(chess: Chess, from: Square, to: Square) {
   const piece = chess.get(from);
@@ -37,13 +39,10 @@ export function isPromoting(chess: Chess, from: Square, to: Square) {
 const ChessGame = () => {
   const [chess, setChess] = useState(new Chess());
   const [board, setBoard] = useState(chess.board());
-  const [color, setColor] = useState("white");
   const [time, setTime] = useState(5);
   const [setting, setSetting] = useState(false);
-  const [moves, setMoves] = useState<string[]>([]);
-  
+  const [moves, setMoves] = useState<string[]>([]);  
 
-  type Tab = "newgame" | "history" | "friends" | "play";
 
   const navigate = useNavigate();
   const {
@@ -57,16 +56,19 @@ const ChessGame = () => {
     roomId,
     setRoomId,
     setMessages,
+    socket,
+    activeTab,
+    setActiveTab,
+    color,
+    setColor
   } = useChessContext();
   const { username, rating, profile } = user!;
 
-  const [activeTab, setActiveTab] = useState<Tab>("newgame");
   const [gameEnded, setGameEnded] = useState(false);
   const [playerWon, setplayerWon] = useState<string | undefined>();
   const [gameStatus, setGameStatus] = useState<string | null>();
   const [gameAlert,setGameAlert]=useState<string|undefined>();
 
-  const socket = useSocket(); //we are getting socket from customhook which is connected to backend
   axios.defaults.withCredentials = true;
   axios.defaults.baseURL = "http://localhost:3000";
 
@@ -110,6 +112,7 @@ const ChessGame = () => {
               setGameStarted(true);
               setOpponent(isUser ? payload.BlackPlayer : payload.WhitePlayer);
               setRoomId(payload.RoomId);
+              setActiveTab("play")
 
               //Room Id in localStorage logic with expiary
               const rmid = payload.RoomId;
@@ -205,7 +208,10 @@ const ChessGame = () => {
             setActiveTab("newgame")
             setGameAlert(payload.message)
             break;
-            
+          case GAME_ADDED:
+            setRoomId(message.gameId)
+            setConnecting(true)
+            break;
           
         }
       };
@@ -261,7 +267,9 @@ const ChessGame = () => {
     console.log(responce);
   }
 
-  if (!socket) return <div>Connecting...</div>;
+  if (!socket) return <div>
+    socket : {socket} {" "}
+    Connecting...</div>;
 
   return (
     <>
@@ -364,7 +372,11 @@ const ChessGame = () => {
                 <div
                   onClick={() => {
                     setActiveTab("newgame");
+                    setOpponent(null)
                     setGameEnded(false);
+                    const newBoard=chess.board()
+                    setBoard(newBoard);
+
                   }}
                   className="text-lg text-zinc-200 font-bold m-3 rounded-md text-center bg-emerald-900 w-[80%] flex mx-auto justify-center p-2 cursor-pointer playButton"
                 >

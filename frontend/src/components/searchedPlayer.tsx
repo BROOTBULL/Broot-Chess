@@ -33,7 +33,15 @@ export const SearchedPlayer = ({ player }: { player: Player }) => {
       senderId: user?.id,
       receiverId: playerId,
     });
-    console.log(response.data.message);
+
+    const reqtype=(status==="Friend_Request")?"Sent":"Accepted your"
+    const responseReqMessage = await axios.post("/social/message", {
+        message: reqtype+" Friend Request",
+        user: user,
+        friendId: playerId,
+        type: (reqtype==="Sent")?"REQUEST":"ACCEPT",
+      });
+    console.log(response.data.message," ",responseReqMessage.data.message);
     setStatus(response.data.status)
   }
   return (
