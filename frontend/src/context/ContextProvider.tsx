@@ -1,5 +1,7 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 import axios from "axios";
+import { useNotification } from "./NotificationProvider";
+import { NOTIFICATION } from "../screens/socials";
 
 export interface User {
   id: string;
@@ -98,6 +100,28 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
     };
     checkAuth();
   }, []);
+
+
+const notify = useNotification();
+
+useEffect(() => {
+  if (!socket) return;
+
+  socket.onmessage = (e) => {
+    const message = JSON.parse(e.data);
+    console.log(message);
+
+    switch (message.type) {
+      case NOTIFICATION:
+        console.log("swit triggered")
+        notify(message.payload.player, message.payload.type || "info");
+        break;
+
+      // other cases...
+    }
+  };
+}, [socket]);
+
 
   return (
     <ChessContext.Provider

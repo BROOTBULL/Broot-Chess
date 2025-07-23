@@ -4,6 +4,7 @@ import url from "url";
 import jwt from "jsonwebtoken";
 import { randomUUID } from "crypto";
 import dotenv from "dotenv";
+import { connectionManager } from "./connectionManager";
 
 export class User {
   public socket: WebSocket;
@@ -58,14 +59,13 @@ wss.on("connection", function connection(ws, req) {
   let user: User;
   try {
     user = extractAuthUser(token, ws);
-    // console.log("user: ",user);
-    
+    // console.log("user: ",user);    
   } catch (err) {
     console.error("🔴 Invalid token:", err);
     ws.close(4002, "Invalid token");
     return;
   }
-
+    connectionManager.addUserSocket(user.userId, ws);
   gameManager.addUser(user); //that ws is added in the room as player or pending player
 
   ws.on("error", console.error);

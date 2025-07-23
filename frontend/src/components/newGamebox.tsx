@@ -17,6 +17,7 @@ export const NewGame = ({
 }: Props) => {
   const INIT_GAME = "init_game";
   const JOINROOM = "joinroom";
+  const NOTIFICATION="notification"
 
   const { gameType, setGameType, connecting, setConnecting, roomId } =
     useChessContext();
@@ -73,6 +74,7 @@ export const NewGame = ({
     setActiveTab("play");
     setConnecting(true);
   }
+
 
   return (
     <>
@@ -279,7 +281,8 @@ export const NewGame = ({
           </div>
         </div>
 
-        <div className="bg-zinc-800 playButton h-18 flex flex-row items-center justify-center cursor-pointer shadow-md/50 w-full ">
+        <div
+        className="bg-zinc-800 playButton h-18 flex flex-row items-center justify-center cursor-pointer shadow-md/50 w-full ">
           <img
             className="size-8 m-1 "
             src="../../public/media/friends.png"

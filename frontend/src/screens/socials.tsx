@@ -13,7 +13,7 @@ import { Notification } from "../components/notification";
 import { useNavigate } from "react-router-dom";
 
 export type FriendStatus = "REJECTED" | "PENDING" | "ACCEPTED";
-
+export const NOTIFICATION="notification"
 export type MessageType = "MESSAGE" | "ACCEPT" | "REQUEST";
 
 export type Player = {
@@ -118,20 +118,32 @@ const Socials = () => {
     document.getElementById(friendId)?.classList.add("hidden");
   }
 
-  async function handleChallenge(e, friendId: string, type: string) {
+  async function handleChallenge(e, player:User, type: string) {
     e.preventDefault();
     console.log(socket && "socket");
 
-    if (socket) {
-      console.log(friendId, type);
-      setPendingChallenge({ friendId, type });
+
+    console.log("I Got Triggred !!");
+    
       socket?.send(
         JSON.stringify({
-          type: INIT_GAME,
-          private: true,
+          type: NOTIFICATION,
+          payload: {player:player,
+            type:type
+          },
         })
-      );
-    }
+      )
+
+    // if (socket) {
+    //   console.log(friendId, type);
+    //   setPendingChallenge({ friendId, type });
+    //   socket?.send(
+    //     JSON.stringify({
+    //       type: INIT_GAME,
+    //       private: true,
+    //     })
+    //   );
+    // }
   }
 
   useEffect(() => {
@@ -324,7 +336,9 @@ const Socials = () => {
                       </div>
                     </div>
                     <div className="flex flex-row justify-center items-center ml-auto">
-                      <div className="hover:bg-zinc-700 cursor-pointer p-1 interact-btn rounded-md flex justify-center duration-200">
+                      <div 
+                      onClick={(e)=>handleChallenge(e,player,"")}
+                      className="hover:bg-zinc-700 cursor-pointer p-1 interact-btn rounded-md flex justify-center duration-200">
                         <img
                           className="size-8"
                           src="./media/challenge.png"
@@ -365,7 +379,7 @@ const Socials = () => {
                     <div className="flex flex-row justify-center items-center ml-auto">
                       <div
                         onClick={(e) =>
-                          handleChallenge(e, friend.id, "CHALLENGE")
+                          handleChallenge(e, friend, "Rapid")
                         }
                         className="hover:bg-zinc-700 cursor-pointer p-1 interact-btn rounded-md flex justify-center duration-200"
                       >

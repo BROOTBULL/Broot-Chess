@@ -9,7 +9,8 @@ import {
   GAME_JOINED,
   CHAT,
   GAME_NOT_FOUND,
-  JOINROOM
+  JOINROOM,
+  NOTIFICATION
 } from "./messages";
 import { User } from ".";
 import { connectionManager } from "./connectionManager";
@@ -204,6 +205,26 @@ export class GameManager {
         }))
       }
      }
+
+    if(message.type===NOTIFICATION)
+     {
+
+      console.log("notification recieved");
+      
+      const player=message.payload.player as User;
+      connectionManager.sendMessageToUser(player?.id,JSON.stringify({
+          type:NOTIFICATION,
+          payload:{
+           player:player,
+           type:message.payload.type
+          }
+        }))
+     }
+
+
+
+
+     
     });
   }
 }

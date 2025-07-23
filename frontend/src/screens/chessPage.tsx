@@ -37,12 +37,6 @@ export function isPromoting(chess: Chess, from: Square, to: Square) {
 }
 
 const ChessGame = () => {
-  const [chess, setChess] = useState(new Chess());
-  const [board, setBoard] = useState(chess.board());
-  const [time, setTime] = useState(5);
-  const [setting, setSetting] = useState(false);
-  const [moves, setMoves] = useState<string[]>([]);  
-
 
   const navigate = useNavigate();
   const {
@@ -64,6 +58,12 @@ const ChessGame = () => {
   } = useChessContext();
   const { username, rating, profile } = user!;
 
+
+  const [chess, setChess] = useState(new Chess());
+  const [board, setBoard] = useState(chess.board());
+  const [time, setTime] = useState(5);
+  const [setting, setSetting] = useState(false);
+  const [moves, setMoves] = useState<string[]>([]);  
   const [gameEnded, setGameEnded] = useState(false);
   const [playerWon, setplayerWon] = useState<string | undefined>();
   const [gameStatus, setGameStatus] = useState<string | null>();
