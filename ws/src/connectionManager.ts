@@ -78,9 +78,12 @@ class ConnectionManager {
   getPlayersInfo(roomId: string) {
     return this.roomUserMap.get(roomId);
   }
+  getPlayerIdToRoomId(userId: string) {
+    return this.userToRoom.get(userId);
+  }
 
   getmapInfo() {
-    return this.userToSocket;
+    return this.userToRoom;
   }
 }
 

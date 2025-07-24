@@ -5,13 +5,13 @@ import ChessGame from "./screens/chessPage";
 import SignUpPage from "./screens/signUp";
 import LogInPage from "./screens/logIn";
 import { ReactNode } from "react";
-import { useChessContext } from "./hooks/contextHook";
+import { useUserContext } from "./hooks/contextHook";
 import LandingPage from "./screens/LandingPage";
 import Socials from "./screens/socials";
 
 // 1. Route guard for authenticated users
 const RequireAuth = ({ children }: { children: ReactNode }) => {
-  const { user } = useChessContext();
+  const { user } = useUserContext();
 
   if (user === null) return <Navigate to="/signup" replace />;
   return <>{children}</>;
@@ -19,7 +19,7 @@ const RequireAuth = ({ children }: { children: ReactNode }) => {
 
 // 2. Route guard to redirect if user is already authenticated
 const RedirectIfAuth = ({ children }: { children: ReactNode }) => {
-  const { user } = useChessContext();
+  const { user } = useUserContext();
 
   if (user !== null) return <Navigate to="/home" replace />;
   return <>{children}</>;
@@ -27,7 +27,7 @@ const RedirectIfAuth = ({ children }: { children: ReactNode }) => {
 
 function App() {
   const location = useLocation();
-  const { loading} = useChessContext(); // Optional: show spinner while auth check runs
+  const { loading} = useUserContext(); // Optional: show spinner while auth check runs
 
   if (loading) {
     return <div>Loading...</div>; // Replace with spinner or splash screen

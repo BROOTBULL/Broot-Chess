@@ -1,7 +1,7 @@
-import { useChessContext } from "../hooks/contextHook";
+import { useUserContext } from "../hooks/contextHook";
 
 export const LevelLoader = () => {
-  const { user } = useChessContext();
+  const { user } = useUserContext();
   const rating = user?.rating ?? 0;
 
   const trophies = [

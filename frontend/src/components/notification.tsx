@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useChessContext } from "../hooks/contextHook";
+import { useChessContext, useUserContext } from "../hooks/contextHook";
 import { Message } from "../screens/socials";
 import axios from "axios";
 
@@ -29,7 +29,8 @@ export const NotifMessage = ({ notif }: { notif: Message }) => {
 };
 
 export const NotifChallenge = ({ notif }: { notif: Message }) => {
-  const { socket, setConnecting } = useChessContext();
+  const {socket}=useUserContext()
+  const { setConnecting } = useChessContext();
   const navigate = useNavigate();
 
   function handleAccept() {
@@ -75,7 +76,7 @@ export const NotifChallenge = ({ notif }: { notif: Message }) => {
 };
 
 export const Notification = ({ setNotifications, notif }: {setNotifications:React.Dispatch<React.SetStateAction<Message[]>>, notif: Message }) => {
-  const { user } = useChessContext();
+  const { user } = useUserContext();
 
   async function handleAccept(playerId: string) {
     const responseReq = await axios.post("/social/reqPlayer", {

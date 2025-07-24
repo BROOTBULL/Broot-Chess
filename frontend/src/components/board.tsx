@@ -1,35 +1,11 @@
-import { Chess, Color, PieceSymbol, Square, SQUARES } from "chess.js";
+import { Square, SQUARES } from "chess.js";
 import { useState } from "react";
+import { useChessContext, useUserContext } from "../hooks/contextHook";
 
-export const ChessBoard = ({
-  board,
-  socket,
-  setBoard,
-  chess,
-  color,
-  roomId
-}: {
-  color: string;
-  chess: Chess;
-  setBoard: React.Dispatch<
-    React.SetStateAction<
-      ({
-        square: Square;
-        type: PieceSymbol;
-        color: Color;
-      } | null)[][]
-    >
-  >;
-  board: ({
-    square: Square;
-    type: PieceSymbol;
-    color: Color;
-  } | null)[][];
-  socket: WebSocket;
-  roomId:string|undefined;
-}) => {
+export const ChessBoard = () => {
     const MOVE = "move";
-    
+    const {socket}=useUserContext()
+    const {setBoard,board,chess,color,roomId}=useChessContext()
 
     const rows = color === "white" ? board : [...board].reverse();
     const [validmoves, setValidmoves] = useState<Square[]>([]);

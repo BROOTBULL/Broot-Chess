@@ -1,7 +1,7 @@
-import { useChessContext } from "../hooks/contextHook"
+import { useUserContext } from "../hooks/contextHook"
 
 export const Stats=()=>{
-    const {user}=useChessContext();
+    const {user}=useUserContext();
 
     return(<>
       <div className="flex flex-col w-full h-fit bg-zinc-800 text-zinc-200 lg:my-5 ring-1 ring-black shadow-lg/40">

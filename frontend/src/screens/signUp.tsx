@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Trasition } from "../transition";
 import axios from "axios";
 import { useState } from "react";
-import { useChessContext } from "../hooks/contextHook";
+import { useUserContext } from "../hooks/contextHook";
 
 
 axios.defaults.withCredentials = true;
@@ -10,7 +10,7 @@ axios.defaults.baseURL = "http://localhost:3000";
 
 const SignUpPage = () => {
   const navigate = useNavigate();
-  const {setUser}=useChessContext()
+  const {setUser}=useUserContext()
 
 
   const [formData, setFormData] = useState({

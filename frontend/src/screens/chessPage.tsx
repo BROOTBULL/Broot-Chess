@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ChessBoard } from "../components/board";
 import { PlayerInfo } from "../components/playerInfos";
 import { Trasition } from "../transition";
-import { Chess, Move, Square } from "chess.js";
 import axios from "axios";
-import { useChessContext } from "../hooks/contextHook";
+import { useChessContext, useUserContext } from "../hooks/contextHook";
 import { useNavigate } from "react-router-dom";
 import { NewGame } from "../components/newGamebox";
 import { History } from "../components/historyBox";
@@ -12,62 +11,36 @@ import { Friends } from "../components/friendsBox";
 import { Play } from "../components/playBox";
 import { AnimatePresence, motion } from "motion/react";
 
-export const INIT_GAME = "init_game";
-export const MOVE = "move";
-export const GAME_OVER = "game_over";
-export const GAME_ENDED = "game_ended";
-export const RECONNECT = "reconnect";
-export const GAME_JOINED = "game_joined";
-export const CHAT = "chat";
-export const GAME_ALERT="game_alert"
-export const GAME_ADDED="game_added"
-
 export const StartFen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
 
-export function isPromoting(chess: Chess, from: Square, to: Square) {
-  const piece = chess.get(from);
-
-  if (!piece || piece.type !== "p") return false;
-
-  // White pawn reaching 8th rank or black pawn reaching 1st
-  return (
-    (piece.color === "w" && to.endsWith("8")) ||
-    (piece.color === "b" && to.endsWith("1"))
-  );
-}
 
 const ChessGame = () => {
 
   const navigate = useNavigate();
+  const {user,setUser,socket}=useUserContext()
   const {
-    user,
-    setUser,
     gameStarted,
-    setGameStarted,
-    setConnecting,
     Opponent,
     setOpponent,
-    roomId,
-    setRoomId,
-    setMessages,
-    socket,
     activeTab,
     setActiveTab,
     color,
-    setColor
+    chess,
+    setBoard,
+    moves,
+    playerWon,
+    gameStatus,
+    gameEnded,
+    setGameEnded,
+    gameAlert,
+    setGameAlert
+
   } = useChessContext();
   const { username, rating, profile } = user!;
 
 
-  const [chess, setChess] = useState(new Chess());
-  const [board, setBoard] = useState(chess.board());
   const [time, setTime] = useState(5);
   const [setting, setSetting] = useState(false);
-  const [moves, setMoves] = useState<string[]>([]);  
-  const [gameEnded, setGameEnded] = useState(false);
-  const [playerWon, setplayerWon] = useState<string | undefined>();
-  const [gameStatus, setGameStatus] = useState<string | null>();
-  const [gameAlert,setGameAlert]=useState<string|undefined>();
 
   axios.defaults.withCredentials = true;
   axios.defaults.baseURL = "http://localhost:3000";
@@ -89,155 +62,7 @@ const ChessGame = () => {
   function handleClose()
   {
     setGameEnded(false)
-    setActiveTab("newgame")
   }
-
-  useEffect(() => {
-    if (!socket) {
-      return;
-    } else {
-      socket.onmessage = (e) => {
-        const message = JSON.parse(e.data);
-        const payload = message.payload;
-        console.log("message recieved:", message);
-
-        switch (message.type) {
-          case INIT_GAME:
-            {
-              const newGame = new Chess();
-              const isUser = payload.WhitePlayer.userId === user?.id;
-              setChess(newGame);
-              setBoard(newGame.board());
-              setConnecting(false);
-              setGameStarted(true);
-              setOpponent(isUser ? payload.BlackPlayer : payload.WhitePlayer);
-              setRoomId(payload.RoomId);
-              setActiveTab("play")
-
-              //Room Id in localStorage logic with expiary
-              const rmid = payload.RoomId;
-              const expiryTime = Date.now() + 15 * 60 * 1000; // 15 minutes in ms
-              localStorage.setItem(
-                "roomData",
-                JSON.stringify({ rmid, expiryTime })
-              );
-
-              console.log(
-                "Game initialized ! You are : ",
-                payload.color,
-                "roomId:",
-                payload.RoomId
-              );
-              setColor(isUser ? "white" : "black");
-            }
-            break;
-          case MOVE:
-            {
-              const move = payload.move as Move;
-              setMoves((prev) => [...prev, move.to]);
-
-              try {
-                if (isPromoting(chess, move.from, move.to)) {
-                  chess.move({
-                    from: move.from,
-                    to: move.to,
-                    promotion: "q",
-                  });
-                } else {
-                  chess.move({ from: move.from, to: move.to });
-                }
-              } catch (error) {
-                console.log("Error", error);
-              }
-              setBoard(chess.board()); //chess.board give a big function that handles how whole board looks it basically used for updating the board ui
-            }
-            break;
-          case GAME_JOINED:
-            {
-              const isUser = payload.WhitePlayer.id === user?.id;
-              console.log(payload.WhitePlayer.id," is not equal to ", user?.id);
-              setActiveTab("play");
-              setConnecting(false);
-              setGameStarted(true);
-              setOpponent(isUser ? payload.BlackPlayer : payload.WhitePlayer);
-              setRoomId(payload.RoomId);
-              setMessages(payload.chat)
-              chess.load(payload.fen)
-              const newBoard=chess.board()
-              setBoard(newBoard);
-              const moveTo=(payload.moves as Move[]).map((move)=>move.to)
-              setMoves(moveTo)
-
-              console.log("Game Rejoined successfully..!!!");
-              console.log("roomId:", payload.RoomId);
-              setColor(isUser ? "white" : "black");
-            }
-            break;
-          case GAME_ENDED:
-            {
-              let wonBy;
-              setGameStarted(false);
-              setGameEnded(true);
-              setplayerWon(
-                payload.result === color ? username : Opponent?.name
-              );
-              switch (payload.status) {
-                case "PLAYER_EXIT":
-                  wonBy = "Resigantion";
-                  break;
-                case "COMPLETED":
-                  wonBy =
-                    message.payload.result !== "DRAW" ? "CheckMate" : "Draw";
-                  console.log(wonBy, "!!! GAME OVER:", payload);
-                  break;
-                case "TIME_OUT":
-                  wonBy = "TimeOut";
-                  break;
-              }
-              setGameStatus(wonBy);
-              localStorage.removeItem("roomData");
-              setRoomId(undefined);
-              chess.reset();
-            }
-            break;
-          case CHAT:
-            setMessages((prev) => [...prev, payload.message]);
-            break;
-          case GAME_ALERT:
-            setConnecting(false);
-            setActiveTab("newgame")
-            setGameAlert(payload.message)
-            break;
-          case GAME_ADDED:
-            setRoomId(message.gameId)
-            setConnecting(true)
-            break;
-          
-        }
-      };
-    }
-    //empty localstorage afte 1 min
-    const stored = localStorage.getItem("roomData");
-    const data = stored ? JSON.parse(stored) : null;
-    if (data && data.expiryTime !== 0) {
-      if (Date.now() > data.expiryTime) {
-        localStorage.removeItem("roomData");
-        console.log("localstorage roomId expired");
-      }
-    }
-    //Reconnection if no RoomId in Localstorage
-    if (roomId !== data?.rmid) {
-      console.log("Reconnection triggered!!!");
-      socket.send(
-        JSON.stringify({
-          type: RECONNECT,
-          payload: {
-            roomId: data.rmid,
-          },
-        })
-      );
-    }
-  }, [socket, chess]);
 
   function renderComponent() {
     switch (activeTab) {
@@ -273,7 +98,7 @@ const ChessGame = () => {
 
   return (
     <>
-      {console.log("my name :",username," Opponent name : ",Opponent?.name)
+      {
       }
 
       <div className="absolute flex flex-col lg:flex-row md:h-full md:w-full -z-12 ">
@@ -392,14 +217,7 @@ const ChessGame = () => {
               color={color}
               profile={Opponent?.profile || "../../public/media/userW.png"}
             />
-            <ChessBoard
-              board={board}
-              setBoard={setBoard}
-              chess={chess}
-              socket={socket}
-              color={color}
-              roomId={roomId}
-            />
+            <ChessBoard/>
             <PlayerInfo
               userName={username}
               rating={rating}

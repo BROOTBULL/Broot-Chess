@@ -5,16 +5,17 @@ import { Profile } from "../components/profile";
 
 import { Trasition } from "../transition";
 import axios from "axios";
-import { useChessContext } from "../hooks/contextHook";
+import { useChessContext, useUserContext } from "../hooks/contextHook";
 import { SearchedPlayer } from "../components/searchedPlayer";
 import { User } from "../context/ContextProvider";
-import { GAME_ADDED, GAME_JOINED, INIT_GAME } from "./chessPage";
+import { INIT_GAME } from "../context/ContextProvider"
 import { Notification } from "../components/notification";
 import { useNavigate } from "react-router-dom";
 
 export type FriendStatus = "REJECTED" | "PENDING" | "ACCEPTED";
 export const NOTIFICATION="notification"
 export type MessageType = "MESSAGE" | "ACCEPT" | "REQUEST";
+export type NotifType="MESSAGE"|"REQUEST"|"CHALLENGE"|"ACCEPT"
 
 export type Player = {
   id: string;
@@ -38,6 +39,7 @@ export type PendingChallenge = {
   type: string;
 } | null;
 
+
 const Socials = () => {
   const [search, setSearch] = useState("");
   const [searchedPlayers, setShearchedPlayers] = useState<Player[]>([]);
@@ -45,23 +47,15 @@ const Socials = () => {
   const [message, setMessage] = useState("");
   const [notifications, setNotifications] = useState<Message[]>([]);
   const [seeAll, setSeeAll] = useState<boolean>(false);
-  const [pendingChallenge, setPendingChallenge] =
-    useState<PendingChallenge>(null);
   const [optionOpen, setOptionOpen] = useState(false);
 
   const {
     user,
-    socket,
-    setRoomId,
-    setConnecting,
-    setOpponent,
-    setActiveTab,
-    setGameStarted,
-    setMessages,
-    color,
-    setColor,
-  } = useChessContext();
+    socket
+  } = useUserContext();
   const navigate = useNavigate();
+
+////////////////////////// GET FRIENDS LIST LOGIC ///////////////////////////////
 
   useEffect(() => {
     const getFriends = async () => {
@@ -76,6 +70,8 @@ const Socials = () => {
     }
   }, [search]);
 
+/////////////////////////// GET NOTIFICATION LIST LOGIC /////////////////////////////
+
   useEffect(() => {
     const getNotifications = async () => {
       const response = await axios.get("/social/getmessage", {
@@ -87,6 +83,8 @@ const Socials = () => {
 
     getNotifications();
   }, [notifications.length]);
+
+ //////////////////////////// SEARCH PLAYER LOGIC /////////////////////////////// 
 
   async function handleSearch(e) {
     e.preventDefault();
@@ -104,6 +102,8 @@ const Socials = () => {
     form?.classList.toggle("hidden");
   }
 
+ ////////////////////////// SEND MESSAGE TO SOCIALPAGE LOGIC ///////////////////////
+
   async function handleMessageSent(e, friendId: string, type: string) {
     e.preventDefault();
     console.log("message:", message);
@@ -118,123 +118,39 @@ const Socials = () => {
     document.getElementById(friendId)?.classList.add("hidden");
   }
 
-  async function handleChallenge(e, player:User, type: string) {
+  ///////////////////////// SEND NOTIFICATION LOGIC /////////////////////////////
+
+  async function handleSendNotif(e, player:User, notifType: NotifType,message:string) {
     e.preventDefault();
     console.log(socket && "socket");
-
-
-    console.log("I Got Triggred !!");
+    if (socket && notifType==="CHALLENGE") 
+      {
+      console.log(player.username, notifType);
+      socket?.send(
+        JSON.stringify({
+          type: INIT_GAME,
+          private: true,
+        })
+      )
     
       socket?.send(
         JSON.stringify({
           type: NOTIFICATION,
-          payload: {player:player,
-            type:type
+          payload: {
+            player:player,
+            notifType:notifType,
+            message:message
           },
         })
       )
 
-    // if (socket) {
-    //   console.log(friendId, type);
-    //   setPendingChallenge({ friendId, type });
-    //   socket?.send(
-    //     JSON.stringify({
-    //       type: INIT_GAME,
-    //       private: true,
-    //     })
-    //   );
-    // }
+    navigate("/game")
+    }
+
+    
   }
 
-  useEffect(() => {
-    if (!socket) {
-      return;
-    } else {
-      socket.onmessage = (e) => {
-        const message = JSON.parse(e.data);
-        console.log("message recieved:", message);
-        const payload = message.payload;
-
-        switch (message.type) {
-          case INIT_GAME:
-            {
-              const isUser = payload.WhitePlayer.userId === user?.id;
-              setConnecting(false);
-              setGameStarted(true);
-              setOpponent(isUser ? payload.BlackPlayer : payload.WhitePlayer);
-              setRoomId(payload.RoomId);
-              setActiveTab("play");
-
-              //Room Id in localStorage logic with expiary
-              const rmid = payload.RoomId;
-              const expiryTime = Date.now() + 15 * 60 * 1000; // 15 minutes in ms
-              localStorage.setItem(
-                "roomData",
-                JSON.stringify({ rmid, expiryTime })
-              );
-
-              console.log(
-                "Game initialized ! You are : ",
-                payload.color,
-                "roomId:",
-                payload.RoomId
-              );
-              setColor(isUser ? "white" : "black");
-            }
-            break;
-          case GAME_ADDED:
-            console.log(pendingChallenge);
-            try {
-              if (pendingChallenge) {
-                axios.post("/social/message", {
-                  message: message.gameId,
-                  user,
-                  friendId: pendingChallenge.friendId,
-                  type: pendingChallenge.type,
-                });
-                console.log(message.gameId);
-
-                setPendingChallenge(null);
-              }
-              setRoomId(message.gameId);
-              setActiveTab("play");
-              setConnecting(true);
-            } catch (error) {
-              console.log("Error occured in social : ", error);
-            } finally {
-              const rmid = message.gameId;
-              const expiryTime = Date.now() + 15 * 60 * 1000; // 15 minutes in ms
-              localStorage.setItem(
-                "roomData",
-                JSON.stringify({ rmid, expiryTime })
-              );
-              navigate("/game");
-            }
-            break;
-
-          case GAME_JOINED:
-            {
-              const isUser = payload.WhitePlayer.id === user?.id;
-              console.log(
-                payload.WhitePlayer.id,
-                " is not equal to ",
-                user?.id
-              );
-              setActiveTab("play");
-              setConnecting(false);
-              setGameStarted(true);
-              setOpponent(isUser ? payload.BlackPlayer : payload.WhitePlayer);
-              setRoomId(payload.RoomId);
-              setMessages(payload.chat);
-
-              console.log("Game Rejoined successfully..!!!");
-              console.log("roomId:", payload.RoomId);
-            }
-            break;
-        }
-      };
-    }
-  }, [socket, pendingChallenge]);
+  ///////////////////// REMOVE FROM FRIEND LIST LOGIC /////////////////////// 
 
   async function handleRemoveFriend(userId: string, friendId: string) {
     const removeFriend=await axios.post("/social/deletefriend", { userId: userId, friendId: friendId });
@@ -277,18 +193,6 @@ const Socials = () => {
             ) : (
               <div className="mx-auto my-5">No message recieved yet</div>
             )}
-            {/* <div className="bg-zinc-800 w-full h-fit border-2 border-b-0 border-zinc-700 flex flex-row p-3 ">
-                <div className="bg-zinc-800 border-2 border-zinc-700 rounded-md aspect-square h-full"><img className="size-18" src="./media/userW.png" alt="" /></div>
-                <div className="flex flex-col w-fit max-w-[80%] pl-3 justify-center ">
-                <div className="text-md text-zinc-200">Broot</div>
-                <div className="text-zinc-300 text-sm"> Broot_Bull@123 Broot_Bull@123 Broot_Bull@123 Broot_Bull@123 Broot_Bull@123 </div>
-                </div> 
-                <div className="flex justify-end items-center w-[20%] ml-auto gap-3">
-                <div className="text-sm">Reply</div>
-                <div className="bg-emerald-900 text-white p-2 px-5 rounded-sm">Accept</div>
-                <div className="bg-zinc-700 rounded-sm p-2 "><img className="rotate-45 size-7" src="./media/plus.png" alt="" /></div>
-                </div>             
-    </div> */}
           </div>
         </div>
         <div className="w-full flex flex-col p-2 px-5 my-5">
@@ -337,7 +241,7 @@ const Socials = () => {
                     </div>
                     <div className="flex flex-row justify-center items-center ml-auto">
                       <div 
-                      onClick={(e)=>handleChallenge(e,player,"")}
+                      onClick={(e)=>handleSendNotif(e,player,"CHALLENGE","Challenged you to a Rapid Match")}
                       className="hover:bg-zinc-700 cursor-pointer p-1 interact-btn rounded-md flex justify-center duration-200">
                         <img
                           className="size-8"
@@ -379,7 +283,7 @@ const Socials = () => {
                     <div className="flex flex-row justify-center items-center ml-auto">
                       <div
                         onClick={(e) =>
-                          handleChallenge(e, friend, "Rapid")
+                          handleSendNotif(e, friend, "CHALLENGE","Challenged you to a Rapid Match")
                         }
                         className="hover:bg-zinc-700 cursor-pointer p-1 interact-btn rounded-md flex justify-center duration-200"
                       >

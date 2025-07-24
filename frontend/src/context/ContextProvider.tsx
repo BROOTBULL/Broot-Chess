@@ -1,7 +1,8 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
-import axios from "axios";
 import { useNotification } from "./NotificationProvider";
 import { NOTIFICATION } from "../screens/socials";
+import { Chess, Move, Piece, Square } from "chess.js";
+import { useUserContext } from "../hooks/contextHook";
 
 export interface User {
   id: string;
@@ -13,12 +14,20 @@ export interface User {
   token: string;
 }
 
+export const INIT_GAME = "init_game";
+export const MOVE = "move";
+export const GAME_OVER = "game_over";
+export const GAME_ENDED = "game_ended";
+export const RECONNECT = "reconnect";
+export const GAME_JOINED = "game_joined";
+export const CHAT = "chat";
+export const GAME_ALERT="game_alert"
+export const GAME_ADDED="game_added"
+
+
 interface ChessContextType {
-  user: User | null;
-  setUser: React.Dispatch<React.SetStateAction<User | null>>;
   Opponent: User | null;
   setOpponent: React.Dispatch<React.SetStateAction<User | null>>;
-  loading: boolean;
   gameType: GameType;
   setGameType: React.Dispatch<React.SetStateAction<GameType>>;
   gameStarted: boolean;
@@ -27,14 +36,27 @@ interface ChessContextType {
   setConnecting: React.Dispatch<React.SetStateAction<boolean>>;
   roomId: string | undefined;
   setRoomId: React.Dispatch<React.SetStateAction<string | undefined>>;
-  socket: WebSocket | null;
-  setSocket: React.Dispatch<React.SetStateAction<WebSocket | null>>;
   Messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>
   activeTab: Tab;
   setActiveTab: React.Dispatch<React.SetStateAction<Tab>>
   color: string;
   setColor: React.Dispatch<React.SetStateAction<string>>
+  chess: Chess;
+  setChess: React.Dispatch<React.SetStateAction<Chess>>
+  board: (Piece | null)[][];
+  setBoard: React.Dispatch<React.SetStateAction<(Piece | null)[][]>>
+  moves: string[];
+  setMoves: React.Dispatch<React.SetStateAction<string[]>>
+  playerWon: string|undefined;
+  setPlayerWon: React.Dispatch<React.SetStateAction<string|undefined>>
+  gameStatus: string|undefined;
+  setGameStatus: React.Dispatch<React.SetStateAction<string|undefined>>
+  gameAlert: string|undefined;
+  setGameAlert: React.Dispatch<React.SetStateAction<string|undefined>>
+  gameEnded: boolean;
+  setGameEnded: React.Dispatch<React.SetStateAction<boolean>>;
+
 }
 
 type GameType = "blitz" | "rapid" | "daily" | "";
@@ -45,92 +67,205 @@ type Message = { sender: string; message: string };
 export const ChessContext = createContext<ChessContextType | undefined>(undefined);
 
 export const ContextProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+
+  const {user,socket}=useUserContext()
+
   const [roomId, setRoomId] = useState<string | undefined>(undefined);
   const [Opponent, setOpponent] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
   const [connecting, setConnecting] = useState<boolean>(false);
   const [gameType, setGameType] = useState<GameType>("");
   const [gameStarted, setGameStarted] = useState(false);
-  const [socket, setSocket] = useState<WebSocket | null>(null);
   const [Messages, setMessages] = useState<Message[]>([]);
   const [activeTab, setActiveTab] = useState<Tab>("newgame");
   const [color, setColor] = useState("white");
+  const [chess, setChess] = useState(new Chess());
+  const [board, setBoard] = useState<(Piece | null)[][]>(chess.board());
+  const [moves, setMoves] = useState<string[]>([]);  
+  const [playerWon, setPlayerWon] = useState<string | undefined>();
+  const [gameStatus, setGameStatus] = useState<string | undefined>();
+  const [gameEnded, setGameEnded] = useState(false);
+  const [gameAlert,setGameAlert]=useState<string|undefined>();
 
+function isPromoting(chess: Chess, from: Square, to: Square) {
+  const piece = chess.get(from);
 
+  if (!piece || piece.type !== "p") return false;
 
-  // ✅ WebSocket connection logic here directly
-  useEffect(() => {
-    if (!user) return;
-
-    const ws = new WebSocket(`ws://localhost:8080?token=${user.token}`);
-
-    ws.onopen = () => {
-      console.log("✅ WebSocket connected");
-      setSocket(ws);
-    };
-
-    ws.onclose = () => {
-      console.log("❌ WebSocket disconnected");
-      setSocket(null);
-    };
-
-    return () => {
-      console.log("🔌 Closing WebSocket...");
-      ws.close();
-    };
-  }, [user]);
-
-  // ✅ Auth check on mount
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await axios.get("/auth/checkAuth");
-        if (res.data.isAuthanticated) {
-          setUser(res.data.UserDetails);
-        } else {
-          setUser(null);
-        }
-      } catch (err) {
-        console.error("Auth check failed:", err);
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-    checkAuth();
-  }, []);
+  // White pawn reaching 8th rank or black pawn reaching 1st
+  return (
+    (piece.color === "w" && to.endsWith("8")) ||
+    (piece.color === "b" && to.endsWith("1"))
+  );
+}
 
 
 const notify = useNotification();
 
-useEffect(() => {
-  if (!socket) return;
+  useEffect(() => {
+    if (!socket) {
+      return;
+    } else {
+      socket.onmessage = (e) => {
+        const message = JSON.parse(e.data);
+        const payload = message.payload;
+        // console.log("message recieved:", message);
 
-  socket.onmessage = (e) => {
-    const message = JSON.parse(e.data);
-    console.log(message);
+        switch (message.type) {
+          case INIT_GAME:
+            {
+              const newGame = new Chess();
+              const isUser = payload.WhitePlayer.userId === user?.id;
+              setChess(newGame);
+              setBoard(newGame.board());
+              setConnecting(false);
+              setGameStarted(true);
+              setOpponent(isUser ? payload.BlackPlayer : payload.WhitePlayer);
+              setRoomId(payload.RoomId);
+              setActiveTab("play")
 
-    switch (message.type) {
-      case NOTIFICATION:
-        console.log("swit triggered")
-        notify(message.payload.player, message.payload.type || "info");
-        break;
+              //Room Id in localStorage logic with expiary
+              const rmid = payload.RoomId;
+              const expiryTime = Date.now() + 15 * 60 * 1000; // 15 minutes in ms
+              localStorage.setItem(
+                "roomData",
+                JSON.stringify({ rmid, expiryTime })
+              );
 
-      // other cases...
+              // console.log(
+              //   "Game initialized ! You are : ",
+              //   payload.color,
+              //   "roomId:",
+              //   payload.RoomId
+              // );
+              setColor(isUser ? "white" : "black");
+            }
+            break;
+          case MOVE:
+            {
+              const move = payload.move as Move;
+              setMoves((prev) => [...prev, move.to]);
+
+              try {
+                if (isPromoting(chess, move.from, move.to)) {
+                  chess.move({
+                    from: move.from,
+                    to: move.to,
+                    promotion: "q",
+                  });
+                } else {
+                  chess.move({ from: move.from, to: move.to });
+                }
+              } catch (error) {
+                console.log("Error", error);
+              }
+              setBoard(chess.board()); //chess.board give a big function that handles how whole board looks it basically used for updating the board ui
+            }
+            break;
+          case GAME_JOINED:
+            {
+              const isUser = payload.WhitePlayer.id === user?.id;
+              setActiveTab("play");
+              setConnecting(false);
+              setGameStarted(true);
+              setOpponent(isUser ? payload.BlackPlayer : payload.WhitePlayer);
+              setRoomId(payload.RoomId);
+              setMessages(payload.chat)
+              chess.load(payload.fen)
+              const newBoard=chess.board()
+              setBoard(newBoard);
+              const moveTo=(payload.moves as Move[]).map((move)=>move.to)
+              setMoves(moveTo)
+
+              // console.log("Game Rejoined successfully..!!!");
+              // console.log("roomId:", payload.RoomId);
+              setColor(isUser ? "white" : "black");
+            }
+            break;
+          case GAME_ENDED:
+            {
+              let wonBy;
+              setGameStarted(false);
+              setGameEnded(true);
+              setPlayerWon(
+                payload.result === color ? user?.username : Opponent?.name
+              );
+              switch (payload.status) {
+                case "PLAYER_EXIT":
+                  wonBy = "Resigantion";
+                  break;
+                case "COMPLETED":
+                  wonBy =
+                    message.payload.result !== "DRAW" ? "CheckMate" : "Draw";
+                  // console.log(wonBy, "!!! GAME OVER:", payload);
+                  break;
+                case "TIME_OUT":
+                  wonBy = "TimeOut";
+                  break;
+              }
+              setGameStatus(wonBy);
+              localStorage.removeItem("roomData");
+              setRoomId(undefined);
+              chess.reset();
+            }
+            break;
+          case CHAT:
+            setMessages((prev) => [...prev, payload.message]);
+            break;
+          case GAME_ALERT:
+            setConnecting(false);
+            setActiveTab("newgame")
+            setGameAlert(payload.message)
+            break;
+          case GAME_ADDED:
+            {setRoomId(message.gameId)
+            const rmid = message.gameId;
+              const expiryTime = Date.now() + 15 * 60 * 1000; // 15 minutes in ms
+              localStorage.setItem(
+                "roomData",
+                JSON.stringify({ rmid, expiryTime })
+              );
+            setConnecting(true)
+            setActiveTab("play")}
+            break;
+          case NOTIFICATION:
+            // console.log(message.payload);
+            notify(message.payload || "info");
+            break;
+
+          
+        }
+      };
     }
-  };
-}, [socket]);
+    //empty localstorage afte 1 min
+    const stored = localStorage.getItem("roomData");
+    const data = stored ? JSON.parse(stored) : null;
+    if (data && data.expiryTime !== 0) {
+      if (Date.now() > data.expiryTime) {
+        localStorage.removeItem("roomData");
+        console.log("localstorage roomId expired");
+      }
+    }
+    //Reconnection if no RoomId in Localstorage
+    if (roomId !== data?.rmid) {
+      console.log("Reconnection triggered!!!");
+      socket.send(
+        JSON.stringify({
+          type: RECONNECT,
+          payload: {
+            roomId: data.rmid,
+          },
+        })
+      );
+    }
+  }, [socket, chess]);
+
 
 
   return (
     <ChessContext.Provider
       value={{
-        user,
-        setUser,
         Opponent,
         setOpponent,
-        loading,
         gameType,
         setGameType,
         gameStarted,
@@ -139,14 +274,26 @@ useEffect(() => {
         setConnecting,
         roomId,
         setRoomId,
-        socket,
-        setSocket,
         Messages,
         setMessages,
         activeTab, 
         setActiveTab,
         color,
-        setColor
+        setColor,
+        chess,
+        setChess,
+        board,
+        setBoard,
+        moves,
+        setMoves,
+        playerWon,
+        setPlayerWon,
+        gameStatus,
+        setGameStatus,
+        gameAlert,
+        setGameAlert,
+        gameEnded,
+        setGameEnded
       }}
     >
       {children}

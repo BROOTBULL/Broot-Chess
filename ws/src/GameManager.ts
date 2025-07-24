@@ -17,6 +17,8 @@ import { connectionManager } from "./connectionManager";
 import { Game } from "./Game";
 import { getGameFromDb, saveMessageInDb } from "./API_Routes";
 
+export type NotifType="MESSAGE"|"REQUEST"|"CHALLENGE"|"ACCEPT"
+
 export class GameManager {
   private games: Game[]; //game is defined like games:type  where array of Room (where Room is a class name Game).... like x:number[] x is the array of number
   private pendingGameId: string | null;
@@ -212,11 +214,14 @@ export class GameManager {
       console.log("notification recieved");
       
       const player=message.payload.player as User;
+      const roomId=connectionManager.getPlayerIdToRoomId(user.userId)
       connectionManager.sendMessageToUser(player?.id,JSON.stringify({
           type:NOTIFICATION,
           payload:{
            player:player,
-           type:message.payload.type
+           notifType:message.payload.notifType as NotifType,
+           message:message.payload.message as string,
+           roomId:roomId
           }
         }))
      }

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useChessContext } from "../hooks/contextHook";
+import { useUserContext } from "../hooks/contextHook";
 import { useEffect, useState } from "react";
 import { Player } from "../screens/socials";
 export type Status =
@@ -9,7 +9,7 @@ export type Status =
   | "Friend_Request"; // we are talking about player who recieved our req   ...so on behave of his prospective he recieved req or sent req
 
 export const SearchedPlayer = ({ player }: { player: Player }) => {
-  const { user } = useChessContext();
+  const { user } = useUserContext();
   const [status, setStatus] = useState<Status>("Friend_Request");
 
   useEffect(()=>{

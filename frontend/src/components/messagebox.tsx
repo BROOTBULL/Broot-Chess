@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useChessContext } from "../hooks/contextHook";
+import { useChessContext, useUserContext } from "../hooks/contextHook";
 import EmojiPicker from "emoji-picker-react";
 import { motion } from "motion/react";
 
@@ -7,7 +7,8 @@ export const MessageBox = ({fullscreen}:{fullscreen:boolean}) => {
   const CHAT = "chat";
 
   const [text, setText] = useState("");
-  const { user,roomId, socket, Messages } = useChessContext();
+  const {user,socket}=useUserContext()
+  const { roomId, Messages } = useChessContext();
   const sender=user?.id
   const [emojiBox, setEmojiBox] = useState(false);
   const bottomRef = useRef<HTMLDivElement | null>(null);

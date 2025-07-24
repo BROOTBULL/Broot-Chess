@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useChessContext } from "../hooks/contextHook";
+import { useUserContext } from "../hooks/contextHook";
 import axios from "axios";
 
 export const Header = () => {
@@ -19,7 +19,7 @@ export const Header = () => {
 
 export const Header2 = () => {
   const [optionDisplay, setOptionDisplay] = useState<boolean>(false);
-  const {setUser}=useChessContext()
+  const {setUser}=useUserContext()
 
   function handleOptionButton() {
     setOptionDisplay(!optionDisplay);
@@ -136,7 +136,7 @@ export const Header2 = () => {
 export const Header3 = () => {
   const [optionDisplay, setOptionDisplay] = useState<boolean>(false);
   const navigate=useNavigate();
-  const {setUser}=useChessContext()
+  const {setUser}=useUserContext()
   const activetab = window.location.pathname.split('/').filter(Boolean).pop();
   
 
