@@ -1,40 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import { INIT_GAME, User } from "../context/ContextProvider";
-import { NOTIFICATION, NotifType } from "../screens/socials";
 import { useUserContext } from "../hooks/contextHook";
+import { useSendNotification } from "../hooks/NotificationHook";
 
 export const FriendsGame = () => {
- const { friends ,socket} = useUserContext();
-  const navigate=useNavigate()
-
-    async function handleSendNotif( player:User, notifType: NotifType,message:string) {
-      console.log(socket && "socket");
-      if (socket && notifType==="CHALLENGE") 
-        {
-        console.log(player.username, notifType);
-        socket?.send(
-          JSON.stringify({
-            type: INIT_GAME,
-            private: true,
-          })
-        )
-      
-        socket?.send(
-          JSON.stringify({
-            type: NOTIFICATION,
-            payload: {
-              player:player,
-              notifType:notifType,
-              message:message
-            },
-          })
-        )
-  
-      navigate("/game")
-      }
-  
-      
-    }
+ const { friends } = useUserContext();
+ const navigate=useNavigate()
+ const {sendNotification}=useSendNotification()
   return (
     <div className="lg:w-[50%] w-full h-fit my-4 ring-1 ring-zinc-400">
       <div className="flex justify-between m-2 my-1 font-bold">
@@ -67,7 +38,7 @@ export const FriendsGame = () => {
             <span className="text-red-700">2</span>
           </span>
           <div
-            onClick={()=>handleSendNotif(friend,"CHALLENGE","Challenged you for a friendly Rapid Match")}
+            onClick={()=>sendNotification(friend,"CHALLENGE","Challenged you for a friendly Rapid Match")}
             className="bg-zinc-700 w-fit p-2 md:p-3 shadow-md/30 flex flex-row cursor-pointer playButton"
           >
             <span className="text-zinc-200 font-bold text-sm md:text-md">
@@ -75,7 +46,7 @@ export const FriendsGame = () => {
             </span>
           </div>
         </div>)})): (
-            <div className="text-center text-white my-auto text-md">No friends yet</div>
+            <div className="text-center text-zinc-800 text-md h-70 w-full flex items-center justify-center"><div>No friends yet</div></div>
           )}
       </div>
     </div>

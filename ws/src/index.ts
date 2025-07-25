@@ -65,7 +65,7 @@ wss.on("connection", function connection(ws, req) {
     ws.close(4002, "Invalid token");
     return;
   }
-    connectionManager.addUserSocket(user.userId, ws);
+  connectionManager.addUserSocket(user.userId, ws);
   gameManager.addUser(user); //that ws is added in the room as player or pending player
 
   ws.on("error", console.error);

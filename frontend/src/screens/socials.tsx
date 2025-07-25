@@ -5,20 +5,20 @@ import { Profile } from "../components/profile";
 
 import { Trasition } from "../transition";
 import axios from "axios";
-import { useChessContext, useUserContext } from "../hooks/contextHook";
+import { useUserContext } from "../hooks/contextHook";
 import { SearchedPlayer } from "../components/searchedPlayer";
 import { User } from "../context/ContextProvider";
-import { INIT_GAME } from "../context/ContextProvider"
 import { Notification } from "../components/notification";
-import { useNavigate } from "react-router-dom";
+import { useSendNotification } from "../hooks/NotificationHook";
+import { useNotificationRefresh } from "../context/NotificationProvider";
 
 export type FriendStatus = "REJECTED" | "PENDING" | "ACCEPTED";
 export const NOTIFICATION="notification"
 export type MessageType = "MESSAGE" | "ACCEPT" | "REQUEST";
-export type NotifType="MESSAGE"|"REQUEST"|"CHALLENGE"|"ACCEPT"
+export type NotifType="MESSAGE"|"REQUEST"|"CHALLENGE"|"ACCEPT"|""
 
 export type Player = {
-  id: string;
+  id: string;// userId
   username: string;
   name: string | null;
   profile: string | null;
@@ -50,10 +50,11 @@ const Socials = () => {
   const [optionOpen, setOptionOpen] = useState(false);
 
   const {
-    user,
-    socket
+    user
   } = useUserContext();
-  const navigate = useNavigate();
+
+  const { sendNotification} = useSendNotification();
+  const triggerRefresh = useNotificationRefresh();
 
 ////////////////////////// GET FRIENDS LIST LOGIC ///////////////////////////////
 
@@ -68,7 +69,7 @@ const Socials = () => {
     if (search === "") {
       getFriends();
     }
-  }, [search]);
+  }, [triggerRefresh,search]);
 
 /////////////////////////// GET NOTIFICATION LIST LOGIC /////////////////////////////
 
@@ -82,7 +83,7 @@ const Socials = () => {
     };
 
     getNotifications();
-  }, [notifications.length]);
+  }, [triggerRefresh,notifications.length]);
 
  //////////////////////////// SEARCH PLAYER LOGIC /////////////////////////////// 
 
@@ -104,50 +105,19 @@ const Socials = () => {
 
  ////////////////////////// SEND MESSAGE TO SOCIALPAGE LOGIC ///////////////////////
 
-  async function handleMessageSent(e, friendId: string, type: string) {
+  async function handleMessageSent(e, friend: User, type: string) {
     e.preventDefault();
     console.log("message:", message);
     const response = await axios.post("/social/message", {
       message: message,
       user: user,
-      friendId: friendId,
+      friendId: friend.id,
       type: type,
     });
     console.log(response.data.message);
+    sendNotification(friend.id,"MESSAGE",message)
     setMessage("");
-    document.getElementById(friendId)?.classList.add("hidden");
-  }
-
-  ///////////////////////// SEND NOTIFICATION LOGIC /////////////////////////////
-
-  async function handleSendNotif(e, player:User, notifType: NotifType,message:string) {
-    e.preventDefault();
-    console.log(socket && "socket");
-    if (socket && notifType==="CHALLENGE") 
-      {
-      console.log(player.username, notifType);
-      socket?.send(
-        JSON.stringify({
-          type: INIT_GAME,
-          private: true,
-        })
-      )
-    
-      socket?.send(
-        JSON.stringify({
-          type: NOTIFICATION,
-          payload: {
-            player:player,
-            notifType:notifType,
-            message:message
-          },
-        })
-      )
-
-    navigate("/game")
-    }
-
-    
+    document.getElementById(friend.id)?.classList.add("hidden");
   }
 
   ///////////////////// REMOVE FROM FRIEND LIST LOGIC /////////////////////// 
@@ -155,6 +125,7 @@ const Socials = () => {
   async function handleRemoveFriend(userId: string, friendId: string) {
     const removeFriend=await axios.post("/social/deletefriend", { userId: userId, friendId: friendId });
     console.log(removeFriend.data.message);
+    sendNotification(friendId,"","Removed you as friend")
     
     setFriends((prevFriends)=>prevFriends.filter((friend)=> friend.id !== friendId))
   }
@@ -241,7 +212,7 @@ const Socials = () => {
                     </div>
                     <div className="flex flex-row justify-center items-center ml-auto">
                       <div 
-                      onClick={(e)=>handleSendNotif(e,player,"CHALLENGE","Challenged you to a Rapid Match")}
+                      onClick={()=>sendNotification(player.id,"CHALLENGE","Challenged you to a Rapid Match")}
                       className="hover:bg-zinc-700 cursor-pointer p-1 interact-btn rounded-md flex justify-center duration-200">
                         <img
                           className="size-8"
@@ -282,8 +253,8 @@ const Socials = () => {
                     </div>
                     <div className="flex flex-row justify-center items-center ml-auto">
                       <div
-                        onClick={(e) =>
-                          handleSendNotif(e, friend, "CHALLENGE","Challenged you to a Rapid Match")
+                        onClick={() =>
+                          sendNotification( friend.id, "CHALLENGE","Challenged you to a Rapid Match")
                         }
                         className="hover:bg-zinc-700 cursor-pointer p-1 interact-btn rounded-md flex justify-center duration-200"
                       >
@@ -323,7 +294,8 @@ const Socials = () => {
                         <button
                           onClick={(e) => {
                             if (user)
-                              handleMessageSent(e, friend.id, "MESSAGE");
+                              handleMessageSent(e, friend, "MESSAGE")
+
                           }}
                           className=" rounded-full size-10 absolute ml-auto cursor-pointer hover:bg-zinc-500"
                         >

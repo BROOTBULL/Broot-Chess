@@ -1,40 +1,10 @@
-import { useNavigate } from "react-router-dom";
-import { INIT_GAME, User } from "../context/ContextProvider";
+
 import { useUserContext } from "../hooks/contextHook";
-import { NOTIFICATION, NotifType } from "../screens/socials";
+import { useSendNotification } from "../hooks/NotificationHook";
 
 export const Friends = () => {
-  const { friends ,socket} = useUserContext();
-  const navigate=useNavigate()
-
-    async function handleSendNotif( player:User, notifType: NotifType,message:string) {
-      console.log(socket && "socket");
-      if (socket && notifType==="CHALLENGE") 
-        {
-        console.log(player.username, notifType);
-        socket?.send(
-          JSON.stringify({
-            type: INIT_GAME,
-            private: true,
-          })
-        )
-      
-        socket?.send(
-          JSON.stringify({
-            type: NOTIFICATION,
-            payload: {
-              player:player,
-              notifType:notifType,
-              message:message
-            },
-          })
-        )
-  
-      navigate("/game")
-      }
-  
-      
-    }
+  const { friends } = useUserContext();
+  const {sendNotification}=useSendNotification()
 
   return (
     <>
@@ -51,7 +21,7 @@ export const Friends = () => {
                   />
                   {friend.username}
                   <div 
-                  onClick={()=>handleSendNotif(friend,"CHALLENGE","Challenged you for a friendly Rapid Match")}
+                  onClick={()=>sendNotification(friend,"CHALLENGE","Challenged you for a friendly Rapid Match")}
                   className="ml-auto bg-emerald-900 p-2 text-[10px] cursor-pointer hover:bg-emerald-800">
                     Challenge
                   </div>

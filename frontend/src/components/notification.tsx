@@ -102,6 +102,7 @@ export const Notification = ({ setNotifications, notif }: {setNotifications:Reac
     prevMessages.filter((message) => message.id !== id)
   );
   }
+  
 
   function renderBox() {
     switch (notif.messageType) {

@@ -1,20 +1,17 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  ReactNode,
-} from "react";
-import {motion} from "motion/react"
-import { User } from "./ContextProvider";
+import React, { createContext, useContext, useState, ReactNode } from "react";
+import { motion } from "motion/react";
+import { User } from "./userProvider";
 import { NotifType } from "../screens/socials";
 import { useUserContext } from "../hooks/contextHook";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useSendNotification } from "../hooks/NotificationHook";
 
 const JOINROOM = "joinroom";
 
 type Notification = {
   id: number;
-  player: User;
+  sender: User;
   notifType: NotifType;
   message: string;
   roomId?: string;
@@ -22,72 +19,111 @@ type Notification = {
 
 interface NotificationContextType {
   notify: (notif: Omit<Notification, "id">) => void;
+  triggerRefresh: boolean;
 }
 
-
-const NotificationContext = createContext<
-  NotificationContextType | undefined
->(undefined);
+const NotificationContext = createContext<NotificationContextType | undefined>(
+  undefined
+);
 
 export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [triggerRefresh, setTriggerRefresh] = useState(false);
 
-const notify = (notif: Omit<Notification, "id">) => {
-  const id = Date.now(); // generate unique id
-  setNotifications((prev) => [...prev, { id, ...notif }]);
-  // remove it after 15 seconds
-  setTimeout(() => {
+  const notify = (notif: Omit<Notification, "id">) => {
+    const id = Date.now(); // generate unique id
+    setNotifications((prev) => [...prev, { id, ...notif }]);
+    setTriggerRefresh((prev) => !prev);
+    // remove it after 15 seconds
+    setTimeout(() => {
+      setNotifications((prev) => prev.filter((n) => n.id !== id));
+    }, 15000);
+  };
+
+  const removeNotification = (id: number) => {
     setNotifications((prev) => prev.filter((n) => n.id !== id));
-  }, 15000);
-};
+  };
 
-const removeNotification = (id: number) => {
-  setNotifications((prev) => prev.filter((n) => n.id !== id));
-};
-
-function renderButton(notifType:NotifType,roomId:string,id: number,remove: (id: number) => void)
-{
-  switch(notifType)
-  {
-    case "CHALLENGE":
-    return <ChallengeButtons roomId={roomId} notifId={id} onRemove={remove}/>;
-    case "REQUEST":
-    return<RequestButtons/>;
-    case "MESSAGE":
-    return(<div>Reply</div>);
-    case "ACCEPT":
-    default:
-      return(<></>)
+  function renderButton(
+    notifType: NotifType,
+    roomId: string,
+    id: number,
+    remove: (id: number) => void,
+    sender: User,
+    messageId: string
+  ) {
+    switch (notifType) {
+      case "CHALLENGE":
+        return (
+          <ChallengeButtons roomId={roomId} notifId={id} onRemove={remove} />
+        );
+      case "REQUEST":
+        return (
+          <RequestButtons
+            notifId={id}
+            onRemove={remove}
+            sender={sender}
+            messageId={messageId}
+          />
+        );
+      case "MESSAGE":
+        return (
+          <div className="h-full min-h-24 w-[20%] ml-auto flex items-center justify-center">
+            <div onClick={()=>{
+               const form = document.getElementById(sender.userId);
+                             form?.classList.toggle("hidden");
+            }} className="cursor-pointer text-zinc-100 hover:text-zinc-300">
+              Reply
+            </div>
+          </div>
+        );
+      case "ACCEPT":
+      default:
+        return <></>;
+    }
   }
-}
-
 
   return (
-    <NotificationContext.Provider value={{ notify }}>
+    <NotificationContext.Provider value={{ notify,triggerRefresh }}>
       {children}
 
-      <div
-       className="fixed top-4 right-4 z-[9999] space-y-2">
+      <div className="fixed top-4 right-4 z-[9999] space-y-2">
         {notifications.map((n) => (
           <motion.div
-           initial={{ opacity: 0.5, x: 100 }}      // start off right and invisible
-           animate={{ opacity: 1, x: 0 }}        // slide in to position
-           exit={{ opacity: 0.5, x: 100 }}         // slide out to right again
-           transition={{ duration: 0.2 }}
+            initial={{ opacity: 0.5, x: 100 }} // start off right and invisible
+            animate={{ opacity: 1, x: 0 }} // slide in to position
+            exit={{ opacity: 0.5, x: 100 }} // slide out to right again
+            transition={{ duration: 0.2 }}
             key={n.id}
-            className={`bg-zinc-800 h-25 w-120 rounded-2xl text-white shadow-2xl/70`}>
-        <div className="h-full w-full flex flex-row p-2">
-            <div className="rounded-lg h-full aspect-square border-2 border-zinc-700">
-                <img className="h-full" src={n.player.profile||"./media/userW.png"} alt="" />
+            className={`bg-zinc-800 min-h-25 h-fit w-120 rounded-2xl text-white shadow-2xl/70`}
+          >
+            <div className="h-full w-full flex flex-row p-2">
+              <div className="rounded-lg h-full aspect-square border-2 border-zinc-700">
+                <img
+                  className="h-full max-h-22"
+                  src={n.sender.profile || "./media/userW.png"}
+                  alt=""
+                />
+              </div>
+              <div className="bg-zinc-800 p-2 max-w-[80%] w-fit h-full min-h-24 flex flex-col justify-center">
+                <div className="text-lg font-bold text-zinc-200 ">
+                  {n.sender.name}
+                </div>
+                <div className="text-sm text-zinc-300 ">
+                  {n.notifType === "REQUEST"
+                    ? "Sent a Friend Request"
+                    : n.message}
+                </div>
+              </div>
+              {renderButton(
+                n.notifType,
+                n.roomId as string,
+                n.id,
+                removeNotification,
+                n.sender,
+                n.message
+              )}
             </div>
-            <div className="bg-zinc-800 p-2 max-w-[80%] w-fit h-full flex flex-col justify-center">
-                <div className="text-lg font-bold text-zinc-200 ">{n.player.username}</div>
-                <div className="text-sm text-zinc-400 ">{n.message}</div>
-
-            </div>
-            {renderButton(n.notifType, n.roomId as string, n.id, removeNotification)}
-
-        </div>
           </motion.div>
         ))}
       </div>
@@ -98,30 +134,37 @@ function renderButton(notifType:NotifType,roomId:string,id: number,remove: (id: 
 export const useNotification = () => {
   const context = useContext(NotificationContext);
   if (!context) {
-    throw new Error("useNotification must be used within a NotificationProvider");
+    throw new Error(
+      "useNotification must be used within a NotificationProvider"
+    );
   }
   return context.notify;
 };
 
+export const useNotificationRefresh = () => {
+  const context = useContext(NotificationContext);
+  if (!context) {
+    throw new Error("useNotificationRefresh must be used within a NotificationProvider");
+  }
+  return context.triggerRefresh;
+};
 
-
-const ChallengeButtons =({
+const ChallengeButtons = ({
   roomId,
   notifId,
-  onRemove
+  onRemove,
 }: {
   roomId: string;
   notifId: number;
   onRemove: (id: number) => void;
-}) =>{
+}) => {
   console.log(roomId);
-  
-  const {socket}=useUserContext()
-  const navigate=useNavigate()
 
-  
-   function handleAccept() {
-    if(roomId)
+  const { socket } = useUserContext();
+  const navigate = useNavigate();
+
+  function handleAccept() {
+    if (roomId)
       socket?.send(
         JSON.stringify({
           type: JOINROOM,
@@ -134,37 +177,74 @@ const ChallengeButtons =({
     navigate("/game");
   }
 
-  return(<div className="h-full w-[25%] ml-auto">
-                <div 
-                onClick={()=>handleAccept()}
-                className="text-sm text-zinc-100 bg-emerald-800 rounded-tr-lg rounded-[2px] p-2 px-4 cursor-pointer hover:bg-emerald-700 m-1">
-                    Accept
-                </div>
-                <div className="text-sm text-zinc-100 bg-zinc-700 rounded-br-lg rounded-[2px] p-2 px-4 cursor-pointer hover:bg-zinc-600 m-1 ">
-                    <img className="size-5 rotate-45 mx-auto" src="./media/plus.png" alt="" />
-                </div>
-          </div>
-  )
-}
+  return (
+    <div className="h-full w-[20%] ml-auto">
+      <div
+        onClick={() => handleAccept()}
+        className="text-sm text-zinc-100 text-center bg-emerald-800 rounded-tr-lg rounded-[2px] p-2 px-4 cursor-pointer hover:bg-emerald-700 m-1"
+      >
+        Accept
+      </div>
+      <div className="text-sm text-zinc-100 text-center bg-zinc-700 rounded-br-lg rounded-[2px] p-2 px-4 cursor-pointer hover:bg-zinc-600 m-1 ">
+        <img
+          className="size-5 rotate-45 mx-auto"
+          src="./media/plus.png"
+          alt=""
+        />
+      </div>
+    </div>
+  );
+};
 
-const RequestButtons =()=>{
+const RequestButtons = ({
+  sender,
+  onRemove,
+  notifId,
+  messageId,
+}: {
+  sender: User;
+  onRemove: (id: number) => void;
+  notifId: number;
+  messageId: string;
+}) => {
+  const { user } = useUserContext();
+  const { sendNotification } = useSendNotification();
 
-  
-  function handleAcceptReq()
-  {
-
+  async function handleRequest(player: User) {
+    const response = await axios.post("/social/reqPlayer", {
+      senderId: user?.id,
+      receiverId: player.userId,
+    });
+    const responseReqMessage = await axios.post("/social/message", {
+      message: "Accepted your Friend Request",
+      user: user,
+      friendId: player.userId,
+      type: "ACCEPT",
+    });
+    sendNotification(sender.userId, "ACCEPT", "Accepted your Friend Request");
+    sendNotification(user?.id as string, "ACCEPT", `You and ${sender.name} are Friends Now`);
+    const responseDeleteMessage = await axios.post("/social/deletemessage", {
+      messageId: messageId,
+    });
+    console.log(responseDeleteMessage);
+    console.log(response.data.message, " ", responseReqMessage.data.message);
+    onRemove(notifId);
   }
 
-  return(
-               <div className="h-full w-[25%]">
-                <div 
-                onClick={()=>handleAcceptReq()}
-                className="text-sm text-zinc-100 bg-emerald-800 rounded-tr-lg rounded-[2px] p-2 px-4 cursor-pointer hover:bg-emerald-700 m-1">
-                    Accept
-                </div>
-                <div className="text-sm text-zinc-100 bg-zinc-700 rounded-br-lg rounded-[2px] p-2 px-4 cursor-pointer hover:bg-zinc-600 m-1 ">
-                    Decline
-                </div>
-            </div>
-  )
-}
+  return (
+    <div className="h-full w-[25%] ml-auto">
+      <div
+        onClick={() => handleRequest(sender)}
+        className="text-sm text-zinc-100  text-center bg-emerald-800 rounded-tr-lg rounded-[2px] p-2 px-4 cursor-pointer hover:bg-emerald-700 m-1 "
+      >
+        Accept
+      </div>
+      <div
+        onClick={() => onRemove(notifId)}
+        className="text-sm text-zinc-100 text-center bg-zinc-700 rounded-br-lg rounded-[2px] p-2 px-4 cursor-pointer hover:bg-zinc-600 m-1 "
+      >
+        Decline
+      </div>
+    </div>
+  );
+};

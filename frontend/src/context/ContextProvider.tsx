@@ -5,7 +5,8 @@ import { Chess, Move, Piece, Square } from "chess.js";
 import { useUserContext } from "../hooks/contextHook";
 
 export interface User {
-  id: string;
+  id: string;//id for backend processes 
+  userId:string;//userId for ws processes
   username: string;
   name: string;
   email: string;
@@ -108,7 +109,7 @@ const notify = useNotification();
       socket.onmessage = (e) => {
         const message = JSON.parse(e.data);
         const payload = message.payload;
-        // console.log("message recieved:", message);
+        console.log("message recieved:", message);
 
         switch (message.type) {
           case INIT_GAME:
