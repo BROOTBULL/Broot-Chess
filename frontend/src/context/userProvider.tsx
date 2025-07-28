@@ -24,6 +24,10 @@ interface UserContextProviderType {
 }
 
 
+axios.defaults.withCredentials = true;
+axios.defaults.baseURL = "https://broot-chess-backend.onrender.com";
+
+
 export const UserContext = createContext<UserContextProviderType | undefined>(undefined);
 
 export const UserContextProvider = ({ children }: { children: ReactNode }) => {
