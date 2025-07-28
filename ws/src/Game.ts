@@ -3,11 +3,11 @@ import { randomUUID } from "crypto";
 import { User } from ".";
 import { connectionManager } from "./connectionManager";
 import { GAME_OVER, INIT_GAME, MOVE, GAME_ENDED } from "./messages";
-import { createGameInDb, saveMovesInDb } from "./API_Routes";
+import { createGameInDb, endGameDB, saveMovesInDb } from "./API_Routes";
 
-type GAME_RESULT = "WHITE_WINS" | "BLACK_WINS" | "DRAW";
-type GAME_STATUS = 'IN_PROGRESS' | 'COMPLETED' | 'ABANDONED' | 'TIME_UP' | 'PLAYER_EXIT';
-type timeControl =  "CLASSICAL" | "RAPID" | "BLITZ" ;
+export type GAME_RESULT = "WHITE_WINS" | "BLACK_WINS" | "DRAW";
+export type GAME_STATUS = 'IN_PROGRESS' | 'COMPLETED' | 'ABANDONED' | 'TIME_UP' | 'PLAYER_EXIT';
+export type timeControl =  "CLASSICAL" | "RAPID" | "BLITZ" ;
 export type gamedata ={
       id:string,
       timeControl:timeControl,
@@ -24,7 +24,7 @@ export class Game {
   public player2Id: string | null;
   public result: GAME_RESULT | null = null;
   public board: Chess;
-  private moveCount = 0;  
+  public moveCount :number 
   private startTime = new Date(Date.now());
 
   constructor(player1Id: string, player2Id: string | null, RoomId?: string) {
@@ -32,6 +32,7 @@ export class Game {
     this.player1Id = player1Id;
     this.player2Id = player2Id;
     this.board = new Chess();
+    this.moveCount=0;
   }
 
   PushSecondPlayer(user:User)
@@ -109,7 +110,7 @@ export class Game {
       console.error("Error while making move", e);
       return;
     }
-    this.moveCount++;
+    ++this.moveCount;
 
 
     await saveMovesInDb(this.RoomId,move,this.board.fen(),this.moveCount)
@@ -136,6 +137,8 @@ export class Game {
   }
 
   async endGame(status: GAME_STATUS, result: string) {
+
+    const updategame=await endGameDB(this.RoomId,status,result)
 
     connectionManager.sendMessageToAll(
       this.RoomId,

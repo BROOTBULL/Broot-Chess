@@ -23,7 +23,7 @@ export const verifyToken = async (
 
   try {
     if (!token) {
-      console.log("no token recieved!!");
+      //console.log("no token recieved!!");
       res
         .status(401)
         .json({ seccess: false, message: "Unauthorised - no token provided" });
@@ -33,9 +33,9 @@ export const verifyToken = async (
           "JWT_SECRET is not defined in the environment variables"
         );
       }
-      console.log("token recieved!!");
+      //console.log("token recieved!!");
       const tokenVerify = jwt.verify(token, secret);
-      console.log("token verify: ",tokenVerify);
+      //console.log("token verify: ",tokenVerify);
       
       if (!tokenVerify) {
         res.status(401).json({
@@ -49,7 +49,7 @@ export const verifyToken = async (
       next();
     }
   } catch (err) {
-    console.log("error in verifytoken", err);
+    //console.log("error in verifytoken", err);
     res.status(500).json({ success: false, message: "Something went wrong" });
     return;
   }

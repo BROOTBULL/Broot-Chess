@@ -3,16 +3,18 @@ import { useChessContext } from "../hooks/contextHook";
 import { MessageBox } from "./messagebox";
 
 const EXIT_GAME = "exit_game";
+const UNDO_MOVE ="undo_move"
 
 export const Play = ({
   moves,
   socket,
 }: {
   moves: string[];
-  socket: WebSocket|null;
+  socket: WebSocket | null;
 }) => {
-  const { connecting, roomId } = useChessContext();
+  const { connecting, roomId,undoBox,setUndoBox,waitingResponse,setWaitingResponse } = useChessContext();
   const [resignBox, setResignBox] = useState<boolean>(false);
+
 
   if (connecting)
     return (
@@ -34,7 +36,21 @@ export const Play = ({
         },
       })
     );
-    setResignBox(false)
+    setResignBox(false);
+  }
+
+  function handleUndoReq() {
+    setWaitingResponse(true);
+    console.log(roomId);
+    if(roomId)
+    socket?.send(
+      JSON.stringify({
+        type: UNDO_MOVE,
+        payload: {
+          gameId: roomId,
+        },
+      })
+    );
   }
 
   return (
@@ -82,7 +98,41 @@ export const Play = ({
           </div>
 
           <div className="flex flex-row items-center bg-zinc-800  font-[500] text-center mt-auto">
-            <div className="flex items-center justify-center h-7 text-sm hover:bg-zinc-600 duration-200 bg-zinc-700 m-1 px-2 rounded-sm text-zinc-200 w-fit cursor-pointer">
+            <div
+              className={`${
+                undoBox ? " max-h-25 " : " max-h-0 "
+              }bg-zinc-700 h-25 w-50 absolute mb-36 m-1 rounded-md flex flex-col justify-center items-center overflow-hidden duration-200`}
+            >
+            {waitingResponse ? (
+                <div className="flex flex-row justify-center m-1 w-[80%]">
+                  <div className="text-zinc-200">
+                    Waiting for Opponent Response...
+                  </div>
+                </div>
+              ) : (<>
+              <div className="text-sm text-zinc-300 mt-1">
+                Request to revert your last move?
+              </div>
+                <div className="flex flex-row justify-center gap-3 m-1 w-[80%]">
+                  <div
+                    onClick={() => handleUndoReq()}
+                    className="bg-teal-950 text-zinc-200 p-1 px-2 cursor-pointer duration-200 hover:bg-teal-900 rounded-md flex-1"
+                  >
+                    Yes
+                  </div>
+                  <div
+                    onClick={() => setUndoBox(!undoBox)}
+                    className="bg-rose-950/50 p-1 text-zinc-200 px-2 cursor-pointer rounded-md hover:bg-rose-900 duration-200 shadow-md flex-1"
+                  >
+                    No
+                  </div>
+                </div>
+              </>)}
+            </div>
+            <div
+              onClick={() => setUndoBox(!undoBox)}
+              className="flex items-center justify-center h-7 text-sm hover:bg-zinc-600 duration-200 bg-zinc-700 m-1 px-2 rounded-sm text-zinc-200 w-fit cursor-pointer"
+            >
               <img className="size-5 mr-2" src="./media/takeback.png" alt="" />{" "}
               Request undo
             </div>
@@ -107,9 +157,10 @@ export const Play = ({
                 >
                   <img className="size-5" src="./media/yes.png" alt="" />
                 </div>
-                <div 
-                onClick={()=>setResignBox(false)}
-                className="bg-rose-950/50 p-1 px-2 cursor-pointer rounded-md hover:bg-rose-800 duration-200 shadow-md">
+                <div
+                  onClick={() => setResignBox(false)}
+                  className="bg-rose-950/50 p-1 px-2 cursor-pointer rounded-md hover:bg-rose-800 duration-200 shadow-md"
+                >
                   <img
                     className="size-5 rotate-45"
                     src="./media/plus.png"

@@ -10,6 +10,7 @@ import { History } from "../components/historyBox";
 import { Friends } from "../components/friendsBox";
 import { Play } from "../components/playBox";
 import { AnimatePresence, motion } from "motion/react";
+import { UNDO_MOVE_APPROVE } from "../context/ContextProvider";
 
 export const StartFen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
 
@@ -19,6 +20,7 @@ const ChessGame = () => {
   const navigate = useNavigate();
   const {user,setUser,socket}=useUserContext()
   const {
+    roomId,
     gameStarted,
     Opponent,
     setOpponent,
@@ -33,7 +35,9 @@ const ChessGame = () => {
     gameEnded,
     setGameEnded,
     gameAlert,
-    setGameAlert
+    setGameAlert,
+    undoRequested,
+    setUndoRequested
 
   } = useChessContext();
   const { username, rating, profile } = user!;
@@ -61,7 +65,7 @@ const ChessGame = () => {
 
   function handleClose()
   {
-    setGameEnded(false)
+    setUndoRequested(false)
   }
 
   function renderComponent() {
@@ -84,6 +88,23 @@ const ChessGame = () => {
   function handleSetting() {
     setSetting(!setting);
     document.getElementById("setting")?.classList.toggle("rotate-[45deg]");
+  }
+
+  function handleUndoReq(choice:boolean)
+  {
+    console.log("roomId",roomId);
+
+     socket?.send(
+      JSON.stringify({
+        type: UNDO_MOVE_APPROVE,
+        payload: {
+          gameId:roomId,
+          color: color=="white"?"w":"b",
+          choice:choice
+        },
+      })
+    );
+
   }
 
   async function handleLogout() {
@@ -210,9 +231,48 @@ const ChessGame = () => {
               </div>
             </motion.div>}
            </AnimatePresence>
+                         {/* ///////////////// take back one move logic ////////////////////// */}
+           <AnimatePresence>
+            {
+             undoRequested &&
+             <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -30 }}
+              transition={{ duration: 0.2 }}
+              className={`absolute w-[82%] aspect-square z-50 rounded-lg p-1 justify-center items-center flex`}
+            >
+              <div
+                className={`w-60 h-40 z-50 flex bg-zinc-800 rounded-lg p-1 flex-col `}
+              >
+                <div className="text-2xl text-zinc-200 font-bold mt-5 text-center flex flex-col justify-center items-center">
+                  Undo Request
+                  <div className="text-[12px] text-zinc-400 font-bold w-[60%] text-center mt-1">
+                  Broot wants to revert their move
+                  </div>
+                </div>
+              
+              <img 
+              onClick={handleClose}
+              className="absolute size-7 flex z-50 self-end rotate-45 invert cursor-pointer hover:drop-shadow-[0px_0px_2px] hover:drop-shadow-zinc-500" 
+              src="./media/closeOption.png" 
+              alt="" 
+              />
+                
+              <div className=" w-[80%] flex mx-auto justify-center  ">
+                <div 
+                onClick={()=>handleUndoReq(true)}
+                className="text-sm text-zinc-200 font-bold p-2 m-3 rounded-md text-center bg-emerald-900 playButton cursor-pointer flex-1">Accept</div>
+                <div 
+                onClick={()=>handleUndoReq(false)}
+                className="text-sm text-zinc-200 font-bold p-2 m-3 rounded-md text-center bg-zinc-700 cursor-pointer flex-1">Reject</div>
+              </div>
+              </div>
+            </motion.div>}
+           </AnimatePresence>
 
             <PlayerInfo
-              userName={Opponent?.name || "Opponent"}
+              userName={Opponent?.username || "Opponent"}
               rating={Opponent?.rating || 500}
               color={color}
               profile={Opponent?.profile || "../../public/media/userW.png"}

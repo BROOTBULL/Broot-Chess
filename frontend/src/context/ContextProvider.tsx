@@ -5,8 +5,8 @@ import { Chess, Move, Piece, Square } from "chess.js";
 import { useUserContext } from "../hooks/contextHook";
 
 export interface User {
-  id: string;//id for backend processes 
-  userId:string;//userId for ws processes
+  id: string; //id for backend processes
+  userId: string; //userId for ws processes
   username: string;
   name: string;
   email: string;
@@ -22,9 +22,10 @@ export const GAME_ENDED = "game_ended";
 export const RECONNECT = "reconnect";
 export const GAME_JOINED = "game_joined";
 export const CHAT = "chat";
-export const GAME_ALERT="game_alert"
-export const GAME_ADDED="game_added"
-
+export const GAME_ALERT = "game_alert";
+export const GAME_ADDED = "game_added";
+export const UNDO_MOVE = "undo_move";
+export const UNDO_MOVE_APPROVE = "undo_move_approve";
 
 interface ChessContextType {
   Opponent: User | null;
@@ -38,38 +39,43 @@ interface ChessContextType {
   roomId: string | undefined;
   setRoomId: React.Dispatch<React.SetStateAction<string | undefined>>;
   Messages: Message[];
-  setMessages: React.Dispatch<React.SetStateAction<Message[]>>
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   activeTab: Tab;
-  setActiveTab: React.Dispatch<React.SetStateAction<Tab>>
+  setActiveTab: React.Dispatch<React.SetStateAction<Tab>>;
   color: string;
-  setColor: React.Dispatch<React.SetStateAction<string>>
+  setColor: React.Dispatch<React.SetStateAction<string>>;
   chess: Chess;
-  setChess: React.Dispatch<React.SetStateAction<Chess>>
+  setChess: React.Dispatch<React.SetStateAction<Chess>>;
   board: (Piece | null)[][];
-  setBoard: React.Dispatch<React.SetStateAction<(Piece | null)[][]>>
-  moves: string[];
-  setMoves: React.Dispatch<React.SetStateAction<string[]>>
-  playerWon: string|undefined;
-  setPlayerWon: React.Dispatch<React.SetStateAction<string|undefined>>
-  gameStatus: string|undefined;
-  setGameStatus: React.Dispatch<React.SetStateAction<string|undefined>>
-  gameAlert: string|undefined;
-  setGameAlert: React.Dispatch<React.SetStateAction<string|undefined>>
+  setBoard: React.Dispatch<React.SetStateAction<(Piece | null)[][]>>;
+   moves: string[];
+  setMoves: React.Dispatch<React.SetStateAction<string[]>>;
+  playerWon: string | undefined;
+  setPlayerWon: React.Dispatch<React.SetStateAction<string | undefined>>;
+  gameStatus: string | undefined;
+  setGameStatus: React.Dispatch<React.SetStateAction<string | undefined>>;
+  gameAlert: string | undefined;
+  setGameAlert: React.Dispatch<React.SetStateAction<string | undefined>>;
   gameEnded: boolean;
   setGameEnded: React.Dispatch<React.SetStateAction<boolean>>;
-
+  undoRequested: boolean;
+  setUndoRequested: React.Dispatch<React.SetStateAction<boolean>>;
+  undoBox: boolean;
+  setUndoBox: React.Dispatch<React.SetStateAction<boolean>>;
+  waitingResponse: boolean;
+  setWaitingResponse: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 type GameType = "blitz" | "rapid" | "daily" | "";
 type Message = { sender: string; message: string };
-  type Tab = "newgame" | "history" | "friends" | "play";
+type Tab = "newgame" | "history" | "friends" | "play";
 
-
-export const ChessContext = createContext<ChessContextType | undefined>(undefined);
+export const ChessContext = createContext<ChessContextType | undefined>(
+  undefined
+);
 
 export const ContextProvider = ({ children }: { children: ReactNode }) => {
-
-  const {user,socket}=useUserContext()
+  const { user, socket } = useUserContext();
 
   const [roomId, setRoomId] = useState<string | undefined>(undefined);
   const [Opponent, setOpponent] = useState<User | null>(null);
@@ -81,26 +87,28 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
   const [color, setColor] = useState("white");
   const [chess, setChess] = useState(new Chess());
   const [board, setBoard] = useState<(Piece | null)[][]>(chess.board());
-  const [moves, setMoves] = useState<string[]>([]);  
+  const [moves, setMoves] = useState<string[]>([]);
   const [playerWon, setPlayerWon] = useState<string | undefined>();
   const [gameStatus, setGameStatus] = useState<string | undefined>();
   const [gameEnded, setGameEnded] = useState(false);
-  const [gameAlert,setGameAlert]=useState<string|undefined>();
+  const [gameAlert, setGameAlert] = useState<string | undefined>();
+  const [undoRequested, setUndoRequested] = useState(false);
+  const [undoBox, setUndoBox] = useState<boolean>(false);
+  const [waitingResponse, setWaitingResponse] = useState<boolean>(false);
 
-function isPromoting(chess: Chess, from: Square, to: Square) {
-  const piece = chess.get(from);
+  function isPromoting(chess: Chess, from: Square, to: Square) {
+    const piece = chess.get(from);
 
-  if (!piece || piece.type !== "p") return false;
+    if (!piece || piece.type !== "p") return false;
 
-  // White pawn reaching 8th rank or black pawn reaching 1st
-  return (
-    (piece.color === "w" && to.endsWith("8")) ||
-    (piece.color === "b" && to.endsWith("1"))
-  );
-}
+    // White pawn reaching 8th rank or black pawn reaching 1st
+    return (
+      (piece.color === "w" && to.endsWith("8")) ||
+      (piece.color === "b" && to.endsWith("1"))
+    );
+  }
 
-
-const notify = useNotification();
+  const notify = useNotification();
 
   useEffect(() => {
     if (!socket) {
@@ -122,7 +130,9 @@ const notify = useNotification();
               setGameStarted(true);
               setOpponent(isUser ? payload.BlackPlayer : payload.WhitePlayer);
               setRoomId(payload.RoomId);
-              setActiveTab("play")
+              setMessages([])
+              setMoves([])
+              setActiveTab("play");
 
               //Room Id in localStorage logic with expiary
               const rmid = payload.RoomId;
@@ -170,12 +180,12 @@ const notify = useNotification();
               setGameStarted(true);
               setOpponent(isUser ? payload.BlackPlayer : payload.WhitePlayer);
               setRoomId(payload.RoomId);
-              setMessages(payload.chat)
-              chess.load(payload.fen)
-              const newBoard=chess.board()
+              setMessages(payload.chat);
+              chess.load(payload.fen);
+              const newBoard = chess.board();
               setBoard(newBoard);
-              const moveTo=(payload.moves as Move[]).map((move)=>move.to)
-              setMoves(moveTo)
+              const moveTo = (payload.moves as Move[]).map((move) => move.to);
+              setMoves(moveTo);
 
               // console.log("Game Rejoined successfully..!!!");
               // console.log("roomId:", payload.RoomId);
@@ -214,26 +224,40 @@ const notify = useNotification();
             break;
           case GAME_ALERT:
             setConnecting(false);
-            setActiveTab("newgame")
-            setGameAlert(payload.message)
+            setActiveTab("newgame");
+            setGameAlert(payload.message);
             break;
           case GAME_ADDED:
-            {setRoomId(message.gameId)
-            const rmid = message.gameId;
+            {
+              setRoomId(message.gameId);
+              const rmid = message.gameId;
               const expiryTime = Date.now() + 15 * 60 * 1000; // 15 minutes in ms
               localStorage.setItem(
                 "roomData",
                 JSON.stringify({ rmid, expiryTime })
               );
-            setConnecting(true)
-            setActiveTab("play")}
+              setConnecting(true);
+              setActiveTab("play");
+            }
             break;
           case NOTIFICATION:
             // console.log(message.payload);
             notify(message.payload || "info");
             break;
-
-          
+          case UNDO_MOVE:
+            setUndoRequested(payload.requestingPlayerId !== user?.id);
+            break;
+          case UNDO_MOVE_APPROVE:
+            {
+              chess.load(payload.revertedfen);
+              const newBoard = chess.board();
+              setBoard(newBoard);
+              
+              setWaitingResponse(false)
+              setUndoBox(false)
+              setUndoRequested(false);
+            }
+            break;
         }
       };
     }
@@ -260,8 +284,6 @@ const notify = useNotification();
     }
   }, [socket, chess]);
 
-
-
   return (
     <ChessContext.Provider
       value={{
@@ -277,7 +299,7 @@ const notify = useNotification();
         setRoomId,
         Messages,
         setMessages,
-        activeTab, 
+        activeTab,
         setActiveTab,
         color,
         setColor,
@@ -294,7 +316,12 @@ const notify = useNotification();
         gameAlert,
         setGameAlert,
         gameEnded,
-        setGameEnded
+        setGameEnded,
+        undoRequested,
+        setUndoRequested,
+        undoBox,setUndoBox,
+        waitingResponse,
+        setWaitingResponse
       }}
     >
       {children}

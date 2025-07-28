@@ -3,7 +3,7 @@ import { useChessContext, useUserContext } from "../hooks/contextHook";
 import EmojiPicker from "emoji-picker-react";
 import { motion } from "motion/react";
 
-export const MessageBox = ({fullscreen}:{fullscreen:boolean}) => {
+export const MessageBox = () => {
   const CHAT = "chat";
 
   const [text, setText] = useState("");

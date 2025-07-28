@@ -5,6 +5,8 @@ import prisma from "../db";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { verifyToken } from "./verifyToken";
+import bcrypt from "bcrypt"; 
+
 
 dotenv.config();
 
@@ -50,7 +52,7 @@ router.get("/checkAuth", verifyToken, async (req: Request, res: Response) => {
 
 
     if (!userDb) {
-      console.log("no user found");
+      //console.log("no user found");
 
      res.status(400).json({ success: true, message: "User not found" });
      return;
@@ -71,57 +73,74 @@ router.get("/checkAuth", verifyToken, async (req: Request, res: Response) => {
       UserDetails,isAuthanticated:true
     });
   } catch (error) {
-    console.log("Error in checkAuth", error);
+    //console.log("Error in checkAuth", error);
     res.status(401).json({ success: false, message: "Unauthorized" }); 
   }
 });
 
 // login guest if reload or revisit
 
+
 router.post("/login", async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+
   if (!secret) {
     throw new Error("JWT_SECRET is not defined in the environment variables");
   }
-  if (req.user) {
-    const user = req.user as UserDetails;
 
-    // Token is issued so it can be shared b/w HTTP and ws server
-    // Todo: Make this temporary and add refresh logic here
+  if (!email || !password) {
+    res.status(400).json({ success: false, message: "Email and password are required." });
+    return ;
+  }
 
-    const userDb = await prisma.user.findFirst({
-      where: {
-        id: user.id,
-      },
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email },
     });
 
-    const token = jwt.sign({ userId: user.id, name: userDb?.name ,rating:user.rating,profile:userDb?.profile }, secret);
-    res.json({
-      token,
-      id: user.id,
-      name: userDb?.name,
-    });
-  } else if (req.cookies && req.cookies.guest) {
-    const decoded = jwt.verify(req.cookies.guest, secret) as userjwtClaims;
+    if (!user) {
+      res.status(401).json({ success: false, message: "User not found." });
+      return ;
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password as string);
+
+    if (!isMatch) {
+      res.status(401).json({ success: false, message: "Incorrect password." });
+      return ;
+    }
+
     const token = jwt.sign(
-      { userId: decoded.userId, name: decoded.name, rating:decoded.rating},
-      secret
+      { userId: user.id, name: user.name, rating: user.rating, profile: user.profile },
+      secret,
+      { expiresIn: "1d" }
     );
-    let User: UserDetails = {
-      id: decoded.userId,
-      name: decoded.name,
-      username:decoded.username!,
-      profile:decoded.profile!,
-      email:decoded.email,
-      rating:decoded.rating,
-      token: token,
+
+    const userDetails: UserDetails = {
+      id: user.id,
+      username: user.username!,
+      name: user.name!,
+      email: user.email!,
+      profile: user.profile!,
+      rating: user.rating,
+      token,
       isGuest: false,
     };
-    res.cookie("token", token, { maxAge: 24 * 60 * 60 * 1000 });
-    res.json(User);
-  } else {
-    res.status(401).json({ success: false, message: "Unauthorized" });
+
+    res.cookie("token", token, {
+      maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+    });
+
+    res.json(userDetails);
+  } catch (err) {
+    console.error("Login error:", err);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 });
+
 
 // login with google
 
@@ -137,7 +156,7 @@ router.get(
   (req, res) => {
     // ✅ req.user is available here from the passport callback
     const user = req.user as UserDetails;
-    console.log("user in backend: ",user);
+    //console.log("user in backend: ",user);
     
 
     if (!secret) {
@@ -167,47 +186,82 @@ router.get(
 // Player signUp in game
 
 router.post("/signUp", async (req: Request, res: Response) => {
-  const bodyData = req.body;
-  console.log(req.body);
-  let guestUUID = "guest-" + uuidv4();
+  try {
+    const bodyData = req.body;
 
-  const user = await prisma.user.create({
-    data: {
-      username: bodyData.username,
-      email: bodyData.email,
-      profile:bodyData.profile,
-      name: bodyData.username || guestUUID,
-      rating:500,
-      password: bodyData.password,
-      provider: "EMAIL",
-    },
-  });
-  if (!secret) {
-    throw new Error("JWT_SECRET is not defined in the environment variables");
+    if (!secret) {
+      throw new Error("JWT_SECRET is not defined in the environment variables");
+    }
+
+    // Check for required fields
+    if (!bodyData.email || !bodyData.password || !bodyData.username) {
+       res.status(400).json({ message: "Email, username, and password are required." });
+       return
+    }
+
+    // Check if user already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { email: bodyData.email },
+    });
+
+    if (existingUser) {
+      res.status(409).json({ message: "User with this email already exists." });
+    return 
   }
-  const token = jwt.sign(
-    { userId: user.id, name: user.name, rating:user.rating,profile:user.profile },
-    secret
-  );
-  const UserDetails: UserDetails = {
-    id: user.id,
-    username:user.username!,
-    name: user.name!,
-    profile:user.profile!,
-    email:user.email,
-    rating:user.rating,
-    token: token,
-    isGuest: false,
-  };
-  res.cookie("token", token, { maxAge: 24 * 60 * 60 * 1000 });
-  res.json(UserDetails);
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(bodyData.password, 10);
+
+    let guestUUID = "guest-" + uuidv4();
+
+    const user = await prisma.user.create({
+      data: {
+        username: bodyData.username,
+        email: bodyData.email,
+        profile: bodyData.profile,
+        name: bodyData.username || guestUUID,
+        rating: 500,
+        password: hashedPassword,
+        provider: "EMAIL",
+      },
+    });
+
+    const token = jwt.sign(
+      { userId: user.id, name: user.name, rating: user.rating, profile: user.profile },
+      secret,
+      { expiresIn: "1d" }
+    );
+
+    const UserDetails: UserDetails = {
+      id: user.id,
+      username: user.username!,
+      name: user.name!,
+      profile: user.profile!,
+      email: user.email!,
+      rating: user.rating,
+      token,
+      isGuest: false,
+    };
+
+    res.cookie("token", token, {
+      maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+    });
+
+    res.json(UserDetails);
+  } catch (error) {
+    console.error("Signup error:", error);
+    res.status(500).json({ message: "Something went wrong during sign up." });
+  }
 });
 
 //post as guest
 
 router.post("/signUpGuest", async (req: Request, res: Response) => {
   const bodyData = req.body;
-  console.log(req.body);
+  //console.log(req.body);
   let guestUUID = "guest-" + uuidv4();
 
   const user = await prisma.user.create({
@@ -249,7 +303,7 @@ router.get("/login/failed", (req: Request, res: Response) => {
 // logout player form game
 
 router.post("/logout", (req: Request, res: Response) => {
-  console.log("hello");
+  //console.log("hello");
   
   res.clearCookie("token");
   res.status(200).json({

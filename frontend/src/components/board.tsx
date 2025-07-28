@@ -5,7 +5,7 @@ import { useChessContext, useUserContext } from "../hooks/contextHook";
 export const ChessBoard = () => {
     const MOVE = "move";
     const {socket}=useUserContext()
-    const {setBoard,board,chess,color,roomId}=useChessContext()
+    const {setBoard,board,chess,color,roomId,moves}=useChessContext()
 
     const rows = color === "white" ? board : [...board].reverse();
     const [validmoves, setValidmoves] = useState<Square[]>([]);
@@ -116,14 +116,14 @@ function handleSquareClick(clickedSquare: Square) {
                     ${square?.type==="k"&&square?.color===chess.turn()&&inCheck?"alert":""}`}
 
                   >
-                    <div className="absolute text-[5px] text-zinc-800 font-[900] ml-[2px]">
+                    <div className="absolute text-[7px] text-zinc-800 font-[900] ml-[2px]">
                       {squareId}
                     </div>
                      {square ? (
                         <div
                           className={`${
-                            from === squareId ? "bg-blue-200": ""
-                          }`}
+                            from === squareId ? " bg-blue-200 ": ""
+                          } ${moves[moves.length-1]===squareId?" drop-shadow-[0px_0px_15px_yellow]/40 ":""}`}
                           draggable={true}
                           onDragStart={() => handleDragstart(squareId)}
                         >

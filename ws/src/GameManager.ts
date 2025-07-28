@@ -10,14 +10,20 @@ import {
   CHAT,
   GAME_NOT_FOUND,
   JOINROOM,
-  NOTIFICATION
+  NOTIFICATION,
+  UNDO_MOVE,
+  UNDO_MOVE_APPROVE,
 } from "./messages";
 import { User } from ".";
 import { connectionManager } from "./connectionManager";
 import { Game } from "./Game";
-import { getGameFromDb, saveMessageInDb } from "./API_Routes";
+import {
+  deleteMovesfromDb,
+  getGameFromDb,
+  saveMessageInDb,
+} from "./API_Routes";
 
-export type NotifType="MESSAGE"|"REQUEST"|"CHALLENGE"|"ACCEPT"|""
+export type NotifType = "MESSAGE" | "REQUEST" | "CHALLENGE" | "ACCEPT" | "";
 
 export class GameManager {
   private games: Game[]; //game is defined like games:type  where array of Room (where Room is a class name Game).... like x:number[] x is the array of number
@@ -32,7 +38,7 @@ export class GameManager {
   }
 
   addUser(user: User) {
-    console.log();
+    //console.log();
 
     this.users.push(user); // just to count online users remove offline users and
     this.addHandler(user); //as soon as this trigger a eventListener is attached to the socket that listen to all message till connections is closed from frontend ...ws.close()
@@ -53,27 +59,24 @@ export class GameManager {
   }
 
   private async addHandler(user: User) {
-    user.socket.on("message", async(data) => {
+    user.socket.on("message", async (data) => {
       const message = JSON.parse(data.toString());
-      console.log("message in gameManger", message);
-      console.log(connectionManager.getmapInfo());
-      
+      //console.log("message in gameManger", message);
+      //console.log(connectionManager.getmapInfo());
 
       if (message.type === INIT_GAME) {
         if (!this.pendingGameId) {
-          console.log("no game room with player waiting");          
+          //console.log("no game room with player waiting");
 
           const game = new Game(user.userId, null);
           this.games.push(game);
-          if(!message.private)
-          {
-            this.pendingGameId = game.RoomId
+          if (!message.private) {
+            this.pendingGameId = game.RoomId;
           }
-          console.log("game created..!!",game.RoomId);
-          
+          //console.log("game created..!!", game.RoomId);
 
           connectionManager.addUserRoomMap(user, game.RoomId);
-          console.log("game added in map:",connectionManager.getmapInfo());
+          //console.log("game added in map:", connectionManager.getmapInfo());
           connectionManager.sendMessageToAll(
             game.RoomId,
             JSON.stringify({
@@ -82,10 +85,7 @@ export class GameManager {
             })
           );
         } else {
-          console.log(
-            "game room available with player waiting",
-            this.pendingGameId
-          );
+          //console.log("game room available with player waiting",this.pendingGameId);
 
           const waitingGame = this.games.find(
             (game) => game.RoomId === this.pendingGameId
@@ -96,12 +96,14 @@ export class GameManager {
           }
 
           if (user.userId === waitingGame.player1Id) {
-            user.socket.send(JSON.stringify({
+            user.socket.send(
+              JSON.stringify({
                 type: GAME_ALERT,
                 payload: {
                   message: "Trying to Connect with yourself?",
-                }
-              }))
+                },
+              })
+            );
             connectionManager.sendMessageToAll(
               waitingGame.RoomId,
               JSON.stringify({
@@ -111,8 +113,8 @@ export class GameManager {
                 },
               })
             );
-            this.removeGame(this.pendingGameId)
-            this.pendingGameId=null;
+            this.removeGame(this.pendingGameId);
+            this.pendingGameId = null;
             return;
           }
 
@@ -126,7 +128,7 @@ export class GameManager {
         const gameId = message.payload.gameId;
         const game = this.games.find((game) => game.RoomId === gameId); // it looks for that game where it can find the current game in Game array.. and make move in that
         if (game) {
-          console.log(message);
+          //console.log(message);
           game.makeMove(user, message.payload.move); //game take user and move and move using socket inside the user
         }
       }
@@ -142,94 +144,159 @@ export class GameManager {
       }
 
       if (message.type === RECONNECTION || message.type === JOINROOM) {
-        
         const gameId = message.payload.roomId;
 
         const gameWS = this.games.find((game) => game.RoomId === gameId);
 
-        if(gameWS&&!gameWS.player2Id)
-        {
-          connectionManager.addUserRoomMap(user,gameId)
-          await gameWS.PushSecondPlayer(user)
+        if (gameWS && !gameWS.player2Id) {
+          connectionManager.addUserRoomMap(user, gameId);
+          await gameWS.PushSecondPlayer(user);
           return;
         }
-        
 
-        const gameDB =await getGameFromDb(gameId)
-        console.log("Game Recieved in Game Manager :",gameDB);
+        const gameDB = await getGameFromDb(gameId);
+        //console.log("Game Recieved in Game Manager :", gameDB);
 
         if (!gameDB) {
           user.socket.send(
             JSON.stringify({
               type: GAME_NOT_FOUND,
-            }),
+            })
           );
           return;
         }
 
-        if(!gameWS)
-        {
-           const game = new Game(
+        if (!gameWS) {
+          const game = new Game(
             gameDB.whitePlayerId,
             gameDB.blackPlayerId,
             gameDB.id
-           );
+          );
           this.games.push(game);
         }
-          
-          user.socket.send(
+
+        user.socket.send(
+          JSON.stringify({
+            type: GAME_JOINED,
+            payload: {
+              RoomId: gameDB.id,
+              WhitePlayer: gameDB.whitePlayer,
+              BlackPlayer: gameDB.blackPlayer,
+              moves: gameDB.moves,
+              chat: gameDB.chat,
+              fen: gameDB.currentFen,
+            },
+          })
+        );
+        connectionManager.addUserRoomMap(user, gameId);
+      }
+
+      if (message.type === CHAT) {
+        const roomId = message.payload.roomId;
+        const game = this.games.find((game) => game.RoomId === roomId);
+        if (game) {
+          await saveMessageInDb(roomId, message.payload.message);
+          connectionManager.sendMessageToAll(
+            roomId,
             JSON.stringify({
-              type: GAME_JOINED,
+              type: CHAT,
               payload: {
-                RoomId: gameDB.id,
-                WhitePlayer: gameDB.whitePlayer,
-                BlackPlayer: gameDB.blackPlayer,
-                moves:gameDB.moves,
-                chat:gameDB.chat,
-                fen: gameDB.currentFen,
+                message: message.payload.message,
               },
             })
           );
-        connectionManager.addUserRoomMap(user,gameId)
+        }
       }
-      
-     if(message.type===CHAT)
-     {
-      const roomId=message.payload.roomId;
-      const game = this.games.find((game) => game.RoomId === roomId);
-      if(game){
-        await saveMessageInDb(roomId,message.payload.message)
-        connectionManager.sendMessageToAll(roomId,JSON.stringify({
-          type:CHAT,
-          payload:{
-          message:message.payload.message
-          }
-        }))
+
+      if (message.type === NOTIFICATION) {
+        //console.log("notification recieved");
+
+        const playerId = message.payload.playerId as string;
+        const roomId = connectionManager.getPlayerIdToRoomId(user.userId);
+        connectionManager.sendMessageToUser(
+          playerId,
+          JSON.stringify({
+            type: NOTIFICATION,
+            payload: {
+              sender: user as User,
+              notifType: message.payload.notifType as NotifType,
+              message: message.payload.message as string,
+              roomId: roomId,
+            },
+          })
+        );
       }
-     }
 
-    if(message.type===NOTIFICATION)
-     {
+      if (message.type === UNDO_MOVE) {
+        //console.log("hello i triggred in undoMove");
 
-      console.log("notification recieved");
-      
-      const playerId=message.payload.playerId as string;
-      const roomId=connectionManager.getPlayerIdToRoomId(user.userId)
-      connectionManager.sendMessageToUser(playerId,JSON.stringify({
-          type:NOTIFICATION,
-          payload:{
-           sender:user as User,
-           notifType:message.payload.notifType as NotifType,
-           message:message.payload.message as string,
-           roomId:roomId
+        const gameId = message.payload.gameId as string;
+        connectionManager.sendMessageToAll(
+          gameId,
+          JSON.stringify({
+            type: UNDO_MOVE,
+            payload: {
+              requestingPlayerId: user.userId,
+            },
+          })
+        );
+      }
+
+      if (message.type === UNDO_MOVE_APPROVE) {
+        const choice = message.payload.choice as boolean;
+        const roomId = message.payload.gameId as string;
+
+        if (choice) {
+          const color = message.payload.color as string;
+          const game = this.games.find((game) => game.RoomId === roomId);
+          if (game) {
+            const turn = game.board.turn() == color;
+            const moveCount = game.moveCount;
+            const undoCount= turn ? 1 : 2;
+            const lastmoveCount = moveCount - undoCount;
+
+            //console.log(roomId);
+
+            const gameDB = await getGameFromDb(roomId);
+            console.log(
+              "Game Recieved in Undo Approved :",
+              gameDB
+            );
+
+            game?.board.load(gameDB.fenHistory[lastmoveCount]);
+
+            connectionManager.sendMessageToAll(
+              roomId,
+              JSON.stringify({
+                type: UNDO_MOVE_APPROVE,
+                payload: {
+                  revertedfen: gameDB.fenHistory[lastmoveCount],
+                  moves:gameDB.moves
+                },
+              })
+            );
+
+           const updatedgame = await deleteMovesfromDb(
+              roomId,
+              undoCount,
+              moveCount,
+              gameDB.fenHistory[lastmoveCount]
+            );
+            game.moveCount=lastmoveCount
+            console.log("Updatedgame after moves deleted :",updatedgame); 
           }
-        }))
-     }
-
-
-
-
-     
+        } else {
+          connectionManager.sendMessageToAll(
+            roomId,
+            JSON.stringify({
+              type: UNDO_MOVE_APPROVE,
+              payload: {
+                choice: choice,
+              },
+            })
+          );
+        }
+      }
     });
   }
 }

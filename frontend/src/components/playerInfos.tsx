@@ -2,6 +2,12 @@ import { useState } from "react"
 
 export const PlayerInfo=({userName,color,rating,profile}:{userName:string,color:string,rating:number,profile:string|null})=>{
     const [timer,setTimer]=useState("00:00");
+
+    if(userName.length>12)
+    {
+      userName=userName.slice(0,-8)
+    }
+
     return(
         <>
            <div className="h-14 m-1 p-1 flex items-center text-black w-full text-[13px]">

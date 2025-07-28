@@ -68,7 +68,7 @@ interactionRoute.post("/reqPlayer", async(req: Request, res: Response) => {
   try {
     const senderId = req.body.senderId as string;
     const receiverId = req.body.receiverId as string;
-    console.log("igot triggered");
+    //console.log("igot triggered");
     
 
 
@@ -87,7 +87,7 @@ interactionRoute.post("/reqPlayer", async(req: Request, res: Response) => {
       });
     if (reqExist)
     {
-        console.log("req exists : ",reqExist);
+        //console.log("req exists : ",reqExist);
         
          if (
       reqExist.senderId === receiverId &&
@@ -103,7 +103,7 @@ interactionRoute.post("/reqPlayer", async(req: Request, res: Response) => {
         .send({ message: "Both Players are friends now", accepted: accepted ,status:"friends"});
     }
     else{
-        console.log("Reqest sent already...!!");
+        //console.log("Reqest sent already...!!");
         
         res.status(400)
         .send({ message: "Request sent already...!!!"});
@@ -120,7 +120,7 @@ interactionRoute.post("/reqPlayer", async(req: Request, res: Response) => {
           sender:true,receiver:true
         }
       });
-      console.log(requested);
+      //console.log(requested);
       
       res.status(200)
         .send({ message: "Friend Request sent Successfully...!!", requested : requested ,status:"Request_Sent"});
@@ -135,7 +135,7 @@ interactionRoute.post("/reqPlayer", async(req: Request, res: Response) => {
 interactionRoute.get("/friends", async(req: Request, res: Response) => {
   try {
     const userId =req.query.userId as string;
-    console.log("igt triggered");
+    //console.log("igt triggered");
     
 
     const acceptedReq =await prisma.friendRequest.findMany({
@@ -169,7 +169,7 @@ interactionRoute.get("/friends", async(req: Request, res: Response) => {
       const isSender = req.senderId === userId;
       return isSender ? req.receiver : req.sender;
     });
-        console.log("found friends :",Friends);
+        //console.log("found friends :",Friends);
         
       res
         .status(200)
@@ -177,7 +177,7 @@ interactionRoute.get("/friends", async(req: Request, res: Response) => {
     else 
         res.status(404).send({ message: "Friends not found" });
   } catch (error) {
-    console.log("Error happend while getting Friends",error);
+    //console.log("Error happend while getting Friends",error);
     res.status(400).send({ message: "Something went wrong..!!", error: error });
   }
 })
@@ -191,7 +191,7 @@ interactionRoute.post("/message", async(req: Request, res: Response) => {
     const message=req.body.message as string;
     const type =req.body.type as MessageType;
 
-    console.log("igot triggered message",user);
+    //console.log("igot triggered message",user);
     
     const sentMessage = await prisma.message.create({
       data:{
@@ -217,7 +217,7 @@ interactionRoute.get("/getmessage", async(req: Request, res: Response) => {
   try {
     const receiverId = req.query.userId as string;
 
-    console.log("igot triggered getmessage ");
+    //console.log("igot triggered getmessage ");
     
     const MyMessageBox =await prisma.message.findMany({
       where:{
@@ -229,7 +229,7 @@ interactionRoute.get("/getmessage", async(req: Request, res: Response) => {
       });
     if (MyMessageBox)
     {
-        console.log("Received Message : ",MyMessageBox);
+        //console.log("Received Message : ",MyMessageBox);
 
      res.status(200)
         .send({ message: "Message Recieved :",messages:MyMessageBox});
@@ -250,7 +250,7 @@ interactionRoute.post("/deletemessage", async(req: Request, res: Response) => {
   try {
     const messageId = req.body.messageId as string;
 
-    console.log("igot triggered deletemessage ");
+    //console.log("igot triggered deletemessage ");
     
     const deletedMessage = await prisma.message.delete({
       where: { id: messageId },
@@ -326,7 +326,7 @@ export default interactionRoute;
 //     const userId = req.body.userId as string;
 //     const senderId=req.body.senderId as string
 
-//     console.log("igot triggered get message ");
+//     //console.log("igot triggered get message ");
     
 // const MyMessageBox =await prisma.user.findUnique({
 //       where:{
@@ -338,7 +338,7 @@ export default interactionRoute;
 //       });
 //     if (MyMessageBox)
 //     {
-//         console.log("req exists : ",MyMessageBox);
+//         //console.log("req exists : ",MyMessageBox);
 
 //      res.status(200)
 //         .send({ message: "Message Recieved :",messages:MyMessageBox});

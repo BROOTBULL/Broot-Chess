@@ -1,5 +1,5 @@
 import axios from "axios";
-import { gamedata } from "./Game";
+import { GAME_RESULT, GAME_STATUS, gamedata } from "./Game";
 import { Move } from "chess.js";
 
 axios.defaults.withCredentials=true;
@@ -95,3 +95,47 @@ export const saveMovesInDb=async(gameId:string,move:Move,fen:string,moveCount:nu
         console.log(error);
     }  
 }
+
+export const deleteMovesfromDb=async(gameId:string,undoCount:number,moveCount:number,fen:string)=>
+{
+       try {
+
+        const saveMoves=await axios.post("/gameData/deleteMoves",{gameId:gameId,moveCount:moveCount,fen:fen,undoCount:undoCount})
+        console.log(saveMoves.data.message);
+        return saveMoves.data.game;
+        
+    } catch (error) {
+        console.log(error);
+    }   
+}
+
+
+export const endGameDB=async(gameId:string,status:GAME_STATUS,result:string)=>{
+
+    try {
+
+        const saveMoves=await axios.post("/gameData/endGame",{gameId:gameId,status:status,result:result})
+        console.log(saveMoves.data.message);
+        
+    } catch (error) {
+        console.log(error);
+    }  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // const gameId = req.body.gameId as string;
+    // const undoCount = req.body.undoCount as number;
+    // const moveCount = req.body.moveCount as number;
+    // const fen = req.body.fen as string;

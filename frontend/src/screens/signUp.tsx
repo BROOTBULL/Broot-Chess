@@ -4,20 +4,29 @@ import axios from "axios";
 import { useState } from "react";
 import { useUserContext } from "../hooks/contextHook";
 
-
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = "http://localhost:3000";
 
 const SignUpPage = () => {
   const navigate = useNavigate();
-  const {setUser}=useUserContext()
-
+  const { setUser } = useUserContext();
 
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
   });
+  const [strength, setStrength] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+
+  function calculateStrength(password: string): number {
+    let score = 0;
+    if (password.length >= 8) score += 1;
+    if (/[A-Z]/.test(password)) score += 1;
+    if (/[0-9]/.test(password)) score += 1;
+    if (/[^A-Za-z0-9]/.test(password)) score += 1;
+    return score;
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -25,31 +34,52 @@ const SignUpPage = () => {
       ...prev,
       [name]: value,
     }));
+    if (name === "password") {
+      setStrength(calculateStrength(value));
+    }
   };
 
   async function handleSubmit(e: React.MouseEvent<HTMLElement>) {
     e.preventDefault();
-    const UserInput = await axios.post(
-      "/auth/signUp",
-      formData
-    );
-    setUser(UserInput.data)
+    const emailError = validateEmail(formData.email);
+    if (emailError) {
+      setError(emailError);
+
+      // Auto-clear error after 3 seconds (3000 ms)
+      setTimeout(() => {
+        setError(null);
+      }, 3000);
+
+      return;
+    }
+
+    const UserInput = await axios.post("/auth/signUp", formData);
+    setUser(UserInput.data);
     console.log("SignUp response:", UserInput);
   }
 
   async function handleGuest(e: React.MouseEvent<HTMLElement>) {
     e.preventDefault();
-    const guestInput = await axios.post(
-      "/auth/signUpGuest",{name:"Guest123"}
-    );
-    setUser(guestInput.data)
+    const guestInput = await axios.post("/auth/signUpGuest", {
+      name: "Guest123",
+    });
+    setUser(guestInput.data);
     console.log("response:", guestInput);
   }
 
   async function handleGoogle(e: React.MouseEvent<HTMLElement>) {
     e.preventDefault();
-    const response=window.open(`http://localhost:3000/auth/google`, "_self");
-    console.log("response",response);
+    const response = window.open(`http://localhost:3000/auth/google`, "_self");
+    console.log("response", response);
+  }
+
+  function validateEmail(email: string): string | null {
+    if (!email.trim()) return "Email is required";
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) return "Please enter a valid email address";
+
+    return null; // No error
   }
 
   return (
@@ -63,6 +93,12 @@ const SignUpPage = () => {
 
       <div className="absolute flex flex-row h-full w-full -z-12  ">
         <div className="flex flex-col justify-center items-center bg-gradient-to-r from-zinc-300 to-zinc-100 backdrop-blur-md h-full w-full md:w-[56%] -z-10 ">
+          {error && (
+            <div className="bg-red-400 h-10 w-[60%] rounded-lg absolute top-0 mt-5 text-center p-2 text-white ">
+              {error}
+            </div>
+          )}
+
           <img
             className="h-10 w-6 md:h-14 md:w-9 lg:h-18 lg:w-10 drop-shadow-lg/40 "
             src="../../public/media/Broot.png"
@@ -112,6 +148,28 @@ const SignUpPage = () => {
                   autoComplete="off"
                 />
               </div>
+              <div className="h-2 mt-1 w-full rounded px-1">
+                <div
+                  className={`h-full rounded transition-all duration-300 ${
+                    strength === 1
+                      ? "bg-red-500 w-1/4"
+                      : strength === 2
+                      ? "bg-yellow-500 w-1/2"
+                      : strength === 3
+                      ? "bg-blue-500 w-3/4"
+                      : strength === 4
+                      ? "bg-green-500 w-full"
+                      : "w-0"
+                  }`}
+                ></div>
+              </div>
+              <span className="text-xs text-zinc-700">
+                {strength === 0 && ""}
+                {strength === 1 && "Weak"}
+                {strength === 2 && "Medium"}
+                {strength === 3 && "Strong"}
+                {strength === 4 && "Very Strong"}
+              </span>
 
               <button
                 onClick={(e) => handleSubmit(e)}
@@ -121,9 +179,9 @@ const SignUpPage = () => {
               </button>
             </form>
           </div>
-          <span className="text-[10px] md:text-[12px] items-end lg:text-[16px] font-serif text-zinc-800 font-[600] drop-shadow-lg">
+          <div className=" items-end text-sm font-serif text-zinc-800 font-[600] drop-shadow-lg">
             Play as guest OR signup with Google
-          </span>
+          </div>
           <div className="flex flex-row w-[80%]">
             <button
               onClick={(e) => handleGuest(e)}
@@ -143,6 +201,15 @@ const SignUpPage = () => {
               <span> Google</span>
             </button>
           </div>
+          <span className="text-[12px] font-serif text-zinc-600">
+            If already signed In ....Try{" "}
+            <span
+              className="text-blue-950 cursor-pointer"
+              onClick={() => navigate("/login")}
+            >
+              LogIn
+            </span>
+          </span>
         </div>
       </div>
     </>
