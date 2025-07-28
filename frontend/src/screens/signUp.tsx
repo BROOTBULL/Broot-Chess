@@ -4,9 +4,6 @@ import axios from "axios";
 import { useState } from "react";
 import { useUserContext } from "../hooks/contextHook";
 
-axios.defaults.withCredentials = true;
-axios.defaults.baseURL = "https://broot-chess-backend.onrender.com";
-
 const SignUpPage = () => {
   const navigate = useNavigate();
   const { setUser } = useUserContext();
