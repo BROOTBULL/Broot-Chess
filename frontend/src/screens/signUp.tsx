@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useUserContext } from "../hooks/contextHook";
 
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = "http://localhost:3000";
+axios.defaults.baseURL = "https://broot-chess-backend.onrender.com";
 
 const SignUpPage = () => {
   const navigate = useNavigate();
@@ -69,7 +69,7 @@ const SignUpPage = () => {
 
   async function handleGoogle(e: React.MouseEvent<HTMLElement>) {
     e.preventDefault();
-    const response = window.open(`http://localhost:3000/auth/google`, "_self");
+    const response = window.open(`https://broot-chess-backend.onrender.com/auth/google`, "_self");
     console.log("response", response);
   }
 

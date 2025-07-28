@@ -3,7 +3,7 @@ import { GAME_RESULT, GAME_STATUS, gamedata } from "./Game";
 import { Move } from "chess.js";
 
 axios.defaults.withCredentials=true;
-axios.defaults.baseURL="http://localhost:3000"
+axios.defaults.baseURL="https://broot-chess-backend.onrender.com"
 type message = { sender: string; message: string };
 
 
