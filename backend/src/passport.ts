@@ -64,7 +64,7 @@ export function initPassport() {
             maxAge: 24 * 60 * 60 * 1000,
           });
 
-          req.res?.redirect("https://localhost:5173/home"); // <-- replace this
+          req.res?.redirect("http://localhost:5173/home"); // <-- replace this
         } catch (error) {
           done(error);
         }
