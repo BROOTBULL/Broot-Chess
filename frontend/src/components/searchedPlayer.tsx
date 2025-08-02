@@ -3,7 +3,6 @@ import { useUserContext } from "../hooks/contextHook";
 import { useEffect, useState } from "react";
 import { Player } from "../screens/socials";
 import { useSendNotification } from "../hooks/NotificationHook";
-import { User } from "../context/userProvider";
 export type Status =
   | "Request_Sent"
   | "friends"
