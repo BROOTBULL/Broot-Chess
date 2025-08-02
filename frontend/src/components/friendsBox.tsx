@@ -16,7 +16,7 @@ export const Friends = () => {
                 <div key={i} className=" flex flex-row items-center text-zinc-200 bg-zinc-800 text-sm font-[500] p-2 gap-2 text-center ">
                   <img
                     className="size-5"
-                    src="../../public/media/socialW.png"
+                    src="/media/socialW.png"
                     alt=""
                   />
                   {friend.username}

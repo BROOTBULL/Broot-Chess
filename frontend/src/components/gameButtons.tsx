@@ -9,7 +9,7 @@ export const GameButtons = () => {
      <div className="bg-zinc-800 playButton h-18 hidden lg:flex flex-row items-center justify-center cursor-pointer px-4 shadow-md/50  ">
      <img
           className="size-6 m-1 "
-          src="../../public/media/blitz.png"
+          src="/media/blitz.png"
           alt=""
         />
         <span className="font-serif text-zinc-100 text-lg md:text-2xl">
@@ -21,7 +21,7 @@ export const GameButtons = () => {
        onClick={()=>navigate(`/game`)}>
         <img
           className="size-6 m-1 "
-          src="../../public/media/pawn.png"
+          src="/media/pawn.png"
           alt=""
         />
         <span className="font-serif text-zinc-100 text-lg md:text-2xl">
@@ -32,7 +32,7 @@ export const GameButtons = () => {
         <div className="bg-zinc-800 playButton h-18 flex flex-row items-center justify-center cursor-pointer shadow-md/50 w-[50%] lg:w-full">
           <img
             className="size-7 m-1 mb-2"
-            src="../../public/media/bot.png"
+            src="/media/bot.png"
             alt=""
           />
           <span className="font-serif text-zinc-100 text-lg md:text-2xl">
@@ -42,7 +42,7 @@ export const GameButtons = () => {
         <div className="bg-zinc-800 playButton h-18 flex flex-row items-center justify-center cursor-pointer shadow-md/50 w-[50%] lg:w-full ">
           <img
             className="size-8 m-1 "
-            src="../../public/media/friends.png"
+            src="/media/friends.png"
             alt=""
           />
           <span className="font-serif text-zinc-100 text-lg md:text-2xl">

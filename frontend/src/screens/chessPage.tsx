@@ -188,7 +188,7 @@ const ChessGame = () => {
                     />
                     <img
                       className="size-18"
-                      src={Opponent?.profile || "../../public/media/userW.png"}
+                      src={Opponent?.profile || "/media/userW.png"}
                       alt=""
                     />
                     <div className="text-[10px] text-center text-zinc-300 font-bold">
@@ -206,7 +206,7 @@ const ChessGame = () => {
                     />
                     <img
                       className="size-18"
-                      src={profile || "../../public/media/userW.png"}
+                      src={profile || "/media/userW.png"}
                       alt=""
                     />
                     <div className="text-[10px] text-center text-zinc-300 font-bold">
@@ -274,14 +274,14 @@ const ChessGame = () => {
               userName={Opponent?.username || "Opponent"}
               rating={Opponent?.rating || 500}
               color={color}
-              profile={Opponent?.profile || "../../public/media/userW.png"}
+              profile={Opponent?.profile || "/media/userW.png"}
             />
             <ChessBoard/>
             <PlayerInfo
               userName={username}
               rating={rating}
               color={color}
-              profile={profile || "../../public/media/userW.png"}
+              profile={profile || "/media/userW.png"}
             />
           </div>
         </div>
@@ -298,7 +298,7 @@ const ChessGame = () => {
             >
               <img
                 className="size-6 self-center"
-                src="../../public/media/playW.png"
+                src="/media/playW.png"
                 alt=""
               />
               Play
@@ -311,7 +311,7 @@ const ChessGame = () => {
             >
               <img
                 className="size-6 self-center"
-                src="../../public/media/newgame.png"
+                src="/media/newgame.png"
                 alt=""
               />
               New Game
@@ -324,7 +324,7 @@ const ChessGame = () => {
             >
               <img
                 className="size-6 self-center"
-                src="../../public/media/game.png"
+                src="/media/game.png"
                 alt=""
               />
               Games
@@ -337,7 +337,7 @@ const ChessGame = () => {
             >
               <img
                 className="size-6 self-center"
-                src="../../public/media/socialW.png"
+                src="/media/socialW.png"
                 alt=""
               />
               Friends
@@ -354,7 +354,7 @@ const ChessGame = () => {
         <div className="nav flex flex-row m-1 mb-0 items-center h-10 w-[90%] rounded-lg font-[500] text-md text-zinc-800 cursor-pointer">
           <img
             className="size-6 m-2"
-            src="../../public/media/theme.png"
+            src="/media/theme.png"
             alt=""
           />
           Theme
@@ -365,7 +365,7 @@ const ChessGame = () => {
         >
           <img
             className="h-6 w-6 m-2"
-            src="../../public/media/logout.png"
+            src="/media/logout.png"
             alt=""
           />
           LogOut

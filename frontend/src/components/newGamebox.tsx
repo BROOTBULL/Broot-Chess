@@ -95,7 +95,7 @@ export const NewGame = ({
             >
               <img
                 className="size-7"
-                src="../../public/media/blitz.png"
+                src="/media/blitz.png"
                 alt=""
               />
               <span className={` text-zinc-200 text-lg `}>Blitz</span>
@@ -110,7 +110,7 @@ export const NewGame = ({
             >
               <img
                 className="size-7"
-                src="../../public/media/stopwatchG.png"
+                src="/media/stopwatchG.png"
                 alt=""
               />
               <span className={` text-zinc-200 text-lg `}>Rapid</span>
@@ -123,7 +123,7 @@ export const NewGame = ({
                   : "bg-zinc-800"
               } flex flex-row items-center flex-1 justify-center cursor-pointer shadow-sm/40 `}
             >
-              <img className="size-7" src="../../public/media/sun.png" alt="" />
+              <img className="size-7" src="/media/sun.png" alt="" />
               <span className={` text-zinc-200 text-lg `}>Daily</span>
             </div>
           </div>
@@ -154,7 +154,7 @@ export const NewGame = ({
           >
             <img
               className="size-8 m-1 "
-              src="../../public/media/friends.png"
+              src="/media/friends.png"
               alt=""
             />
             <div className="font-serif text-zinc-100 text-lg md:text-2xl">
@@ -181,7 +181,7 @@ export const NewGame = ({
               >
                 <img
                   className="size-7"
-                  src="../../public/media/blitz.png"
+                  src="/media/blitz.png"
                   alt=""
                 />
                 <span className={` text-zinc-200 text-lg `}>Blitz</span>
@@ -196,7 +196,7 @@ export const NewGame = ({
               >
                 <img
                   className="size-7"
-                  src="../../public/media/stopwatchG.png"
+                  src="/media/stopwatchG.png"
                   alt=""
                 />
                 <span className={` text-zinc-200 text-lg `}>Rapid</span>
@@ -211,7 +211,7 @@ export const NewGame = ({
               >
                 <img
                   className="size-7"
-                  src="../../public/media/sun.png"
+                  src="/media/sun.png"
                   alt=""
                 />
                 <span className={` text-zinc-200 text-lg `}>Daily</span>
@@ -285,7 +285,7 @@ export const NewGame = ({
         className="bg-zinc-800 playButton h-18 flex flex-row items-center justify-center cursor-pointer shadow-md/50 w-full ">
           <img
             className="size-8 m-1 "
-            src="../../public/media/friends.png"
+            src="/media/friends.png"
             alt=""
           />
           <span className="font-serif text-zinc-100 text-lg md:text-2xl">

@@ -38,14 +38,14 @@ export const Header2 = () => {
         <div className="flex flex-row w-full justify-between">
           <img
             className=" self-center h-10 w-6 md:h-14 md:w-8 lg:h-20 lg:w-12 lg:m-8 m-5 mx-3 md:mx-6 drop-shadow-lg/40 z-10 cursor-pointer"
-            src="../../public/media/Broot.png"
+            src="/media/Broot.png"
             alt="Broot"
           />
           <img
             onClick={() => handleOptionButton()}
             id="optionBtn"
             className="self-center size-8 md:size-13 lg:hidden  m-3 drop-shadow-lg/40 z-10 cursor-pointer duration-200"
-            src={`../../public/media/${
+            src={`/media/${
               optionDisplay ? "closeOption" : "option"
             }.png`}
             alt="option"
@@ -54,7 +54,7 @@ export const Header2 = () => {
             onClick={() => handleOptionButton()}
             id="setting2"
             className="self-center size-10 hidden lg:flex m-3 lg:m-8 drop-shadow-lg/40 z-10 cursor-pointer duration-200"
-            src={`../../public/media/setting.png`}
+            src={`/media/setting.png`}
             alt="option"
           />
         </div>
@@ -66,7 +66,7 @@ export const Header2 = () => {
           <div className="nav flex flex-row m-3 mb-0 items-center h-10 w-[90%] rounded-lg font-[500] text-lg text-zinc-800">
             <img
               className="h-6 w-6 m-2"
-              src="../../public/media/theme.png"
+              src="/media/theme.png"
               alt=""
             />
             Theme
@@ -76,7 +76,7 @@ export const Header2 = () => {
           className="nav flex flex-row m-3 mt-0 items-center h-10 cursor-pointer w-[90%] rounded-lg font-[500] text-lg text-zinc-800">
             <img
               className="h-6 w-6 m-2"
-              src="../../public/media/logout.png"
+              src="/media/logout.png"
               alt=""
             />
             LogOut
@@ -90,7 +90,7 @@ export const Header2 = () => {
           <div className="nav flex flex-row items-center h-10 w-[95%] rounded-lg font-[500] text-lg text-zinc-800">
             <img
               className="h-6 w-6 m-2"
-              src="../../public/media/home.png"
+              src="/media/home.png"
               alt=""
             />
             Home
@@ -98,7 +98,7 @@ export const Header2 = () => {
           <div className="nav flex flex-row items-center h-10 w-[95%] rounded-lg font-[500] text-lg text-zinc-800">
             <img
               className="h-6 w-6 m-2"
-              src="../../public/media/play.png"
+              src="/media/play.png"
               alt=""
             />
             Play
@@ -106,7 +106,7 @@ export const Header2 = () => {
           <div className="nav flex flex-row items-center h-10 w-[95%] rounded-lg font-[500] text-lg text-zinc-800">
             <img
               className="h-6 w-6 m-2"
-              src="../../public/media/profile.png"
+              src="/media/profile.png"
               alt=""
             />
             Profile
@@ -114,7 +114,7 @@ export const Header2 = () => {
           <div className="nav flex flex-row items-center h-10 w-[95%] rounded-lg font-[500] text-lg text-zinc-800">
             <img
               className="h-6 w-6 m-2"
-              src="../../public/media/social.png"
+              src="/media/social.png"
               alt=""
             />
             Socials
@@ -122,7 +122,7 @@ export const Header2 = () => {
           <div className="nav flex flex-row items-center h-10 w-[95%] rounded-lg font-[500] text-lg text-zinc-800">
             <img
               className="h-6 w-6 m-2"
-              src="../../public/media/setting.png"
+              src="/media/setting.png"
               alt=""
             />
             Setting
@@ -160,7 +160,7 @@ export const Header3 = () => {
           <img
             className=" h-10 w-6 md:h-14 md:w-8 lg:h-22 lg:w-12 lg:m-8 lg:mx-10 m-5 drop-shadow-lg/40 z-10 cursor-pointer"
             onClick={()=>navigate("/")}
-            src="../../public/media/Broot.png"
+            src="/media/Broot.png"
             alt="Broot"
           />
           <div
@@ -169,7 +169,7 @@ export const Header3 = () => {
             <div className={`${activetab==="profile"?"active":""} nav flex flex-row items-center hover:ml-4 rounded-3xl xl:w-35 duration-300 m-1 cursor-pointer`}>
               <img
                 className="img size-10 lg:m-3 xl:m-2 xl:size-7 xl:ml-3 duration-300"
-                src={`../../public/media/profile.png`}
+                src={`/media/profile.png`}
                 alt=""
               />
               <div className="hidden xl:flex">Profile</div>
@@ -179,7 +179,7 @@ export const Header3 = () => {
             className={`${activetab==="game"?"active":""} nav flex flex-row items-center hover:ml-4 rounded-3xl xl:w-35 duration-300 m-1 cursor-pointer`}>
               <img
                 className="img size-10 lg:m-3 xl:m-2 xl:size-7 xl:ml-3 duration-300"
-                src="../../public/media/play.png"
+                src="/media/play.png"
                 alt=""
               />
               <div className="hidden xl:flex">Play</div>
@@ -189,7 +189,7 @@ export const Header3 = () => {
             className={`${activetab==="home"?"active":""} nav flex flex-row items-center hover:ml-4 rounded-3xl xl:w-35 duration-300 m-1 cursor-pointer`}>
               <img
                 className="img size-10 lg:m-3 xl:m-2 xl:size-7 xl:ml-3 duration-300"
-                src="../../public/media/home.png"
+                src="/media/home.png"
                 alt=""
               />
               <div className="hidden xl:flex ">Home</div>
@@ -199,7 +199,7 @@ export const Header3 = () => {
             className={`${activetab==="social"?"active":""} nav flex flex-row items-center hover:ml-4 rounded-3xl xl:w-35 duration-300 m-1 cursor-pointer`}>
               <img
                 className="img size-10 lg:m-3 xl:m-2 xl:size-7 xl:ml-3 duration-300"
-                src="../../public/media/social.png"
+                src="/media/social.png"
                 alt=""
               />
               <div 
@@ -208,7 +208,7 @@ export const Header3 = () => {
             <div className={`${activetab==="assets"?"active":""} nav flex flex-row items-center hover:ml-4 rounded-3xl xl:w-35 duration-300 m-1 cursor-pointer`}>
               <img
                 className="img size-10 lg:m-3 xl:m-2 xl:size-7 xl:ml-3 duration-300"
-                src="../../public/media/assets.png"
+                src="/media/assets.png"
                 alt=""
               />
               <div className="hidden xl:flex">Assets</div>
@@ -218,7 +218,7 @@ export const Header3 = () => {
             onClick={() => handleOptionButton()}
             id="setting3"
             className="size-8 hidden lg:flex m-3 lg:m-8 lg:mx-10 drop-shadow-lg/40 z-10 cursor-pointer duration-200"
-            src={`../../public/media/setting.png`}
+            src={`/media/setting.png`}
             alt="option"
           />
         </div>
@@ -230,7 +230,7 @@ export const Header3 = () => {
           <div className="nav flex flex-row m-3 mb-0 items-center h-10 w-[90%] rounded-lg font-[500] text-lg text-zinc-800">
             <img
               className="img h-6 w-6 m-2"
-              src="../../public/media/theme.png"
+              src="/media/theme.png"
               alt=""
             />
             Theme
@@ -240,7 +240,7 @@ export const Header3 = () => {
           className="nav flex flex-row m-3 mt-0 items-center h-10 w-[90%] rounded-lg font-[500] text-lg text-zinc-800">
             <img
               className="h-6 w-6 m-2 img"
-              src="../../public/media/logout.png"
+              src="/media/logout.png"
               alt=""
             />
             LogOut

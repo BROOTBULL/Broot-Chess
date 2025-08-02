@@ -17,7 +17,7 @@ const LandingPage = () => {
     <>
       <img
         className="absolute h-18 w-10 md:h-22 md:w-13 lg:h-24 lg:w-13 m-10 drop-shadow-lg/40 "
-        src="../../public/media/Broot.png"
+        src="/media/Broot.png"
         alt="Broot"
       />
       <button

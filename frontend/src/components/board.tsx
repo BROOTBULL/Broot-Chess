@@ -133,7 +133,7 @@ function handleSquareClick(clickedSquare: Square) {
                                 ? "drop-shadow-lg/40"
                                 : "drop-shadow-md/80 z-5"
                             }`}
-                            src={`../public/media/${
+                            src={`/media/${
                               square.type + square.color
                             }.png `}
                           />
