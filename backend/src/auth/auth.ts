@@ -52,7 +52,7 @@ router.get("/checkAuth", verifyToken, async (req: Request, res: Response) => {
 
 
     if (!userDb) {
-      //console.log("no user found");
+      console.log("no user found");
 
      res.status(400).json({ success: true, message: "User not found" });
      return;
@@ -73,7 +73,7 @@ router.get("/checkAuth", verifyToken, async (req: Request, res: Response) => {
       UserDetails,isAuthanticated:true
     });
   } catch (error) {
-    //console.log("Error in checkAuth", error);
+    console.log("Error in checkAuth", error);
     res.status(401).json({ success: false, message: "Unauthorized" }); 
   }
 });
@@ -156,7 +156,7 @@ router.get(
   (req, res) => {
     // ✅ req.user is available here from the passport callback
     const user = req.user as UserDetails;
-    //console.log("user in backend: ",user);
+    console.log("user in backend: ",user);
     
 
     if (!secret) {
