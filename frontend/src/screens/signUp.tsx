@@ -84,7 +84,7 @@ const SignUpPage = () => {
       <img
         onClick={() => navigate("/")}
         className="absolute h-6 w-6 md:h-8 md:w-8 lg:h-12 lg:w-12 m-5 drop-shadow-lg "
-        src="../../public/media/back.png"
+        src="/media/back.png"
         alt="back button"
       />
 
@@ -98,7 +98,7 @@ const SignUpPage = () => {
 
           <img
             className="h-10 w-6 md:h-14 md:w-9 lg:h-18 lg:w-10 drop-shadow-lg/40 "
-            src="../../public/media/Broot.png"
+            src="/media/Broot.png"
             alt="Broot"
           />
           <span className="text-[40px] flex md:text-[55px] items-end lg:text-[60px] font-serif text-zinc-950 font-[600]  drop-shadow-lg/40">
