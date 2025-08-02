@@ -147,7 +147,7 @@ if (emailError) {
             >
               <img
                 className="h-4 w-4 mr-3 drop-shadow-sm"
-                src="../public/media/google.png"
+                src="/media/google.png"
                 alt="google"
               />
               <span> Google</span>
