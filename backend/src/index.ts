@@ -1,21 +1,20 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import session from "express-session";
 import dotenv from "dotenv";
 import passport from "passport";
 
-import { initPassport } from "./passport";
+import { initPassport } from "./passport"; // contains GoogleStrategy
 import authRoute from "./auth/auth";
 import gameRoute from "./auth/gameData";
 import interactionRoute from "./auth/userInteraction";
 
-// ✅ Initialize
+// Initialize
 dotenv.config();
 const app = express();
 const isProd = process.env.NODE_ENV === "production";
 
-// ✅ CORS first (must be before session and passport)
+// CORS first
 const allowedOrigins = (process.env.ALLOWED_HOST || "").split(",");
 
 app.use(
@@ -32,42 +31,28 @@ app.use(
   })
 );
 
-// ✅ Parsing middlewares
+// Parsing middlewares
 app.use(express.json());
 app.use(cookieParser());
 
-// ✅ Session middleware
-app.use(
-  session({
-    secret: process.env.COOKIE_SECRET || "keyboard cat",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: isProd,                    
-      sameSite: isProd ? "none" : "lax", 
-      httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000,   
-    },
-  })
-);
 
-// ✅ Passport initialization
+// Passport initialization (for Google login only)
 initPassport();
 app.use(passport.initialize());
-app.use(passport.authenticate("session"));
 
-// ✅ Route mounting
-app.use("/auth", authRoute);
+
+// Routes
+app.use("/auth", authRoute); // includes Google login + JWT token issuing
 app.use("/gameData", gameRoute);
 app.use("/social", interactionRoute);
 
-// ✅ Health route (optional)
+// Health check route
 app.get("/", (req, res) => {
   res.send("✅ Backend is live!");
 });
 
-// ✅ Server listen
+// Server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });

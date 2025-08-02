@@ -220,7 +220,7 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
             }
             break;
           case CHAT:
-            setMessages((prev) => [...prev, payload.message]);
+            setMessages((prev) => [...prev||[], payload.message]);
             break;
           case GAME_ALERT:
             setConnecting(false);

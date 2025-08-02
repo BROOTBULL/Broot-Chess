@@ -61,7 +61,7 @@ if (emailError) {
 
   async function handleGoogle(e: React.MouseEvent<HTMLElement>) {
     e.preventDefault();
-    const response=window.open(`http://localhost:3000/auth/google`, "_self");
+    const response=window.open(`https://broot-chess-backend.onrender.com/auth/google`, "_self");
     console.log("response",response);
   }
 

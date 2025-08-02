@@ -46,9 +46,6 @@ const ChessGame = () => {
   const [time, setTime] = useState(5);
   const [setting, setSetting] = useState(false);
 
-  axios.defaults.withCredentials = true;
-  axios.defaults.baseURL = "http://localhost:3000";
-
   // useEffect(() => {
   //   if (gameEnded) {
   //     const handleClick = () => {

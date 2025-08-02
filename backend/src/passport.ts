@@ -1,13 +1,10 @@
 const GoogleStratdgy = require("passport-google-oauth20");
 import passport from "passport";
-import dotenv from "dotenv";
 import prisma from "./db";
-
-dotenv.config();
 
 export function initPassport() {
   if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
-    throw new Error("missing enviroment variable for authantication provider");
+    throw new Error("Missing env vars for authentication provider");
   }
 
   passport.use(
@@ -24,7 +21,6 @@ export function initPassport() {
         done: (error: any, user?: any) => void
       ) {
         const user = await prisma.user.upsert({
-          // update+insert
           create: {
             email: profile.emails[0].value,
             username: profile.displayName,
@@ -44,22 +40,4 @@ export function initPassport() {
       }
     )
   );
-
-  passport.serializeUser(function (user: any, cb) {
-    //	Defines what user data gets stored in the session (e.g., just id)
-    process.nextTick(function () {
-      return cb(null, {
-        id: user.id,
-        username: user.username,
-        profile: user.profile,
-      });
-    });
-  });
-
-  passport.deserializeUser(function (user: any, cb) {
-    //	Defines how to turn that stored data back into a full user object
-    process.nextTick(function () {
-      return cb(null, user);
-    });
-  });
 }
