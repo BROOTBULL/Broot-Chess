@@ -254,12 +254,14 @@ router.get("/login/failed", (req: Request, res: Response) => {
 });
 
 // logout
-router.post("/logout", (req: Request, res: Response) => {
-  res.clearCookie("token");
-  res.status(200).json({
-    success: false,
-    message: "User successfully logged Out",
+router.get("/logout", (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   });
+  res.status(200).json({ message: "Logged out successfully" });
 });
+
 
 export default router;
