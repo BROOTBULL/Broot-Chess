@@ -1,12 +1,11 @@
-import { Request, Response, Router } from "express";
+import { CookieOptions, Request, Response, Router } from "express";
 import passport from "passport";
 import { v4 as uuidv4 } from "uuid";
 import prisma from "../db";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { verifyToken } from "./verifyToken";
-import bcrypt from "bcrypt"; 
-
+import bcrypt from "bcrypt";
 
 dotenv.config();
 
@@ -17,10 +16,10 @@ const CLIENT_URL = "http://localhost:5173/home";
 interface UserDetails {
   id: string;
   username: string;
-  name:string;
-  profile:string,
-  email:string;
-  rating:number;
+  name: string;
+  profile: string;
+  email: string;
+  rating: number;
   token?: string;
   isGuest: boolean;
 }
@@ -28,87 +27,83 @@ interface UserDetails {
 interface userjwtClaims {
   userId: string;
   username: string;
-  name:string;
-  profile:string;
-  email:string;
-  rating:number;
+  name: string;
+  profile: string;
+  email: string;
+  rating: number;
   token?: string;
   isGuest?: boolean;
 }
 
-// check Auth
+// ✅ Cookie config helper
+function getCookieOptions():CookieOptions {
+  return {
+    maxAge: 24 * 60 * 60 * 1000,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  };
+}
 
+// checkAuth
 router.get("/checkAuth", verifyToken, async (req: Request, res: Response) => {
- try {
-  if (!secret) {
-    throw new Error("JWT_SECRET is not defined in the environment variables");
-  }
-  const userId = req.userId as string;
-      const userDb = await prisma.user.findFirst({
-      where: {
-        id: userId,
-      },
-    });
+  try {
+    if (!secret) throw new Error("JWT_SECRET not defined");
 
+    const userId = req.userId as string;
+    const userDb = await prisma.user.findFirst({ where: { id: userId } });
 
     if (!userDb) {
-      console.log("no user found");
-
      res.status(400).json({ success: true, message: "User not found" });
-     return;
-    }
-    const token = jwt.sign({ userId: userId, name: userDb?.name, rating:userDb.rating ,profile:userDb.profile }, secret);
-    
+    return
+  }
+
+    const token = jwt.sign(
+      { userId, name: userDb.name, rating: userDb.rating, profile: userDb.profile },
+      secret
+    );
+
     const UserDetails: UserDetails = {
-    id: userDb.id,
-    username:userDb.username!,
-    profile:userDb.profile!,
-    name: userDb.name!,
-    email:userDb.email,
-    rating:userDb.rating,
-    token: token,
-    isGuest: false,
-  };
-    res.status(200).json({
-      UserDetails,isAuthanticated:true
-    });
+      id: userDb.id,
+      username: userDb.username!,
+      profile: userDb.profile!,
+      name: userDb.name!,
+      email: userDb.email!,
+      rating: userDb.rating,
+      token,
+      isGuest: false,
+    };
+
+    res.status(200).json({ UserDetails, isAuthanticated: true });
   } catch (error) {
     console.log("Error in checkAuth", error);
-    res.status(401).json({ success: false, message: "Unauthorized" }); 
+    res.status(401).json({ success: false, message: "Unauthorized" });
   }
 });
 
-// login guest if reload or revisit
-
-
+// login
 router.post("/login", async (req: Request, res: Response) => {
   const { email, password } = req.body;
-
-  if (!secret) {
-    throw new Error("JWT_SECRET is not defined in the environment variables");
-  }
+  if (!secret) throw new Error("JWT_SECRET not defined");
 
   if (!email || !password) {
-    res.status(400).json({ success: false, message: "Email and password are required." });
-    return ;
-  }
+   res.status(400).json({ success: false, message: "Email and password required." });
+  return
+}
 
   try {
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+    const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
-      res.status(401).json({ success: false, message: "User not found." });
-      return ;
-    }
+     res.status(401).json({ success: false, message: "User not found." });
+    return
+  }
 
     const isMatch = await bcrypt.compare(password, user.password as string);
-
     if (!isMatch) {
-      res.status(401).json({ success: false, message: "Incorrect password." });
-      return ;
-    }
+     res.status(401).json({ success: false, message: "Incorrect password." });
+    return
+  }
 
     const token = jwt.sign(
       { userId: user.id, name: user.name, rating: user.rating, profile: user.profile },
@@ -127,13 +122,7 @@ router.post("/login", async (req: Request, res: Response) => {
       isGuest: false,
     };
 
-    res.cookie("token", token, {
-      maxAge: 24 * 60 * 60 * 1000,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-    });
-
+    res.cookie("token", token, getCookieOptions()); // ✅ updated
     res.json(userDetails);
   } catch (err) {
     console.error("Login error:", err);
@@ -141,77 +130,48 @@ router.post("/login", async (req: Request, res: Response) => {
   }
 });
 
+// Google OAuth - login
+router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 
-// login with google
-
-router.get(
-  "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
-
-// google redirect
+// Google OAuth - callback
 router.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: "/login/failed" }),
   (req, res) => {
-    // ✅ req.user is available here from the passport callback
     const user = req.user as UserDetails;
-    console.log("user in backend: ",user);
-    
+    console.log("user in backend: ", user);
 
-    if (!secret) {
-      throw new Error("secret not defined");
-    }
+    if (!secret) throw new Error("JWT_SECRET not defined");
 
-    // ✅ Generate token
     const token = jwt.sign(
-      { userId: user.id, name: user.name, rating: user.rating , profile: user.profile },
+      { userId: user.id, name: user.name, rating: user.rating, profile: user.profile },
       secret,
       { expiresIn: "1d" }
     );
 
-    // ✅ Set cookie
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
-    });
-
-    // ✅ Redirect to frontend
-    res.redirect(CLIENT_URL); // e.g. http://localhost:5173
+    res.cookie("token", token, getCookieOptions()); // ✅ updated
+    res.redirect(CLIENT_URL);
   }
 );
 
-// Player signUp in game
-
+// Email signup
 router.post("/signUp", async (req: Request, res: Response) => {
   try {
     const bodyData = req.body;
+    if (!secret) throw new Error("JWT_SECRET not defined");
 
-    if (!secret) {
-      throw new Error("JWT_SECRET is not defined in the environment variables");
-    }
-
-    // Check for required fields
     if (!bodyData.email || !bodyData.password || !bodyData.username) {
-       res.status(400).json({ message: "Email, username, and password are required." });
-       return
-    }
-
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email: bodyData.email },
-    });
-
-    if (existingUser) {
-      res.status(409).json({ message: "User with this email already exists." });
-    return 
+     res.status(400).json({ message: "Email, username, and password are required." });
+    return
   }
 
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(bodyData.password, 10);
+    const existingUser = await prisma.user.findUnique({ where: { email: bodyData.email } });
+    if (existingUser) {
+     res.status(409).json({ message: "User with this email already exists." });
+    return
+  }
 
+    const hashedPassword = await bcrypt.hash(bodyData.password, 10);
     let guestUUID = "guest-" + uuidv4();
 
     const user = await prisma.user.create({
@@ -243,13 +203,7 @@ router.post("/signUp", async (req: Request, res: Response) => {
       isGuest: false,
     };
 
-    res.cookie("token", token, {
-      maxAge: 24 * 60 * 60 * 1000,
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-    });
-
+    res.cookie("token", token, getCookieOptions()); // ✅ updated
     res.json(UserDetails);
   } catch (error) {
     console.error("Signup error:", error);
@@ -257,54 +211,50 @@ router.post("/signUp", async (req: Request, res: Response) => {
   }
 });
 
-//post as guest
-
+// Guest sign up
 router.post("/signUpGuest", async (req: Request, res: Response) => {
   const bodyData = req.body;
-  //console.log(req.body);
   let guestUUID = "guest-" + uuidv4();
 
   const user = await prisma.user.create({
     data: {
       username: guestUUID,
       email: guestUUID + "@chess100x.com",
-      rating:500,
+      rating: 500,
       name: bodyData.name || guestUUID,
       provider: "GUEST",
     },
   });
-  if (!secret) {
-    throw new Error("JWT_SECRET is not defined in the environment variables");
-  }
+
+  if (!secret) throw new Error("JWT_SECRET not defined");
+
   const token = jwt.sign(
-    { userId: user.id, name: user.name, rating:user.rating,profile:user.profile },
+    { userId: user.id, name: user.name, rating: user.rating, profile: user.profile },
     secret
   );
+
   const UserDetails: UserDetails = {
     id: user.id,
-    username:user.username!,
+    username: user.username!,
     name: user.name!,
-    profile:user.profile!,
-    email:user.email,
-    rating:user.rating,
-    token: token,
+    profile: user.profile!,
+    email: user.email!,
+    rating: user.rating,
+    token,
     isGuest: false,
   };
-  res.cookie("token", token, { maxAge: 24 * 60 * 60 * 1000 });
+
+  res.cookie("token", token, getCookieOptions()); // ✅ updated
   res.json(UserDetails);
 });
 
-//handle google login callback
-
+// Google login failure route
 router.get("/login/failed", (req: Request, res: Response) => {
   res.status(401).json({ success: false, message: "failure" }).redirect("/");
 });
 
-// logout player form game
-
+// logout
 router.post("/logout", (req: Request, res: Response) => {
-  //console.log("hello");
-  
   res.clearCookie("token");
   res.status(200).json({
     success: false,
