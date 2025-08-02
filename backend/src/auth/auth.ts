@@ -36,14 +36,17 @@ interface userjwtClaims {
 }
 
 // ✅ Cookie config helper
-function getCookieOptions():CookieOptions {
+function getCookieOptions(): CookieOptions {
+  const isProduction = process.env.NODE_ENV === "production";
+
   return {
     maxAge: 24 * 60 * 60 * 1000,
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    secure: isProduction && true,        // ✅ only secure if production
+    sameSite: isProduction ? "none" : "lax",
   };
 }
+
 
 // checkAuth
 router.get("/checkAuth", verifyToken, async (req: Request, res: Response) => {

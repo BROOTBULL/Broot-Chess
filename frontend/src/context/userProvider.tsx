@@ -61,7 +61,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await axios.get("/auth/checkAuth",{withCredentials:true});
+        const res = await axios.get("/auth/checkAuth");
         if (res.data.isAuthanticated) {
           setUser(res.data.UserDetails);
         } else {
