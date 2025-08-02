@@ -254,7 +254,7 @@ router.get("/login/failed", (req: Request, res: Response) => {
 });
 
 // logout
-router.get("/logout", (req:Request, res:Response) => {
+router.post("/logout", (req:Request, res:Response) => {
   res.clearCookie("token", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
