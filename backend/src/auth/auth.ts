@@ -134,12 +134,12 @@ router.post("/login", async (req: Request, res: Response) => {
 });
 
 // Google OAuth - login
-router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
+router.get("/google", passport.authenticate("google", { scope: ["profile", "email"],session:false }));
 
 // Google OAuth - callback
 router.get(
   "/google/callback",
-  passport.authenticate("google", { failureRedirect: "/login/failed" }),
+  passport.authenticate("google", { failureRedirect: "/login/failed",session:false }),
   (req, res) => {
     const user = req.user as UserDetails;
     console.log("user in backend: ", user);
