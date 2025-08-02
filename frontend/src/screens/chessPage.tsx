@@ -44,6 +44,8 @@ const ChessGame = () => {
 
 
   const [time, setTime] = useState(5);
+  console.log(time,setTime(0));
+  
   const [setting, setSetting] = useState(false);
 
   // useEffect(() => {

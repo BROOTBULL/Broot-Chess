@@ -21,7 +21,7 @@ export const Friends = () => {
                   />
                   {friend.username}
                   <div 
-                  onClick={()=>sendNotification(friend,"CHALLENGE","Challenged you for a friendly Rapid Match")}
+                  onClick={()=>sendNotification(friend.id,"CHALLENGE","Challenged you for a friendly Rapid Match")}
                   className="ml-auto bg-emerald-900 p-2 text-[10px] cursor-pointer hover:bg-emerald-800">
                     Challenge
                   </div>

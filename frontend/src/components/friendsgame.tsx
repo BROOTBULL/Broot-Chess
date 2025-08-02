@@ -38,7 +38,7 @@ export const FriendsGame = () => {
             <span className="text-red-700">2</span>
           </span>
           <div
-            onClick={()=>sendNotification(friend,"CHALLENGE","Challenged you for a friendly Rapid Match")}
+            onClick={()=>sendNotification(friend.id,"CHALLENGE","Challenged you for a friendly Rapid Match")}
             className="bg-zinc-700 w-fit p-2 md:p-3 shadow-md/30 flex flex-row cursor-pointer playButton"
           >
             <span className="text-zinc-200 font-bold text-sm md:text-md">

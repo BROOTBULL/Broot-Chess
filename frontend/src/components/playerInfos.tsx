@@ -6,6 +6,7 @@ export const PlayerInfo=({userName,color,rating,profile}:{userName:string,color:
     if(userName.length>12)
     {
       userName=userName.slice(0,-8)
+      setTimer("00:00")
     }
 
     return(

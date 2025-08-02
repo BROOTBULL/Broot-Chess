@@ -19,7 +19,7 @@ export const MessageBox = () => {
 
 
 
-  function handleSend(e) {
+  function handleSend(e:React.SyntheticEvent) {
     e.preventDefault();
     const message = { sender:sender , message: text };
     socket?.send(

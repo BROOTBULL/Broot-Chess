@@ -17,7 +17,7 @@ export const NewGame = ({
 }: Props) => {
   const INIT_GAME = "init_game";
   const JOINROOM = "joinroom";
-  const NOTIFICATION="notification"
+  // const NOTIFICATION="notification"
 
   const { gameType, setGameType, connecting, setConnecting, roomId } =
     useChessContext();
@@ -59,7 +59,7 @@ export const NewGame = ({
     setRoomType(true);
   }
 
-  function joinRoom(e) {
+  function joinRoom(e:React.SyntheticEvent) {
     e.preventDefault();
     // console.log("game sending");
     if (code)

@@ -32,7 +32,7 @@ export const SearchedPlayer = ({ player }: { player: Player }) => {
 
           
 
-  async function handleRequest(player:User, status: Status) {
+  async function handleRequest(player:Player, status: Status) {
     if (status === "Request_Sent" || status === "friends") return;
     const response = await axios.post("/social/reqPlayer", {
       senderId: user?.id,

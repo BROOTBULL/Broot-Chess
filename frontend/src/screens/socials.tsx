@@ -87,7 +87,7 @@ const Socials = () => {
 
  //////////////////////////// SEARCH PLAYER LOGIC /////////////////////////////// 
 
-  async function handleSearch(e) {
+  async function handleSearch(e:React.SyntheticEvent) {
     e.preventDefault();
     if (!search.trim()) return;
     const response = await axios.get("/social/getPlayer", {
@@ -105,7 +105,7 @@ const Socials = () => {
 
  ////////////////////////// SEND MESSAGE TO SOCIALPAGE LOGIC ///////////////////////
 
-  async function handleMessageSent(e, friend: User, type: string) {
+  async function handleMessageSent(e:React.SyntheticEvent, friend: User, type: string) {
     e.preventDefault();
     console.log("message:", message);
     const response = await axios.post("/social/message", {

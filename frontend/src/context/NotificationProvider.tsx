@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode } from "react";
 import { motion } from "motion/react";
 import { User } from "./userProvider";
 import { NotifType } from "../screens/socials";
