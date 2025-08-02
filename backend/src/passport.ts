@@ -1,4 +1,4 @@
-const GoogleStratdgy = require("passport-google-oauth20");
+const GoogleStrategy = require("passport-google-oauth20");
 import passport from "passport";
 import prisma from "./db";
 
@@ -8,7 +8,7 @@ export function initPassport() {
   }
 
   passport.use(
-    new GoogleStratdgy(
+    new GoogleStrategy(
       {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -20,23 +20,33 @@ export function initPassport() {
         profile: any,
         done: (error: any, user?: any) => void
       ) {
-        const user = await prisma.user.upsert({
-          create: {
-            email: profile.emails[0].value,
-            username: profile.displayName,
-            name: profile.displayName,
-            profile: profile._json.picture,
-            provider: "GOOGLE",
-          },
-          update: {
-            name: profile.displayName,
-          },
-          where: {
-            email: profile.emails[0].value,
-          },
-        });
+        const email = profile.emails?.[0]?.value;
 
-        done(null, user);
+        if (!email) {
+          return done(new Error("Email not found in Google profile"));
+        }
+
+        try {
+          const user = await prisma.user.upsert({
+            create: {
+              email: email,
+              username: profile.displayName,
+              name: profile.displayName,
+              profile: profile._json.picture,
+              provider: "GOOGLE",
+            },
+            update: {
+              name: profile.displayName,
+            },
+            where: {
+              email: email,
+            },
+          });
+
+          done(null, user);
+        } catch (error) {
+          done(error);
+        }
       }
     )
   );
