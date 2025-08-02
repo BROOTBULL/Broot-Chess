@@ -11,7 +11,7 @@ dotenv.config();
 
 const router = Router();
 const secret = process.env.JWT_SECRET;
-const CLIENT_URL = "http://localhost:5173/home";    
+const CLIENT_URL = "https://broot-chess-frontend-fj9b.onrender.com/home";    
 
 interface UserDetails {
   id: string;
