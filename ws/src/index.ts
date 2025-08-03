@@ -92,7 +92,7 @@ const extractAuthUser = (token: string, ws: WebSocket): User => {
   return new User(ws, decoded);
 };
 
-const PORT = process.env.PORT || 8080;
-server.listen(PORT, () => {
-  console.log(`WebSocket server running on port ${PORT}`);
+const PORT = parseInt(process.env.PORT || "8080", 10);
+server.listen(PORT, "0.0.0.0", () => {
+  console.log(`🚀 WebSocket server running on 0.0.0.0:${PORT}`);
 });
