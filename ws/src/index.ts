@@ -13,7 +13,7 @@ dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET || "SECRETKEY";
 
 const app = express();
-app.get("/", (_, res) => res.send("WebSocket server up ✅"));
+app.get("/", (_:Request, res:Response) => res.send("WebSocket server up ✅"));
 
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
