@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import { randomUUID } from "crypto";
 import dotenv from "dotenv";
 import { connectionManager } from "./connectionManager";
+import http from "http";
 
 export class User {
   public socket: WebSocket;
@@ -37,8 +38,8 @@ export interface userJwtClaims {
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET || "SECRETKEY";
-const PORT = 8080;
-const wss = new WebSocketServer({ port: PORT }); // Create a new WebSocket server instance that listens on the defined port
+const server = http.createServer(); // Create HTTP server it automaically handles https traffic 
+const wss = new WebSocketServer({ server });// Create a new WebSocket server instance that listens on the defined port
 const gameManager = new GameManager(); // Create an instance of the GameManager to manage users and game rooms
 
 
@@ -91,4 +92,7 @@ const extractAuthUser = (token: string, ws: WebSocket): User => {
   return new User(ws, decoded);
 };
 
-console.log(`WebSocket server running on ws://localhost:${PORT}`);
+const PORT = process.env.PORT || 8080;
+server.listen(PORT, () => {
+  console.log(`WebSocket server running on port ${PORT}`);
+});

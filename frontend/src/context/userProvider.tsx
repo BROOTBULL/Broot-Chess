@@ -39,7 +39,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (!user) return;
 
-    const ws = new WebSocket(`ws://localhost:8080?token=${user.token}`);
+    const ws = new WebSocket(`wss://broot-chess-ws.onrender.com?token=${user.token}`);
 
     ws.onopen = () => {
       console.log("✅ WebSocket connected");
