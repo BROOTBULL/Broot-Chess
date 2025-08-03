@@ -60,6 +60,9 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
   // ✅ Auth check on mount
   useEffect(() => {
     const checkAuth = async () => {
+      console.log(cookieStore);
+      
+      
       try {
         const res = await axios.get("/auth/checkAuth");
         if (res.data.isAuthanticated) {
