@@ -14,6 +14,10 @@ dotenv.config();
 const app = express();
 const isProd = process.env.NODE_ENV === "production";
 
+// Parsing middlewares
+app.use(express.json());
+app.use(cookieParser());
+
 // CORS first
 const allowedOrigins = (process.env.ALLOWED_HOST || "").split(",");
 
@@ -31,9 +35,7 @@ app.use(
   })
 );
 
-// Parsing middlewares
-app.use(express.json());
-app.use(cookieParser());
+
 
 
 // Passport initialization (for Google login only)
