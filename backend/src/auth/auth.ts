@@ -37,13 +37,11 @@ interface userjwtClaims {
 
 // ✅ Cookie config helper
 function getCookieOptions(): CookieOptions {
-  const isProduction = process.env.NODE_ENV === "production";
-
   return {
     maxAge: 24 * 60 * 60 * 1000,
     httpOnly: true,
-    secure: isProduction && true,        // ✅ only secure if production
-    sameSite: isProduction ? "none" : "lax",
+    secure: true,               // ✅ Always secure on production
+    sameSite: "none",           // ✅ Must be none for cross-origin
   };
 }
 
