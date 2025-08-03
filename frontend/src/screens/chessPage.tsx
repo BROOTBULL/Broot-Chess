@@ -44,23 +44,10 @@ const ChessGame = () => {
 
 
   const [time, setTime] = useState(5);
-  console.log(time,setTime(0));
+  console.log(time);
+  
   
   const [setting, setSetting] = useState(false);
-
-  // useEffect(() => {
-  //   if (gameEnded) {
-  //     const handleClick = () => {
-  //       setGameEnded(false);
-  //     };
-
-  //     document.addEventListener("click", handleClick);
-
-  //     return () => {
-  //       document.removeEventListener("click", handleClick);
-  //     };
-  //   }
-  // }, []);
 
   function handleClose()
   {
@@ -92,7 +79,7 @@ const ChessGame = () => {
   function handleUndoReq(choice:boolean)
   {
     console.log("roomId",roomId);
-
+    setTime(0)
      socket?.send(
       JSON.stringify({
         type: UNDO_MOVE_APPROVE,
