@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Response } from "express";
 import { WebSocketServer, WebSocket } from "ws";
 import { GameManager } from "./GameManager";
 import url from "url";
@@ -13,7 +13,7 @@ dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET || "SECRETKEY";
 
 const app = express();
-app.get("/", (_:Request, res:Response) => res.send("WebSocket server up ✅"));
+app.get("/", (_, res:Response) => res.send("WebSocket server up ✅"));
 
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
