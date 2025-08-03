@@ -60,7 +60,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
   // ✅ Auth check on mount
   useEffect(() => {
     const checkAuth = async () => {
-      console.log(cookieStore);
+
       
       
       try {
