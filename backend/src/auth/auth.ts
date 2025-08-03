@@ -132,13 +132,13 @@ router.post("/login", async (req: Request, res: Response) => {
 });
 
 // Google OAuth - login
-router.get("/google", passport.authenticate("google", { scope: ["profile", "email"],session:false }));
+router.get("/google", passport.authenticate("google", { scope: ["profile", "email"]}));
 
 // Google OAuth - callback
 router.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: "/login/failed",session:false }),
-  (req, res) => {
+  (req:Request, res:Response) => {
     const user = req.user as UserDetails;
     console.log("user in backend: ", user);
 
@@ -149,6 +149,9 @@ router.get(
       secret,
       { expiresIn: "1d" }
     );
+
+    console.log(token,"token formed in googlecallback");
+    
 
     res.cookie("token", token, getCookieOptions()); // ✅ updated
     res.redirect(CLIENT_URL);
