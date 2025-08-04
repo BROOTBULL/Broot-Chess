@@ -12,11 +12,11 @@ export const FriendsGame = () => {
         <span className=" text-zinc-700 text-md lg:text-2xl cursor-default">
           Friends
         </span>
-        <span 
+        <button
         onClick={()=>navigate("/social")}
         className=" text-zinc-700 text-md lg:text-2xl ml-auto cursor-pointer hover:text-zinc-800">
           See all
-        </span>
+        </button>
       </div>
       <div className={`flex flex-row ring-1 md:gap-1 ring-zinc-400 overflow-x-auto custom-scroll-w overflow-hidden scroll-smooth `}>
          
@@ -30,12 +30,12 @@ export const FriendsGame = () => {
             alt="chess"
           />
           <span className="text-zinc-800 font-[500] text-[13px]">
-            Opponent (500)
+            {friend.name} ({friend.rating})
           </span>
           <span className="text-sm text-zinc-600 font-[600]">
-            <span className="text-green-700">11</span> /{" "}
-            <span className="text-zinc-800">1</span> /{" "}
-            <span className="text-red-700">2</span>
+            <span className="text-green-700">{Math.floor(Math.random()*10)}</span> /{" "}
+            <span className="text-zinc-800">{Math.floor(Math.random()*10)}</span> /{" "}
+            <span className="text-red-700">{Math.floor(Math.random()*10)}</span>
           </span>
           <div
             onClick={()=>sendNotification(friend.id,"CHALLENGE","Challenged you for a friendly Rapid Match")}
@@ -46,7 +46,7 @@ export const FriendsGame = () => {
             </span>
           </div>
         </div>)})): (
-            <div className="text-center text-zinc-800 text-md h-70 w-full flex items-center justify-center"><div>No friends yet</div></div>
+            <div className="text-center text-zinc-800 text-md h-30 w-full flex items-center justify-center"><div>No friends yet</div></div>
           )}
       </div>
     </div>

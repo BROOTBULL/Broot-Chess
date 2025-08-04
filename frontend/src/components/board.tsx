@@ -1,11 +1,12 @@
 import { Square, SQUARES } from "chess.js";
 import { useState } from "react";
 import { useChessContext, useUserContext } from "../hooks/contextHook";
+import { boardTheme } from "../assets/boardtheme";
 
-export const ChessBoard = () => {
+export const ChessBoard = ({showSquare}:{showSquare:boolean}) => {
     const MOVE = "move";
     const {socket}=useUserContext()
-    const {setBoard,board,chess,color,roomId,moves}=useChessContext()
+    const {setBoard,board,chess,color,roomId,moves,boardAppearnce}=useChessContext()
 
     const rows = color === "white" ? board : [...board].reverse();
     const [validmoves, setValidmoves] = useState<Square[]>([]);
@@ -95,11 +96,14 @@ function handleSquareClick(clickedSquare: Square) {
             <div
             key={i}
             className="flex">
+
               {cols.map((square, j) => {
                 const squareIndex =
                   color === "white" ? i * 8 + j : 63 - (i * 8 + j);
                 const squareId = SQUARES[squareIndex];
                 const inCheck=chess.inCheck();
+
+                const theme=boardTheme.find((t)=>t.theme===boardAppearnce)
 
                 return (
                   <div
@@ -110,20 +114,21 @@ function handleSquareClick(clickedSquare: Square) {
                     onClick={() => handleSquareClick(squareId)}
                     className={`flex-1 aspect-square hover:cursor-pointer ${
                       (i + j) % 2 == 0
-                        ? "bg-zinc-200 hover:bg-white "
-                        : "bg-zinc-600 hover:bg-zinc-400 "
-                    }${from?validmoves.includes(squareId)?"validHighlight":"":""}
+                        ? ` ${ theme?.lightTile.square} hover:${theme?.lightTile.hover }`
+                        : ` ${ theme?.darkTile.square} hover:${theme?.darkTile.hover }`
+
+                    }${from?validmoves.includes(squareId)?" validHighlight ":"":""}
                     ${square?.type==="k"&&square?.color===chess.turn()&&inCheck?"alert":""}`}
 
                   >
-                    <div className="absolute text-[7px] text-zinc-800 font-[900] ml-[2px]">
+                    {showSquare&&<div className="absolute text-[6px] md:text-[7px] text-zinc-800 font-[900] ml-[2px] pointer-events-none">
                       {squareId}
-                    </div>
+                    </div>}
                      {square ? (
                         <div
                           className={`${
-                            from === squareId ? " bg-blue-200 ": ""
-                          } ${moves[moves.length-1]===squareId?" drop-shadow-[0px_0px_15px_yellow]/40 ":""}`}
+                            from === squareId ? " bg-blue-200 inset-ring-3 inset-ring-blue-500": ""
+                          } ${moves[moves.length-1]===squareId?"bg-radial from-green-200 to-green-400":""}`}
                           draggable={true}
                           onDragStart={() => handleDragstart(squareId)}
                         >

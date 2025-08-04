@@ -59,7 +59,7 @@ export const SearchedPlayer = ({ player }: { player: Player }) => {
       className={`hover:bg-zinc-700 cursor-pointer p-1 interact-btn rounded-md flex justify-center duration-200 `}
     >
       <img
-        className={`size-8 ${status === "Request_Sent" ? "brightness-50" : ""}`}
+        className={`md:size-8 size-7 ${status === "Request_Sent" ? "brightness-50" : ""}`}
         src={`./media/${status}.png`}
         alt=""
       />

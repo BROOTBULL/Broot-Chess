@@ -37,7 +37,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     // remove it after 15 seconds
     setTimeout(() => {
       setNotifications((prev) => prev.filter((n) => n.id !== id));
-    }, 15000);
+    }, 15*1000);
   };
 
   const removeNotification = (id: number) => {
@@ -68,7 +68,10 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
         );
       case "MESSAGE":
         return (
-          <div className="h-full min-h-24 w-[20%] ml-auto flex items-center justify-center">
+          <div className="h-full min-h-15 md:min-h-24 w-[20%] ml-auto flex items-center justify-center">
+            <button 
+            onClick={()=>remove(id)}
+            className="ml-13 mb-13 absolute cursor-pointer"><img className="rotate-45 size-6 invert" src="./media/closeOption.png" alt="" /></button>
             <div onClick={()=>{
                const form = document.getElementById(sender.userId);
                              form?.classList.toggle("hidden");
@@ -79,7 +82,11 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
         );
       case "ACCEPT":
       default:
-        return <></>;
+        return <>
+        <button 
+            onClick={()=>remove(id)}
+            className="ml-auto cursor-pointer"><img className="rotate-45 size-6 invert" src="./media/closeOption.png" alt="" /></button>
+            </>;
     }
   }
 
@@ -87,7 +94,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     <NotificationContext.Provider value={{ notify,triggerRefresh }}>
       {children}
 
-      <div className="fixed top-4 right-4 z-[9999] space-y-2">
+      <div className="fixed top-4 right-2 z-[9999] space-y-2">
         {notifications.map((n) => (
           <motion.div
             initial={{ opacity: 0.5, x: 100 }} // start off right and invisible
@@ -95,17 +102,18 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
             exit={{ opacity: 0.5, x: 100 }} // slide out to right again
             transition={{ duration: 0.2 }}
             key={n.id}
-            className={`bg-zinc-800 min-h-25 h-fit w-120 rounded-2xl text-white shadow-2xl/70`}
+            className={`bg-zinc-800 min-h-15 md:min-h-25 h-fit w-92 md:w-120 rounded-2xl text-white shadow-2xl/70`}
           >
             <div className="h-full w-full flex flex-row p-2">
-              <div className="rounded-lg h-full aspect-square border-2 border-zinc-700">
+
+              <div className="rounded-lg md:h-full h-15 aspect-square border-2 border-zinc-700">
                 <img
                   className="h-full max-h-22"
                   src={n.sender.profile || "./media/userW.png"}
                   alt=""
                 />
               </div>
-              <div className="bg-zinc-800 p-2 max-w-[80%] w-fit h-full min-h-24 flex flex-col justify-center">
+              <div className="bg-zinc-800 p-2 max-w-[80%] w-fit h-full min-h-15 md:min-h-24 flex flex-col justify-center">
                 <div className="text-lg font-bold text-zinc-200 ">
                   {n.sender.name}
                 </div>
@@ -235,13 +243,13 @@ const RequestButtons = ({
     <div className="h-full w-[25%] ml-auto">
       <div
         onClick={() => handleRequest(sender)}
-        className="text-sm text-zinc-100  text-center bg-emerald-800 rounded-tr-lg rounded-[2px] p-2 px-4 cursor-pointer hover:bg-emerald-700 m-1 "
+        className="text-sm text-zinc-100  text-center bg-emerald-800 rounded-tr-lg rounded-[2px] p-1 md:p-2 px-4 cursor-pointer hover:bg-emerald-700 m-0.5 md:m-1 "
       >
         Accept
       </div>
       <div
         onClick={() => onRemove(notifId)}
-        className="text-sm text-zinc-100 text-center bg-zinc-700 rounded-br-lg rounded-[2px] p-2 px-4 cursor-pointer hover:bg-zinc-600 m-1 "
+        className="text-sm text-zinc-100 text-center bg-zinc-700 rounded-br-lg rounded-[2px] p-1 md:p-2 px-4 cursor-pointer hover:bg-zinc-600 m-0.5 md:m-1 "
       >
         Decline
       </div>

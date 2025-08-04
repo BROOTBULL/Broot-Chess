@@ -134,11 +134,11 @@ const Socials = () => {
     <div className=" flex w-full min-h-screen bg-gradient-to-r from-zinc-300 to-zinc-100 h-fit">
       <Header2 />
       <Header3 />
-      <div className="pt-20 flex flex-col mx-auto h-full w-full p-3 md:p-6 md:pt-28 xl:pt-10 lg:pl-30 max-w-[1200px] ">
+      <div className="pt-20 flex flex-col mx-auto h-full w-full p-3 md:p-6 md:pt-28 xl:pt-10 lg:pl-40 max-w-[1200px] ">
         <Profile />
-        <div className=" h-fir w-full p-2 px-6 mt-5">
+        <div className=" h-fir w-full py-2 mt-5">
           <div className="text-2xl font-bold py-3 text-zinc-900 ">Messages</div>
-          <div className="text-lg text-zinc-800  h-fit">
+          <div className="text-lg text-zinc-800  h-fit flex">
             {notifications && notifications.length > 0 ? (
               <div className="h-fit w-full flex flex-col">
                 {(seeAll ? notifications.slice() : notifications.slice(-3))
@@ -155,7 +155,7 @@ const Socials = () => {
                 {notifications.length > 3 && (
                   <div
                     onClick={() => setSeeAll(!seeAll)}
-                    className="bg-zinc-800 w-full h-12 border-3 border-zinc-700 justify-center flex items-center text-zinc-400 text-md cursor-pointer hover:bg-zinc-700"
+                    className="bg-zinc-800 w-full h-8 md:h-12 border-3 border-zinc-700 justify-center flex items-center text-zinc-400 text-[12px] md:text-md cursor-pointer hover:bg-zinc-700"
                   >
                     {seeAll ? "See less" : "See more"}
                   </div>
@@ -166,13 +166,13 @@ const Socials = () => {
             )}
           </div>
         </div>
-        <div className="w-full flex flex-col p-2 px-5 my-5">
+        <div className="w-full flex flex-col py-2 my-5">
           <div className="text-2xl font-bold py-3 text-zinc-900 ">
             Friends List
           </div>
-          <form className="w-full h-10  rounded-sm border-2 border-zinc-400 flex justify-center ">
+          <form className="w-full h-8 md:h-10  rounded-sm border-2 border-zinc-400 flex justify-center ">
             <input
-              className="w-[95%] h-full flex-15 outline-0 focus:border-zinc-600 rounded-l-sm focus:border-2 text-zinc-800 p-1 pl-2"
+              className="w-[95%] h-full text-sm md:text-md flex-15 outline-0 focus:border-zinc-600 rounded-l-sm focus:border-2 text-zinc-800 p-1 pl-2"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               type="text"
@@ -180,7 +180,7 @@ const Socials = () => {
             />
             <button
               onClick={(e) => handleSearch(e)}
-              className="border-l-2 border-zinc-400 w-full h-full flex-1 flex justify-center items-center text-zinc-600 cursor-pointer hover:bg-zinc-400"
+              className="border-l-2 border-zinc-400 w-full h-full md:flex-1 flex-2  flex justify-center items-center text-zinc-600 cursor-pointer hover:bg-zinc-400"
             >
               <img
                 className="size-7 brightness-30"
@@ -195,18 +195,18 @@ const Socials = () => {
                 return (
                   <div
                     key={i}
-                    className="bg-zinc-800 w-full h-30 border-2 border-zinc-700 flex flex-row p-3"
+                    className="bg-zinc-800 w-full h-fit border-2 border-zinc-700 flex flex-row p-3"
                   >
                     <div className="bg-zinc-800 border-2 border-zinc-700 rounded-md aspect-square h-full">
                       <img
-                        className="rounded-sm"
+                        className="rounded-sm size-15 md:size-20"
                         src={player.profile || `./media/userW.png`}
                         alt=""
                       />
                     </div>
                     <div className="w-fit h-full flex flex-col justify-center p-3">
-                      <div className="text-lg text-zinc-200">{player.name}</div>
-                      <div className="text-zinc-300 text-sm">
+                      <div className="text-sm md:text-lg text-zinc-200">{player.name}</div>
+                      <div className="text-zinc-300 text-[12px] md:text-sm">
                         {player.username}
                       </div>
                     </div>
@@ -215,7 +215,7 @@ const Socials = () => {
                       onClick={()=>sendNotification(player.id,"CHALLENGE","Challenged you to a Rapid Match")}
                       className="hover:bg-zinc-700 cursor-pointer p-1 interact-btn rounded-md flex justify-center duration-200">
                         <img
-                          className="size-8"
+                          className="size-7 md:size-8 "
                           src="./media/challenge.png"
                           alt=""
                         />
@@ -236,18 +236,18 @@ const Socials = () => {
                 return (
                   <div
                     key={i}
-                    className="bg-zinc-800 w-full h-30 border-2 border-zinc-700 flex flex-row p-3"
+                    className="bg-zinc-800 w-full h-fit border-2 border-zinc-700 flex flex-row p-3"
                   >
                     <div className="bg-zinc-800 border-2 border-zinc-700 rounded-md aspect-square h-full">
                       <img
-                        className="rounded-sm"
+                        className="rounded-sm size-15 md:size-20"
                         src={friend.profile || `./media/userW.png`}
                         alt=""
                       />
                     </div>
                     <div className="w-fit h-full flex flex-col justify-center p-3">
-                      <div className="text-lg text-zinc-200">{friend.name}</div>
-                      <div className="text-zinc-300 text-sm">
+                      <div className="text-sm md:text-lg text-zinc-200">{friend.name}</div>
+                      <div className="text-zinc-300 text-[12px] md:text-sm">
                         {friend.username}
                       </div>
                     </div>
@@ -259,7 +259,7 @@ const Socials = () => {
                         className="hover:bg-zinc-700 cursor-pointer p-1 interact-btn rounded-md flex justify-center duration-200"
                       >
                         <img
-                          className="size-8"
+                          className="size-7 md:size-8"
                           src="./media/challenge.png"
                           alt=""
                         />
@@ -269,10 +269,10 @@ const Socials = () => {
                       </div>
                       <div
                         onClick={() => OpenMessage(friend.id)}
-                        className="hover:bg-zinc-700 cursor-pointer p-1 interact-btn rounded-md flex justify-center duration-200"
+                        className="hover:bg-zinc-700 cursor-pointer md:p-1 interact-btn rounded-md flex justify-center duration-200"
                       >
                         <img
-                          className="size-8"
+                          className="size-7 md:size-8"
                           src="./media/message.png"
                           alt=""
                         />
@@ -282,7 +282,7 @@ const Socials = () => {
                       </div>
                       <form
                         id={friend.id}
-                        className={`h-20 w-90 mt-32 absolute hidden mx-auto my-auto `}
+                        className={`h-20 w-60 md:w-90 mt-28 md:mt-33 absolute hidden my-auto mx-auto mr-27 `}
                       >
                         <textarea
                           name="message"
@@ -297,10 +297,10 @@ const Socials = () => {
                               handleMessageSent(e, friend, "MESSAGE")
 
                           }}
-                          className=" rounded-full size-10 absolute ml-auto cursor-pointer hover:bg-zinc-500"
+                          className=" rounded size-8 absolute ml-auto cursor-pointer bg-emerald-900 hover:bg-emerald-800 mt-1"
                         >
                           <img
-                            className="size-8 invert"
+                            className="size-7 md:size-8"
                             src="./media/message.png"
                             alt=""
                           />
@@ -311,10 +311,10 @@ const Socials = () => {
                       </div>
                       <div
                         onClick={() => setOptionOpen(!optionOpen)}
-                        className="hover:bg-zinc-700 cursor-pointer p-1 interact-btn rounded-md flex justify-center duration-200"
+                        className="hover:bg-zinc-700 cursor-pointer md:p-1 interact-btn rounded-md flex justify-center duration-200"
                       >
                         <img
-                          className="size-8"
+                          className="size-7 md:size-8"
                           src="./media/optionD.png"
                           alt=""
                         />
@@ -323,11 +323,11 @@ const Socials = () => {
                         onClick={async () =>
                           user&&handleRemoveFriend(user.id, friend.id)
                         }
-                        className={`bg-zinc-700 w-fit duration-300 absolute cursor-pointer group mt-25 ml-30 rounded-sm   ${
+                        className={`bg-zinc-700 w-fit duration-300 absolute cursor-pointer group mt-15 md:mt-25 ml-10 md:ml-30 rounded-sm   ${
                           optionOpen ? " h-fit max-h-20" : " max-h-0"
                         } duration-200 overflow-hidden`}
                       >
-                        <div className="mx-1 my-1 p-1 px-2 text-md text-zinc-200 group-hover:bg-red-900/40 duration-200">
+                        <div className="mx-1 my-1 p-1 px-2 text-[12px] md:text-md text-zinc-200 group-hover:bg-red-900/40 duration-200">
                           Remove friend
                         </div>
                       </div>

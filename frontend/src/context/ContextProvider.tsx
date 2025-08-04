@@ -64,6 +64,8 @@ interface ChessContextType {
   setUndoBox: React.Dispatch<React.SetStateAction<boolean>>;
   waitingResponse: boolean;
   setWaitingResponse: React.Dispatch<React.SetStateAction<boolean>>;
+  boardAppearnce: string;
+  setBoardAppearnce: React.Dispatch<React.SetStateAction<string>>;
 }
 
 type GameType = "blitz" | "rapid" | "daily" | "";
@@ -95,6 +97,8 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
   const [undoRequested, setUndoRequested] = useState(false);
   const [undoBox, setUndoBox] = useState<boolean>(false);
   const [waitingResponse, setWaitingResponse] = useState<boolean>(false);
+  const [boardAppearnce, setBoardAppearnce] = useState<string>( localStorage.getItem("theme")as string||"zinc");
+
 
   function isPromoting(chess: Chess, from: Square, to: Square) {
     const piece = chess.get(from);
@@ -141,13 +145,6 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
                 "roomData",
                 JSON.stringify({ rmid, expiryTime })
               );
-
-              // console.log(
-              //   "Game initialized ! You are : ",
-              //   payload.color,
-              //   "roomId:",
-              //   payload.RoomId
-              // );
               setColor(isUser ? "white" : "black");
             }
             break;
@@ -246,12 +243,15 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
             break;
           case UNDO_MOVE:
             setUndoRequested(payload.requestingPlayerId !== user?.id);
+            
             break;
           case UNDO_MOVE_APPROVE:
             {
               chess.load(payload.revertedfen);
               const newBoard = chess.board();
               setBoard(newBoard);
+              const moveTo = (payload.moves as Move[]).map((move) => move.to);
+              setMoves(moveTo);
               
               setWaitingResponse(false)
               setUndoBox(false)
@@ -321,7 +321,9 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
         setUndoRequested,
         undoBox,setUndoBox,
         waitingResponse,
-        setWaitingResponse
+        setWaitingResponse,
+        boardAppearnce,
+        setBoardAppearnce
       }}
     >
       {children}

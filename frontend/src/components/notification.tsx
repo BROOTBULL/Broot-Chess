@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useChessContext, useUserContext } from "../hooks/contextHook";
 import { Message } from "../screens/socials";
 import axios from "axios";
+import { useSendNotification } from "../hooks/NotificationHook";
 
 const JOINROOM = "joinroom";
 
@@ -77,6 +78,7 @@ export const NotifChallenge = ({ notif }: { notif: Message }) => {
 
 export const Notification = ({ setNotifications, notif }: {setNotifications:React.Dispatch<React.SetStateAction<Message[]>>, notif: Message }) => {
   const { user } = useUserContext();
+  const {sendNotification}=useSendNotification()
 
   async function handleAccept(playerId: string) {
     const responseReq = await axios.post("/social/reqPlayer", {
@@ -90,6 +92,7 @@ export const Notification = ({ setNotifications, notif }: {setNotifications:Reac
       type: "ACCEPT",
     });
     console.log(responseReq.data.message, " ", responseReqMessage.data.message);
+    sendNotification(playerId, "ACCEPT", "Accepted your Friend Request");
     handleClose(notif.id)
   }
 
@@ -112,17 +115,17 @@ export const Notification = ({ setNotifications, notif }: {setNotifications:Reac
             onClick={()=>handleClose(notif.id)}
             className="rounded-sm cursor-pointer">
               <img
-                className="size-5 rotate-45"
+                className="size-3 md:size-5 rotate-45"
                 src="./media/plus.png"
                 alt=""
               />
             </div></div>;
       case "REQUEST":
         return (
-          <div className="flex justify-end items-center w-[20%] ml-auto gap-3">
+          <div className="flex justify-end items-center w-fit ml-auto gap-3">
             <div
               onClick={() => handleAccept(notif.senderId)}
-              className="text-sm text-zinc-100 bg-emerald-800 rounded-sm p-2 px-4 cursor-pointer hover:bg-emerald-700"
+              className="text-[12px] md:text-sm text-zinc-100 bg-emerald-800 rounded-sm p-1 px-2 md:p-2 md:px-4 cursor-pointer hover:bg-emerald-700"
             >
               Accept
             </div>
@@ -130,7 +133,7 @@ export const Notification = ({ setNotifications, notif }: {setNotifications:Reac
             onClick={()=>handleClose(notif.id)}
             className="bg-zinc-700 rounded-sm cursor-pointer hover:bg-rose-950">
               <img
-                className="size-9 p-1 rotate-45"
+                className="size-7 md:size-9 p-1 rotate-45"
                 src="./media/plus.png"
                 alt=""
               />
@@ -139,15 +142,15 @@ export const Notification = ({ setNotifications, notif }: {setNotifications:Reac
         )
         case "ACCEPT":
         return( <div className="ml-auto ">            
-          <div 
+          <button 
             onClick={()=>handleClose(notif.id)}
             className="rounded-sm cursor-pointer">
               <img
-                className="size-5 rotate-45"
+                className="size-3 md:size-5 rotate-45"
                 src="./media/plus.png"
                 alt=""
               />
-            </div></div>)
+            </button></div>)
     }
   }
 
@@ -155,14 +158,14 @@ export const Notification = ({ setNotifications, notif }: {setNotifications:Reac
     <div className="bg-zinc-800 w-full h-fit border-2 border-b-0 border-zinc-700 flex flex-row p-3 ">
       <div className="bg-zinc-800 border-2 border-zinc-700 rounded-md aspect-square h-full">
         <img
-          className="size-18"
+          className="size-12 md:size-18"
           src={notif.sender.profile || "./media/userW.png"}
           alt=""
         />
       </div>
       <div className="flex flex-col w-fit max-w-[80%] pl-3 justify-center ">
-        <div className="text-md text-zinc-200">{notif.sender.username}</div>
-        <div className="text-zinc-300 text-sm">{notif.message}</div>
+        <div className="text-sm md:text-md text-zinc-200">{notif.sender.username}</div>
+        <div className="text-zinc-300 text-[12px] md:text-sm">{notif.message}</div>
       </div>
       {renderBox()}
     </div>

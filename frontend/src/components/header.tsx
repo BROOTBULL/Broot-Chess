@@ -20,10 +20,17 @@ export const Header = () => {
 export const Header2 = () => {
   const [optionDisplay, setOptionDisplay] = useState<boolean>(false);
   const {setUser}=useUserContext()
+  const activetab = window.location.pathname.split('/').filter(Boolean).pop();
+  const navigate=useNavigate()
 
   function handleOptionButton() {
     setOptionDisplay(!optionDisplay);
     document.getElementById("setting2")?.classList.toggle("rotate-[45deg]");
+    document.getElementById("optionBtn")?.classList.toggle("rotate-[45deg]");
+  }
+  function handleOpenSetting()
+  {
+
   }
 
    async function handleLogout() {
@@ -83,45 +90,55 @@ export const Header2 = () => {
           </div>
         </div>
         <div
-          className={`bg-gradient-to-r from-zinc-300 to-zinc-100 shadow-[0_35px_35px_rgba(0,0,0,0.25)] rounded-b-3xl w-full z-10 flex-col duration-300 flex lg:hidden overflow-hidden pl-5 ${
+          className={`bg-gradient-to-r from-zinc-300 to-zinc-100 shadow-[0_35px_35px_rgba(0,0,0,0.25)] rounded-b-3xl w-full z-10 flex-col duration-300 flex lg:hidden overflow-hidden pl-5 gap-0.5 ${
             optionDisplay ? "h-55 opacity-100 " : "h-0 opacity-0"
           }`}
         >
-          <div className="nav flex flex-row items-center h-10 w-[95%] rounded-lg font-[500] text-lg text-zinc-800">
+          <div
+          onClick={()=>navigate("/home")} 
+          className={`${activetab==="home"?"active":""} nav flex flex-row items-center h-10 w-[95%] rounded-lg font-[500] text-lg text-zinc-800`}>
             <img
-              className="h-6 w-6 m-2"
+              className="img h-6 w-6 m-2"
               src="/media/home.png"
               alt=""
             />
             Home
           </div>
-          <div className="nav flex flex-row items-center h-10 w-[95%] rounded-lg font-[500] text-lg text-zinc-800">
+          <div
+          onClick={()=>navigate("/game")} 
+          className={`${activetab==="game"?"active":""} nav flex flex-row items-center h-10 w-[95%] rounded-lg font-[500] text-lg text-zinc-800`}>
             <img
-              className="h-6 w-6 m-2"
+              className="img h-6 w-6 m-2"
               src="/media/play.png"
               alt=""
             />
             Play
           </div>
-          <div className="nav flex flex-row items-center h-10 w-[95%] rounded-lg font-[500] text-lg text-zinc-800">
+          <div
+          onClick={()=>navigate("/profile")} 
+          className={`${activetab==="profile"?"active":""} nav flex flex-row items-center h-10 w-[95%] rounded-lg font-[500] text-lg text-zinc-800`}>
             <img
-              className="h-6 w-6 m-2"
+              className="img h-6 w-6 m-2"
               src="/media/profile.png"
               alt=""
             />
             Profile
           </div>
-          <div className="nav flex flex-row items-center h-10 w-[95%] rounded-lg font-[500] text-lg text-zinc-800">
+          <div
+          onClick={()=>navigate("/social")} 
+          className={`${activetab==="social"?"active":""} nav flex flex-row items-center h-10 w-[95%] rounded-lg font-[500] text-lg text-zinc-800`}>
             <img
-              className="h-6 w-6 m-2"
+              className="img h-6 w-6 m-2"
               src="/media/social.png"
               alt=""
             />
             Socials
           </div>
-          <div className="nav flex flex-row items-center h-10 w-[95%] rounded-lg font-[500] text-lg text-zinc-800">
+          <div 
+          onClick={handleOpenSetting}
+          className={`nav flex flex-row items-center h-10 w-[95%] rounded-lg font-[500] text-lg text-zinc-800`}>
             <img
-              className="h-6 w-6 m-2"
+              className="img h-6 w-6 m-2"
               src="/media/setting.png"
               alt=""
             />
@@ -138,7 +155,6 @@ export const Header3 = () => {
   const navigate=useNavigate();
   const {setUser}=useUserContext()
   const activetab = window.location.pathname.split('/').filter(Boolean).pop();
-  
 
 
 
@@ -166,7 +182,9 @@ export const Header3 = () => {
           <div
             className={`bg-gradient-to-r from-zinc-300 to-zinc-100 xl:bg-none xl:shadow-none shadow-[0_15px_25px_rgba(0,0,0,0.25)] rounded-r-3xl w-fit z-10 flex-col duration-300 flex pl-5 h-fit`}
           >
-            <div className={`${activetab==="profile"?"active":""} nav flex flex-row items-center hover:ml-4 rounded-3xl xl:w-35 duration-300 m-1 cursor-pointer`}>
+            <div 
+            onClick={()=>navigate("/profile")}
+            className={`${activetab==="profile"?"active":""} nav flex flex-row items-center hover:ml-4 rounded-3xl xl:w-35 duration-300 m-1 cursor-pointer`}>
               <img
                 className="img size-10 lg:m-3 xl:m-2 xl:size-7 xl:ml-3 duration-300"
                 src={`/media/profile.png`}

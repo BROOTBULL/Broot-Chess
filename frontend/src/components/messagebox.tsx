@@ -53,7 +53,7 @@ export const MessageBox = () => {
                   : "self-start bg-zinc-500"
               } h-fit w-fit flex  p-2 rounded-2xl max-w-70 `}
             >
-              <div className="text-zinc-200 text-md ">{mesg.message}</div>
+              <div className="text-zinc-50 drop-shadow-sm/90 text-md ">{mesg.message}</div>
             </motion.div>
           ))}
            <div ref={bottomRef} />
@@ -64,7 +64,7 @@ export const MessageBox = () => {
             placeholder="Type message here ..."
             value={text}
             onChange={(e) => setText(e.target.value)}
-            className="rounded-2xl w-[85%] h-9 mx-1 flex items-center p-2 text-zinc-200 outline-0 focus:border-zinc-500 border-2 border-zinc-700"
+            className="rounded-2xl w-[85%] h-9 mx-1 flex items-center p-2 text-zinc-100 outline-0 focus:border-zinc-500 border-2 border-zinc-700"
           />
           <div
             className={`absolute bottom-20 right-12 duration-200 overflow-hidden ${

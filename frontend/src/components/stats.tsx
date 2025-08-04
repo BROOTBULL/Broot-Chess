@@ -4,7 +4,7 @@ export const Stats=()=>{
     const {user}=useUserContext();
 
     return(<>
-      <div className="flex flex-col w-full h-fit bg-zinc-800 text-zinc-200 lg:my-5 ring-1 ring-black shadow-lg/40">
+      <div className="flex flex-col w-full h-fit bg-zinc-800 text-zinc-200 my-2 lg:my-5 ring-1 ring-black shadow-lg/40">
         <div className=" text-2xl cursor-default font-bold m-2" >Stats</div>
           <div className="text-md font-[500] cursor-default ring-1 ring-black">
             <div className="m-4 mx-2 flex flex-row gap-3"><img className="size-6" src="./media/game.png" alt="" /> Games <span className="ml-auto">{user?.rating}</span></div>

@@ -35,33 +35,37 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
   const [friends, setFriends] = useState<User[]>([]);
   
 
-  // ✅ WebSocket connection logic here directly
-  useEffect(() => {
-    if (!user) return;
+useEffect(() => {
+  if (!user) return;
 
-    const ws = new WebSocket(`wss://broot-chess-ws.onrender.com?token=${user.token}`);
+  const isProd = import.meta.env.MODE === "production";
 
-    ws.onopen = () => {
-      console.log("✅ WebSocket connected");
-      setSocket(ws);
-    };
+  const WS_URL = isProd
+    ? `wss://broot-chess-ws.onrender.com?token=${user.token}`
+    : `ws://localhost:8080?token=${user.token}`; // use the actual WS port locally
 
-    ws.onclose = () => {
-      console.log("❌ WebSocket disconnected");
-      setSocket(null);
-    };
+  const ws = new WebSocket(WS_URL);
 
-    return () => {
-      console.log("🔌 Closing WebSocket...");
-      ws.close();
-    };
-  }, [user]);
+  ws.onopen = () => {
+    console.log("✅ WebSocket connected");
+    setSocket(ws);
+  };
+
+  ws.onclose = () => {
+    console.log("❌ WebSocket disconnected");
+    setSocket(null);
+  };
+
+  return () => {
+    console.log("🔌 Closing WebSocket...");
+    ws.close();
+  };
+}, [user]);
+
 
   // ✅ Auth check on mount
   useEffect(() => {
     const checkAuth = async () => {
-
-      
       
       try {
         const res = await axios.get("/auth/checkAuth");
@@ -81,6 +85,9 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
     useEffect(() => {
+
+    if(!user)return;  
+
     const getFriends = async () => {
       const response = await axios.get("/social/friends", {
         params: { userId: user?.id },

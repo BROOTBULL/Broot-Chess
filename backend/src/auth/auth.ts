@@ -35,13 +35,14 @@ interface userjwtClaims {
   isGuest?: boolean;
 }
 
-// ✅ Cookie config helper
 function getCookieOptions(): CookieOptions {
+  const isProduction = process.env.NODE_ENV === "production";
+
   return {
     maxAge: 24 * 60 * 60 * 1000,
     httpOnly: true,
-    secure: true,               // ✅ Always secure on production
-    sameSite: "none",           // ✅ Must be none for cross-origin
+    secure: isProduction,                  // ❗ Only true in production
+    sameSite: isProduction ? "none" : "lax",  // ❗'lax' avoids CORS issues in dev
   };
 }
 
