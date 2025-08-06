@@ -76,8 +76,10 @@ export const ChessContext = createContext<ChessContextType | undefined>(
   undefined
 );
 
+
+
 export const ContextProvider = ({ children }: { children: ReactNode }) => {
-  const { user, socket } = useUserContext();
+  const { user, socket,setReloadData,reloadData } = useUserContext();
 
   const [roomId, setRoomId] = useState<string | undefined>(undefined);
   const [Opponent, setOpponent] = useState<User | null>(null);
@@ -215,6 +217,7 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
               localStorage.removeItem("roomData");
               setRoomId(undefined);
               chess.reset();
+              setReloadData(!reloadData)
             }
             break;
           case CHAT:

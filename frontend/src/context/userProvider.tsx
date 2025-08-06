@@ -44,6 +44,8 @@ interface UserContextProviderType {
   setFriends: React.Dispatch<React.SetStateAction<User[] | []>>
   games: GamesData[] | [];
   setGames: React.Dispatch<React.SetStateAction<GamesData[] | []>>
+  reloadData:boolean;
+  setReloadData:React.Dispatch<React.SetStateAction<boolean>>
 }
 
 
@@ -57,6 +59,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [friends, setFriends] = useState<User[]>([]);
   const [games, setGames] = useState<GamesData[]>([]);
+  const [reloadData,setReloadData] = useState(false);
   
 
 useEffect(() => {
@@ -120,16 +123,24 @@ useEffect(() => {
       
     };
     
+      getFriends();
+  }, [user]);
+
+    useEffect(() => {
+
+    if(!user)return;  
     const getGames = async () => {
       const response = await axios.get("/gameData/games", {
         params: { userId: user?.id },
       });
       setGames(response.data.games)
+      console.log(response.data.games);
+      
     };
 
-      getFriends();
       getGames()
-  }, [user]);
+  }, [user,reloadData]);
+
 
 
   return (
@@ -142,7 +153,9 @@ useEffect(() => {
         friends,
         setFriends,
         games,
-        setGames
+        setGames,
+        reloadData,
+        setReloadData
       }}
     >
       {children}

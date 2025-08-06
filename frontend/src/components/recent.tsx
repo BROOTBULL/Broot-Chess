@@ -43,7 +43,7 @@ export const RecentGame = () => {
           </div>
       </div>
         )
-      }):<></>}
+      }):<div className="h-40 flex justify-center items-center w-full"> <div>No Matches played yet</div></div>}
         </div>
     </div>
   );

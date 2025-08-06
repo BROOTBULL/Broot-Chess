@@ -21,19 +21,19 @@ export const GameHistory = () => {
           <div className="flex-2">Rematch</div>
         </div>
 
-        {games?.map((game) => (
+        {games.length?(games?.map((game,i) => (
           <div
-            key={game.id}
+            key={i}
             className="flex flex-row text-zinc-200 text-sm font-[400] p-1 py-2 border-b border-zinc-800 items-center text-center gap-2"
           >
             <div className="flex-1 flex justify-center">
               <img className="size-5 mx-1" src={`./media/${game.timeControl.toLowerCase()}.png`} alt="" />
             </div>
             <div className="flex-5 truncate flex-row flex justify-center">
-              <img className={`${game.playedAs==="white"?"":"invert"} size-5 mr-1`} src={`./media/pawn.png`} alt="" />
+              <img className={`${game.playedAs==="white"?"":"invert"} drop-shadow-zinc-500 drop-shadow-sm size-5 mr-1`} src={`./media/pawn.png`} alt="" />
               {game.opponent?.name || game.opponent?.username}
             </div>
-            <div className="flex-1 flex justify-center"><div className={`size-5 aspect-square rounded ${game.result==="loss"?"bg-rose-500/70":"bg-emerald-600"}`}><img className={`size-5 invert mr-1`} src={`./media/${game.result==="loss"?"minus":"plus"}.png`} alt="" /></div></div>
+            <div className="flex-1 flex justify-center"><div className={`size-5 aspect-square rounded ${game.result==="Loss"?"bg-rose-500/70":"bg-emerald-600"}`}><img className={`size-5 invert mr-1`} src={`./media/${game.result==="Loss"?"minus":"plus"}.png`} alt="" /></div></div>
             <div className="flex-2  ">
               {format(new Date(game.startAt), "dd MMM")}
             </div>
@@ -48,11 +48,12 @@ export const GameHistory = () => {
                   )
                 }
               >
-                <img className="size-5 mr-1" src="./media/challenge.png" alt="" /><div className="lg:flex hidden "> Rematch</div>
+                <img className="size-5 " src="./media/challenge.png" alt="" /><div className="lg:flex hidden "> Rematch</div>
               </button>
             </div>
           </div>
-        ))}
+        ))):(<div className="h-40 flex justify-center items-center w-full"> <div className="text-zinc-200">No Matches played yet</div></div>)
+      }
       </div>
     </div>
   );
