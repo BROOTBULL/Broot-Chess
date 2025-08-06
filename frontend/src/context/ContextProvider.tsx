@@ -195,7 +195,7 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
               setGameStarted(false);
               setGameEnded(true);
               setPlayerWon(
-                payload.result === color ? user?.username : Opponent?.name
+                payload.result === color ? user?.name : Opponent?.name
               );
               switch (payload.status) {
                 case "PLAYER_EXIT":
@@ -233,8 +233,9 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
                 "roomData",
                 JSON.stringify({ rmid, expiryTime })
               );
-              setConnecting(true);
-              setActiveTab("play");
+              if(!message.private)
+              {setConnecting(true);
+              setActiveTab("play");}
             }
             break;
           case NOTIFICATION:

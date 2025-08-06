@@ -7,6 +7,7 @@ import { useUserContext } from "../hooks/contextHook";
 const SignUpPage = () => {
   const navigate = useNavigate();
   const { setUser } = useUserContext();
+  const [registering, setRegistering] = useState(false);
 
   const [formData, setFormData] = useState({
     username: "",
@@ -36,29 +37,42 @@ const SignUpPage = () => {
     }
   };
 
+  function displayError(error: string) {
+    setError(error);
+
+    // Auto-clear error after 3 seconds (3000 ms)
+    setTimeout(() => {
+      setError(null);
+    }, 3000);
+    setRegistering(false);
+    return;
+  }
+
   async function handleSubmit(e: React.MouseEvent<HTMLElement>) {
     e.preventDefault();
+    setRegistering(true);
     const emailError = validateEmail(formData.email);
     if (emailError) {
-      setError(emailError);
-
-      // Auto-clear error after 3 seconds (3000 ms)
-      setTimeout(() => {
-        setError(null);
-      }, 3000);
-
-      return;
+      displayError(emailError);
     }
 
-    const UserInput = await axios.post("/auth/signUp", formData);
-    setUser(UserInput.data);
-    console.log("SignUp response:", UserInput);
+    try {
+      const UserInput = await axios.post("/auth/signUp", formData);
+      setUser(UserInput.data);
+
+      console.log("SignUp response:", UserInput);
+    } catch (err) {
+      console.error("Auth check failed:", err);
+      displayError("Username or Email Already exists..!!");
+      setUser(null);
+    }
+    setRegistering(false);
   }
 
   async function handleGuest(e: React.MouseEvent<HTMLElement>) {
     e.preventDefault();
     const guestInput = await axios.post("/auth/signUpGuest", {
-      name: "Guest123",
+      name: "Guest-" + Math.floor(Math.random() * 100000),
     });
     setUser(guestInput.data);
     console.log("response:", guestInput);
@@ -66,7 +80,10 @@ const SignUpPage = () => {
 
   async function handleGoogle(e: React.MouseEvent<HTMLElement>) {
     e.preventDefault();
-    const response = window.open(`https://broot-chess-backend.onrender.com/auth/google`, "_self");
+    const response = window.open(
+      `https://broot-chess-backend.onrender.com/auth/google`,
+      "_self"
+    );
     console.log("response", response);
   }
 
@@ -83,13 +100,13 @@ const SignUpPage = () => {
     <>
       <img
         onClick={() => navigate("/")}
-        className="absolute h-6 w-6 md:h-8 md:w-8 lg:h-12 lg:w-12 m-5 drop-shadow-lg "
+        className="absolute h-6 w-6 md:h-8 md:w-8 lg:h-12 lg:w-12 m-5 drop-shadow-lg z-10 cursor-pointer"
         src="/media/back.png"
         alt="back button"
       />
 
-      <div className="absolute flex flex-row h-full w-full -z-12  ">
-        <div className="flex flex-col justify-center items-center bg-gradient-to-r from-zinc-300 to-zinc-100 backdrop-blur-md h-full w-full md:w-[56%] -z-10 ">
+      <div className="absolute flex flex-row h-full w-full ">
+        <div className="flex flex-col justify-center items-center bg-gradient-to-r from-zinc-300 to-zinc-100 backdrop-blur-md h-full w-full md:w-[56%] ">
           {error && (
             <div className="bg-red-400 h-10 w-[60%] rounded-lg absolute top-0 mt-5 text-center p-2 text-white ">
               {error}
@@ -124,7 +141,7 @@ const SignUpPage = () => {
               <div className="bg-white pl-2">
                 <input
                   className="UserInput w-full h-12 lg:h-14 lg:text-[18px] p-2 focus:outline-none"
-                  placeholder="Username"
+                  placeholder="Name"
                   type="text"
                   name="username"
                   id="username"
@@ -170,9 +187,15 @@ const SignUpPage = () => {
 
               <button
                 onClick={(e) => handleSubmit(e)}
-                className="playButton text-center text-[20px] md:text-[25px] lg:text-[30px] md:px-15 lg:px-20 h-fit items-center  bg-zinc-800 px-10 py-2 my-2 rounded-lg shadow-lg/30 text-zinc-100 font-serif cursor-pointer hover:shadow-white "
+                className="playButton text-center  md:px-15 lg:px-20 h-fit items-center  bg-zinc-800 px-10 py-2 my-2 rounded-lg shadow-lg/30 text-zinc-100 font-serif cursor-pointer hover:shadow-white "
               >
-                Submit
+                {!registering ? (
+                  <div className="text-sm md:text-md ">Submit</div>
+                ) : (
+                  <div className="flex flex-row justify-center text-sm md:text-md ">
+                    Signing Up...
+                  </div>
+                )}
               </button>
             </form>
           </div>
@@ -198,15 +221,15 @@ const SignUpPage = () => {
               <span> Google</span>
             </button>
           </div>
-          <span className="text-[12px] font-serif text-zinc-600">
+          <div className="text-[12px] font-serif text-zinc-600">
             If already signed In ....Try{" "}
-            <span
+            <button
               className="text-blue-950 cursor-pointer"
               onClick={() => navigate("/login")}
             >
               LogIn
-            </span>
-          </span>
+            </button>
+          </div>
         </div>
       </div>
     </>

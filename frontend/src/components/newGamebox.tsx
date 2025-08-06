@@ -172,7 +172,7 @@ export const NewGame = ({
               } overflow-hidden duration-300`}
             >
               <div
-                onClick={() => setGameType("blitz")}
+                onClick={() => setGameType(gameType==="blitz"?"":"blitz")}
                 className={` h-12 ${
                   gameType === "blitz"
                     ? "ring-2 ring-inset ring-emerald-700 bg-emerald-950"
@@ -187,7 +187,7 @@ export const NewGame = ({
                 <span className={` text-zinc-200 text-lg `}>Blitz</span>
               </div>
               <div
-                onClick={() => setGameType("rapid")}
+                onClick={() => setGameType(gameType==="rapid"?"":"rapid")}
                 className={` h-12 ${
                   gameType === "rapid"
                     ? "ring-2 ring-inset ring-emerald-700 bg-emerald-950"
@@ -202,7 +202,7 @@ export const NewGame = ({
                 <span className={` text-zinc-200 text-lg `}>Rapid</span>
               </div>
               <div
-                onClick={() => setGameType("daily")}
+                onClick={() => setGameType(gameType==="daily"?"":"daily")}
                 className={` h-12 ${
                   gameType === "daily"
                     ? "ring-2 ring-inset ring-emerald-700 bg-emerald-950"

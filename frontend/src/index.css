@@ -1,12 +1,9 @@
 @import "tailwindcss";
 
-:root {
-  background: 
-    linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)),
-    url('../public/media/image.png');
-  background-size: cover;
-  background-position:center;
-  background-repeat: no-repeat;
+#root {
+z-index: -9999;
+height: 100vh;
+width: 100vw;
 }
 
 /* Ensure html and body take full width and allow height to grow with content */
@@ -159,14 +156,114 @@ html, body {
   animation: online 1s ease-in-out infinite !important;
 }
 
+@keyframes loader {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
 
 
 .heartbeat {
   animation: heartbeat 0.6s ease-in-out infinite;
 }
+.loader {
+  animation: loader 1.5s ease-in-out infinite;
+}
+
+.delay-1{
+  animation-delay: 0.4s;
+}
+.delay-2{
+  animation-delay: 0.8s;
+}
+.delay-3{
+  animation-delay: 1.2s;
+}
+
 
 .interact-btn:hover >.interact
 {
   opacity: 1;
 
+}
+
+
+.persp {
+  perspective: 1000px;
+}
+
+.shape {
+  transform: rotateX(46deg) rotate(45deg);
+  transform-style: preserve-3d;
+}
+
+
+@keyframes diagonalMove {
+  0% {
+    transform: translate(-100px, 100px) rotateX(46deg) rotate(45deg);
+    opacity: 0;
+  }
+  40% {
+    transform: translate(0px, 0px) rotateX(46deg) rotate(45deg);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(0px, 0px) rotateX(46deg) rotate(45deg);
+    opacity: 1;
+  }
+  60% {
+    transform: translate(0px, 0px) rotateX(46deg) rotate(45deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-100px, 50px) rotateX(46deg) rotate(45deg);
+    opacity: 0;
+  }
+}
+
+@keyframes fallingMove {
+  0% {
+    transform: translate(0px, -50px) rotateX(46deg) rotate(45deg);
+    opacity: 0;
+  }
+  40% {
+    transform: translate(0, 0px) rotateX(46deg) rotate(45deg);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(0, 0px) rotateX(46deg) rotate(45deg);
+    opacity: 1;
+  }
+  60% {
+    transform: translate(0, 0px) rotateX(46deg) rotate(45deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(0px, 50px) rotateX(46deg) rotate(45deg);
+    opacity: 0;
+  }
+}
+
+.landingloader {
+  animation: fallingMove 4s ease-in-out infinite;
+  animation-fill-mode: both;
+  animation-delay: 0.4s;
+
+}
+.landingloader1 {
+  animation: fallingMove 4s ease-in-out infinite;
+  animation-fill-mode: both;
+}
+.landingloader2 {
+  animation: diagonalMove 4s ease-in-out infinite;
+  animation-fill-mode: both;
+  animation-delay: 0.4s;
+}
+.landingloader3 {
+  animation: diagonalMove 4s ease-in-out infinite;
+  animation-fill-mode: both;
+  animation-delay: 0.6s;
 }

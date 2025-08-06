@@ -1,12 +1,9 @@
-import { useState } from "react"
 
 export const PlayerInfo=({userName,color,rating,profile}:{userName:string,color:string,rating:number,profile:string|null})=>{
-    const [timer,setTimer]=useState("00:00");
 
     if(userName.length>12)
     {
       userName=userName.slice(0,-8)
-      setTimer("00:00")
     }
 
     return(
@@ -17,7 +14,7 @@ export const PlayerInfo=({userName,color,rating,profile}:{userName:string,color:
              {userName}<div className=" text-[8px] md:text-[10px]">{rating}</div>
             </div>
             <div className={`${color==="w"?"bg-white":"bg-black"} ml-auto text-end text-white text-sm font-[600] w-40 p-2 shadow-lg/40`}>
-              {timer}
+              00:00
             </div>
           </div>
         </>

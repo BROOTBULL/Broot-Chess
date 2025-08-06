@@ -181,7 +181,7 @@ router.post("/signUp", async (req: Request, res: Response) => {
 
     const user = await prisma.user.create({
       data: {
-        username: bodyData.username,
+       username: (bodyData.username?.slice(0, 4) ?? 'user') + uuidv4().slice(0, 6),
         email: bodyData.email,
         profile: bodyData.profile,
         name: bodyData.username || guestUUID,

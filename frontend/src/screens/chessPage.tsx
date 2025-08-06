@@ -12,6 +12,7 @@ import { Play } from "../components/playBox";
 import { AnimatePresence, motion } from "motion/react";
 import { UNDO_MOVE_APPROVE } from "../context/ContextProvider";
 import { BoardAppreance } from "../components/boardAppreance";
+import { Loader } from "../assets/loader";
 
 export const StartFen =
   "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -38,7 +39,7 @@ const ChessGame = () => {
     undoRequested,
     setUndoRequested,
   } = useChessContext();
-  const { username, rating, profile } = user!;
+  const { name, rating, profile } = user!;
 
   const [time, setTime] = useState(5);
   console.log(time);
@@ -103,14 +104,14 @@ const ChessGame = () => {
     console.log(responce);
   }
 
-  if (!socket) return <div>socket : {socket} Connecting...</div>;
+  if (!socket) return <Loader/>;
 
   return (
     <>
       {}
 
-      <div className="absolute flex flex-col lg:flex-row md:h-full md:w-full -z-12 ">
-        <div className=" flex flex-col lg:flex-row justify-between bg-gradient-to-r  from-zinc-200 to-zinc-100 backdrop-blur-md h-fit w-full lg:w-[60%] md:h-full p-5 -z-10  ">
+      <div className="absolute flex flex-col lg:flex-row md:h-full md:w-full  ">
+        <div className=" flex flex-col lg:flex-row justify-between bg-gradient-to-r  from-zinc-200 to-zinc-100 backdrop-blur-md h-fit w-full lg:w-[60%] md:h-full p-5 ">
           <div className="flex flex-row lg:flex-col justify-between items-center mb-5">
             <img
               className="h-10 lg:h-13 lg:w-8 xl:h-20 xl:w-12 w-6 ml-2 drop-shadow-lg/40 cursor-pointer "
@@ -215,7 +216,7 @@ const ChessGame = () => {
                       <div className="flex flex-col">
                         <img
                           className={`absolute size-7 drop-shadow-sm/90 -rotate-25 heartbeat ${
-                            playerWon === username ? "hidden" : ""
+                            playerWon === name ? "hidden" : ""
                           }`}
                           src="./media/won.png"
                           alt=""
@@ -235,7 +236,7 @@ const ChessGame = () => {
                       <div className="flex flex-col">
                         <img
                           className={`absolute size-7 drop-shadow-sm/90 -rotate-25 heartbeat ${
-                            playerWon === username ? "" : "hidden"
+                            playerWon === name ? "" : "hidden"
                           }`}
                           src="./media/won.png"
                           alt=""
@@ -246,7 +247,7 @@ const ChessGame = () => {
                           alt=""
                         />
                         <div className="text-[10px] text-center text-zinc-300 font-bold">
-                          {username}
+                          {name}
                         </div>
                       </div>
                     </div>
@@ -323,7 +324,7 @@ const ChessGame = () => {
             />
             <ChessBoard showSquare={showSquare} />
             <PlayerInfo
-              userName={username}
+              userName={name}
               rating={rating}
               color={color}
               profile={profile || "/media/userW.png"}
@@ -331,7 +332,7 @@ const ChessGame = () => {
           </div>
         </div>
 
-        <div className=" flex flex-col bg-zinc-800 h-fit md:h-full lg:w-[40%] p-2 md:p-5 -z-10">
+        <div className=" flex flex-col bg-zinc-800 h-fit md:h-full lg:w-[40%] p-2 md:p-5 ">
           <div className="flex w-full h-fit">
             <div
               onClick={() => setActiveTab("play")}

@@ -28,10 +28,6 @@ export const Header2 = () => {
     document.getElementById("setting2")?.classList.toggle("rotate-[45deg]");
     document.getElementById("optionBtn")?.classList.toggle("rotate-[45deg]");
   }
-  function handleOpenSetting()
-  {
-
-  }
 
    async function handleLogout() {
       const responce = await axios.post("/auth/logout", {});
@@ -135,14 +131,14 @@ export const Header2 = () => {
             Socials
           </div>
           <div 
-          onClick={handleOpenSetting}
+          onClick={handleLogout}
           className={`nav flex flex-row items-center h-10 w-[95%] rounded-lg font-[500] text-lg text-zinc-800`}>
             <img
               className="img h-6 w-6 m-2"
-              src="/media/setting.png"
+              src="/media/logout.png"
               alt=""
             />
-            Setting
+            LogOut
           </div>
         </div>
       </div>

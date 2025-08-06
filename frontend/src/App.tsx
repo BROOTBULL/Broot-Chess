@@ -9,6 +9,7 @@ import { useUserContext } from "./hooks/contextHook";
 import LandingPage from "./screens/LandingPage";
 import Socials from "./screens/socials";
 import ProfilePage from "./screens/profilePage";
+import { LandingLoader } from "./assets/loader";
 
 // 1. Route guard for authenticated users
 const RequireAuth = ({ children }: { children: ReactNode }) => {
@@ -31,7 +32,7 @@ function App() {
   const { loading} = useUserContext(); // Optional: show spinner while auth check runs
 
   if (loading) {
-    return <div>Loading...</div>; // Replace with spinner or splash screen
+    return <LandingLoader />; // Replace with spinner or splash screen
   }
 
   return (

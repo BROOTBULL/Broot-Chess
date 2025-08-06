@@ -82,6 +82,7 @@ export class GameManager {
             JSON.stringify({
               type: GAME_ADDED,
               gameId: game.RoomId,
+              private:message.private
             })
           );
         } else {

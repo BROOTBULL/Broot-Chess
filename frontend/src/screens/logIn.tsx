@@ -79,13 +79,13 @@ if (emailError) {
     <>
       <img
         onClick={() => navigate("/")}
-        className="absolute h-6 w-6 md:h-8 md:w-8 lg:h-12 lg:w-12 m-5 drop-shadow-lg "
+        className="absolute h-6 w-6 md:h-8 md:w-8 lg:h-12 lg:w-12 m-5 drop-shadow-lg z-10 cursor-pointer"
         src="/media/back.png"
         alt="back button"
       />
 
-      <div className="absolute flex flex-row h-full w-full -z-12  ">
-        <div className="flex flex-col justify-center items-center bg-gradient-to-r from-zinc-300 to-zinc-100 backdrop-blur-md h-full w-full md:w-[56%] -z-10 ">
+      <div className="absolute flex flex-row h-full w-full  ">
+        <div className="flex flex-col justify-center items-center bg-gradient-to-r from-zinc-300 to-zinc-100 backdrop-blur-md h-full w-full md:w-[56%] ">
         {error&&<div className="bg-red-400 h-10 w-[60%] rounded-lg absolute top-0 mt-5 text-center p-2 text-white ">{error}</div>}
           <img
             className="h-10 w-6 md:h-14 md:w-9 lg:h-18 lg:w-10 drop-shadow-lg/40 "
@@ -151,6 +151,15 @@ if (emailError) {
                 alt="google"
               />
               <span> Google</span>
+            </button>
+          </div>
+          <div className="text-[12px] font-serif text-zinc-600">
+            Register a new Account... {" "}
+            <button
+              className="text-blue-950 cursor-pointer"
+              onClick={() => navigate("/login")}
+            >
+              SignUp
             </button>
           </div>
         </div>

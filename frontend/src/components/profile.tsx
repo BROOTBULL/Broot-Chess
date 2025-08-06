@@ -21,7 +21,11 @@ export const Profile2=()=>{
           <div className="Profile bg-zinc-800 size-35 md:size-55 p-1 rounded-md">
             <img className="rounded-sm size-full" src={user?.profile?user?.profile:"/media/chessboard.png"} alt="" />
           </div>
-          <div className="text-zinc-100 drop-shadow-sm/90 text-3xl md:text-5xl p-2 font-[900]">{user?.name}</div>
+          <div className="flex flex-col">
+            <div className="text-zinc-100 drop-shadow-sm/90 text-3xl md:text-5xl px-2 font-[900]">{user?.name}</div>
+          <div className="text-zinc-800 text-sm px-2 ">{user?.username}</div>
+          </div>
+          
         </div>
         </>)
 }

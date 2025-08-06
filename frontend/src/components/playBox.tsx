@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useChessContext } from "../hooks/contextHook";
 import { MessageBox } from "./messagebox";
+import { SearchingLoader } from "../assets/loader";
 
 const EXIT_GAME = "exit_game";
 const UNDO_MOVE = "undo_move";
@@ -23,9 +24,7 @@ export const Play = ({
 
   if (connecting)
     return (
-      <div className="p-3 h-full bg-zinc-700 flex justify-center items-center">
-        <div className=" h-60 flex"><div className="my-auto text-zinc-200 font-bold text-lg">Connecting...</div></div>
-      </div>
+      <SearchingLoader/>
     );
 
   function handleResign() {
