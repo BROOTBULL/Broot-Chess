@@ -8,7 +8,7 @@ export const Friends = () => {
 
   return (
     <>
-      <div className="p-3 h-full bg-zinc-700">
+      <div className="p-3 h-full w-full bg-zinc-700 max-w-[1000px]">
         <div className="flex flex-col Profile h-full min-h-[500px] w-full bg-zinc-900">
           {friends && friends.length > 0 ? (
             friends.map((friend,i) => {

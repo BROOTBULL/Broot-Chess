@@ -9,6 +9,7 @@ export const Trasition = <P extends object>(
     <>
       
       <motion.div 
+          className="h-full w-full"
           initial={{ opacity: "0%" }}
           animate={{ opacity: "100%" }}
           exit={{ opacity: "0%" }}

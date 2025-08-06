@@ -41,6 +41,7 @@ export const NewGame = ({
       JSON.stringify({
         type: INIT_GAME,
         private: false,
+        gameType:gameType
       })
     );
     setActiveTab("play");
@@ -53,6 +54,7 @@ export const NewGame = ({
       JSON.stringify({
         type: INIT_GAME,
         private: true,
+        gameType:gameType
       })
     );
     setRoomIdBox(true);
@@ -78,7 +80,7 @@ export const NewGame = ({
 
   return (
     <>
-      <div className="bg-zinc-700 w-full min-h-[400px] h-full flex flex-col gap-3 p-3">
+      <div className="bg-zinc-700 w-full min-h-[400px] h-full flex flex-col gap-3 p-3 max-w-[1000px]">
         <div
           className={`bg-zinc-900 px-2 ${
             !playFriend ? "max-h-100" : "max-h-0"
@@ -110,7 +112,7 @@ export const NewGame = ({
             >
               <img
                 className="size-7"
-                src="/media/stopwatchG.png"
+                src="./media/rapid.png"
                 alt=""
               />
               <span className={` text-zinc-200 text-lg `}>Rapid</span>
@@ -123,7 +125,7 @@ export const NewGame = ({
                   : "bg-zinc-800"
               } flex flex-row items-center flex-1 justify-center cursor-pointer shadow-sm/40 `}
             >
-              <img className="size-7" src="/media/sun.png" alt="" />
+              <img className="size-7" src="/media/classical.png" alt="" />
               <span className={` text-zinc-200 text-lg `}>Daily</span>
             </div>
           </div>
@@ -196,7 +198,7 @@ export const NewGame = ({
               >
                 <img
                   className="size-7"
-                  src="/media/stopwatchG.png"
+                  src="/media/rapid.png"
                   alt=""
                 />
                 <span className={` text-zinc-200 text-lg `}>Rapid</span>
@@ -211,7 +213,7 @@ export const NewGame = ({
               >
                 <img
                   className="size-7"
-                  src="/media/sun.png"
+                  src="/media/classical.png"
                   alt=""
                 />
                 <span className={` text-zinc-200 text-lg `}>Daily</span>

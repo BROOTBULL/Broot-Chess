@@ -155,7 +155,7 @@ export const Notification = ({ setNotifications, notif }: {setNotifications:Reac
   }
 
   return (
-    <div className="bg-zinc-800 w-full h-fit border-2 border-b-0 border-zinc-700 flex flex-row p-3 ">
+    <div className="bg-zinc-800 w-full h-fit border-2 border-b-0 border-zinc-700 flex flex-row p-3 rounded-lg">
       <div className="bg-zinc-800 border-2 border-zinc-700 rounded-md aspect-square h-full">
         <img
           className="size-12 md:size-18"
@@ -164,7 +164,7 @@ export const Notification = ({ setNotifications, notif }: {setNotifications:Reac
         />
       </div>
       <div className="flex flex-col w-fit max-w-[80%] pl-3 justify-center ">
-        <div className="text-sm md:text-md text-zinc-200">{notif.sender.username}</div>
+        <div className="text-sm md:text-md text-zinc-200">{notif.sender.name}</div>
         <div className="text-zinc-300 text-[12px] md:text-sm">{notif.message}</div>
       </div>
       {renderBox()}

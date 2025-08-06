@@ -12,7 +12,7 @@ import { Play } from "../components/playBox";
 import { AnimatePresence, motion } from "motion/react";
 import { UNDO_MOVE_APPROVE } from "../context/ContextProvider";
 import { BoardAppreance } from "../components/boardAppreance";
-import { Loader } from "../assets/loader";
+import { LandingLoader } from "../assets/loader";
 
 export const StartFen =
   "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -104,14 +104,16 @@ const ChessGame = () => {
     console.log(responce);
   }
 
-  if (!socket) return <Loader/>;
+  if (!socket) return <LandingLoader/>;
 
   return (
     <>
-      {}
+      {console.log(playerWon,color,user?.id,Opponent?.id)
+      
+      }
 
-      <div className="absolute flex flex-col lg:flex-row md:h-full md:w-full  ">
-        <div className=" flex flex-col lg:flex-row justify-between bg-gradient-to-r  from-zinc-200 to-zinc-100 backdrop-blur-md h-fit w-full lg:w-[60%] md:h-full p-5 ">
+      <div className="absolute flex flex-col xl:flex-row md:h-full w-full  ">
+        <div className=" flex flex-col lg:flex-row justify-between bg-gradient-to-r  from-zinc-200 to-zinc-100 backdrop-blur-md h-fit w-full xl:w-[60%] md:h-full p-5 ">
           <div className="flex flex-row lg:flex-col justify-between items-center mb-5">
             <img
               className="h-10 lg:h-13 lg:w-8 xl:h-20 xl:w-12 w-6 ml-2 drop-shadow-lg/40 cursor-pointer "
@@ -332,8 +334,8 @@ const ChessGame = () => {
           </div>
         </div>
 
-        <div className=" flex flex-col bg-zinc-800 h-fit md:h-full lg:w-[40%] p-2 md:p-5 ">
-          <div className="flex w-full h-fit">
+        <div className=" flex flex-col bg-zinc-800 h-fit md:h-full xl:w-[40%] items-center p-2 md:p-5 ">
+          <div className="flex w-full h-fit max-w-[1000px]">
             <div
               onClick={() => setActiveTab("play")}
               className={`${

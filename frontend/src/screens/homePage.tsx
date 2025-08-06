@@ -24,13 +24,14 @@ const HomePage = () => {
             <FriendsGame />
             <GameButtons />
           </div>
-          <div className="flex flex-col lg:flex-row gap-5 w-full ">
-            <div className="flex flex-col w-full lg:w-[60%]">
               <RecentGame />
-              <GameHistory />
-            </div>
+          <div className="flex flex-col md:flex-row gap-5 w-full ">
+            <GameHistory />
             <Stats />
           </div>
+
+
+
         </div>
       </div>
     </>

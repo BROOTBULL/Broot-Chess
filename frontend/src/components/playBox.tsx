@@ -61,7 +61,7 @@ export const Play = ({
     <>
       {console.log()}
 
-      <div className="p-3 h-full bg-zinc-700">
+      <div className="p-3 h-full bg-zinc-700 max-w-[1000px] w-full">
         <div className="flex flex-col Profile h-full min-h-[500px] w-full bg-zinc-900">
           <div className="flex flex-row items-center bg-zinc-800 text-sm font-[500] text-center ">
             <div className="flex items-center justify-center h-8 text-sm   text-zinc-200 flex-5">

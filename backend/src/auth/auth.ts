@@ -219,12 +219,12 @@ router.post("/signUp", async (req: Request, res: Response) => {
 // Guest sign up
 router.post("/signUpGuest", async (req: Request, res: Response) => {
   const bodyData = req.body;
-  let guestUUID = "guest-" + uuidv4();
+  let guestUUID = ("guest-" + uuidv4()).slice(0,14);
 
   const user = await prisma.user.create({
     data: {
       username: guestUUID,
-      email: guestUUID + "@chess100x.com",
+      email: guestUUID + "@brootchess.com",
       rating: 500,
       name: bodyData.name || guestUUID,
       provider: "GUEST",
@@ -267,6 +267,7 @@ router.post("/logout", (req:Request, res:Response) => {
   });
   res.status(200).json({ message: "Logged out successfully" });
 });
+
 
 
 export default router;

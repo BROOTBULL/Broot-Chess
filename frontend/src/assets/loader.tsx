@@ -21,7 +21,7 @@ export const Loader = () => {
 
 export const SearchingLoader = () => {
   return (
-    <div className="p-3 lg:h-full h-60 bg-zinc-700 flex justify-center items-center">
+    <div className="p-3 lg:h-full h-120 bg-zinc-700 flex justify-center items-center w-full max-w-[1000px]">
       <div className="h-50 w-80 flex flex-col items-center overflow-hidden">
         <div className="[perspective:800px] [perspective-origin:top] h-25 w-60 mt-auto ">
           <div>
@@ -73,20 +73,17 @@ export const SearchingLoader = () => {
 
 export const LandingLoader = () => {
   return (
-    <>
-      <div className="w-full h-full flex justify-center items-center">
-        <div className="absolute w-full h-full bg-zinc-300 -z-10" />
-        <div className="absolute w-50 h-100 bg-zinc-300 z-10 mr-70 " />
-        <div className="persp">
-          <div className="aspact-square size-30 absolute shape rounded-sm border-3 border-l-transparent border-b-transparent border-t-zinc-600 border-r-zinc-300 bg-black ml-7 landingloader2 drop-shadow-lg/80" />
-          <div className="aspact-square w-13 h-29 ml-20 shape rounded-sm border-3 border-l-transparent border-b-transparent border-t-zinc-600 border-r-zinc-300 bg-black mt-21  mr-32 landingloader3 drop-shadow-lg/80" />
-        </div>
-        <div className="persp absolute ml-18">
-          <div className="aspact-square size-10 shape rounded-sm border-3 border-l-transparent border-b-transparent border-t-zinc-600 border-r-zinc-300 bg-black mt-13 mb-5 landingloader drop-shadow-lg/80" />
-          <div className="aspact-square size-10 shape rounded-sm border-3 border-l-transparent border-b-transparent border-t-zinc-600 border-r-zinc-300 bg-black landingloader1 drop-shadow-lg/80" />
-        </div>
-
+    <div className="w-full h-full flex justify-center items-center">
+      <div className="absolute w-full h-full bg-white -z-10" />
+      <div className="absolute w-50 h-100 bg-white z-10 mr-70 " />
+      <div className="persp">
+        <div className="aspact-square size-30 absolute shape rounded-sm border-3 border-l-transparent border-b-transparent border-t-zinc-600 border-r-zinc-300 bg-black ml-7 landingloader2 drop-shadow-lg/90" />
+        <div className="aspact-square w-13 h-29 ml-20 shape rounded-sm border-3 border-l-transparent border-b-transparent border-t-zinc-600 border-r-zinc-300 bg-black mt-21  mr-32 landingloader3 drop-shadow-lg/90" />
       </div>
-    </>
+      <div className="persp absolute ml-18">
+        <div className="aspact-square size-10 shape rounded-sm border-3 border-l-transparent border-b-transparent border-t-zinc-600 border-r-zinc-300 bg-black mt-13 mb-5 landingloader drop-shadow-lg/90" />
+        <div className="aspact-square size-10 shape rounded-sm border-3 border-l-transparent border-b-transparent border-t-zinc-600 border-r-zinc-300 bg-black landingloader1 drop-shadow-lg/90" />
+      </div>
+    </div>
   );
 };

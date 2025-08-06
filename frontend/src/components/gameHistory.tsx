@@ -1,18 +1,59 @@
-export const GameHistory=()=>{
+import { format } from "date-fns";
+import { useSendNotification } from "../hooks/NotificationHook";
+import { useUserContext } from "../hooks/contextHook";
 
-    return(<>
-      <div className="flex flex-col Profile h-full w-full mt-8 bg-zinc-800">
-        <div className="flex text-zinc-200 text-md lg:text-2xl lg:p-2  font-bold m-2 cursor-default">Game History</div>
-        <div className="flex flex-col Profile h-50 w-full  bg-zinc-900">
-        <div className="font-serif flex flex-row text-zinc-200 bg-zinc-950 text-sm font-[500] p-1 gap-2 text-center ">
-            <div className="flex-1">Time</div>
-            <div className="flex-4">Player</div>
-            <div className="flex-1">Result</div>
-            <div className="flex-2">Date</div>
-            <div className="flex-1 hidden md:flex">Rematch</div>
+export const GameHistory = () => {
+  const { games } = useUserContext();
+  const { sendNotification } = useSendNotification();
+
+  return (
+    <div className="flex flex-col Profile h-full w-full mt-5 bg-zinc-800 rounded-lg pb-2">
+      <div className="flex text-zinc-200 text-md lg:text-2xl lg:p-2 font-bold m-2 cursor-default">
+        Game History
+      </div>
+
+      <div className="flex flex-col Profile w-full bg-zinc-900">
+        <div className="font-serif flex flex-row text-zinc-200 bg-zinc-950 text-sm font-[500] p-1 gap-2 text-center">
+          <div className="flex-1">Time</div>
+          <div className="flex-5">Player</div>
+          <div className="flex-1">Result</div>
+          <div className="flex-2">Date</div>
+          <div className="flex-2">Rematch</div>
         </div>
-     </div>
 
+        {games?.map((game) => (
+          <div
+            key={game.id}
+            className="flex flex-row text-zinc-200 text-sm font-[400] p-1 py-2 border-b border-zinc-800 items-center text-center gap-2"
+          >
+            <div className="flex-1 flex justify-center">
+              <img className="size-5 mx-1" src={`./media/${game.timeControl.toLowerCase()}.png`} alt="" />
+            </div>
+            <div className="flex-5 truncate flex-row flex justify-center">
+              <img className={`${game.playedAs==="white"?"":"invert"} size-5 mr-1`} src={`./media/pawn.png`} alt="" />
+              {game.opponent?.name || game.opponent?.username}
+            </div>
+            <div className="flex-1 flex justify-center"><div className={`size-5 aspect-square rounded ${game.result==="loss"?"bg-rose-500/70":"bg-emerald-600"}`}><img className={`size-5 invert mr-1`} src={`./media/${game.result==="loss"?"minus":"plus"}.png`} alt="" /></div></div>
+            <div className="flex-2  ">
+              {format(new Date(game.startAt), "dd MMM")}
+            </div>
+            <div className="flex-2  flex justify-center">
+              <button
+                className="bg-emerald-900/80 hover:bg-emerald-700 text-white p-1 text-xs rounded flex flex-row"
+                onClick={() =>
+                  sendNotification(
+                    game.opponent.id,
+                    "CHALLENGE",
+                    "Challenged you for a Rematch"
+                  )
+                }
+              >
+                <img className="size-5 mr-1" src="./media/challenge.png" alt="" /><div className="lg:flex hidden "> Rematch</div>
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
-        </>)
-}
+  );
+};

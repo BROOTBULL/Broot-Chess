@@ -23,7 +23,7 @@ export const Profile2=()=>{
           </div>
           <div className="flex flex-col">
             <div className="text-zinc-100 drop-shadow-sm/90 text-3xl md:text-5xl px-2 font-[900]">{user?.name}</div>
-          <div className="text-zinc-800 text-sm px-2 ">{user?.username}</div>
+          <div className="text-zinc-100 text-sm px-3 font-[500] text-shadow-sm/40 ">{user?.username}</div>
           </div>
           
         </div>

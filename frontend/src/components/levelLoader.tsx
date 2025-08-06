@@ -20,7 +20,7 @@ export const LevelLoader = () => {
     : 0;
 
   return (
-    <div className="flex flex-col h-fit w-full  self-end p-5 px-4 md:p-4 my-3 bg-zinc-800 shadow-lg/50">
+    <div className="flex flex-col h-fit w-full self-end p-5 px-4 md:p-6 my-3 bg-zinc-800 shadow-lg/50 rounded-lg">
       <span className="text-zinc-300 text-[10px] md:text-[14px] flex items-center ">
         {currentTrophy && (
           <img

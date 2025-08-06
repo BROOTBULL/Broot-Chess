@@ -7,7 +7,7 @@ import { useUserContext } from "../hooks/contextHook";
 import { Trasition } from "../transition";
 
 const ProfilePage = () => {
-  const { user,friends } = useUserContext();
+  const { user, friends } = useUserContext();
   const rating = user?.rating ?? 0;
 
   const trophies = [
@@ -32,41 +32,62 @@ const ProfilePage = () => {
         <Header3 />
         <div className="pt-20 flex flex-col mx-auto h-fit w-full p-3 md:p-6 md:pt-28 xl:pt-10 lg:pl-30 max-w-[1200px] ">
           <Profile2 />
-          <div className="flex-col md:flex-row flex gap-2 ">
+          <div className="flex-col sm:flex-row flex gap-2 ">
             <GameRatings />
-            <div className="bg-zinc-800 h-48 w-full my-1 flex flex-row rounded">
+            <div className="bg-zinc-800 h-38 lg:h-48 w-full my-1 flex flex-row rounded-lg px-2">
               <div className="flex flex-col items-center">
                 <img
-                  className="size-30 m-5 mb-0"
+                  className="size-24 lg:size-30 m-4 lg:m-5 lg:mb-2 mb-0"
                   src={`./media/${currentTrophy?.name}.png`}
                   alt=""
                 />
-                <div className="text-red-200 font-bold text-lg">
+                <div className="text-red-200 font-bold text-sm lg:text-lg">
                   Bronze League
                 </div>
               </div>
-              <div className="rounded h-5 w-[60%] bg-zinc-400 mt-auto ml-auto mr-5 mb-7">
+              <div className="rounded-full h-4 lg:h-5 w-[70%] bg-linear-to-b from-zinc-200 to-zinc-300 mt-auto ml-auto mb-5">
                 <div
-                  className="h-full rounded-full bg-emerald-500 "
+                  className="h-full rounded-full bg-linear-to-bl from-emerald-500 to-emerald-600 "
                   style={{ width: `${Ptg}%` }}
-                ></div>
+                >
+                </div>
               </div>
             </div>
           </div>
-           <div className="text-zinc-800 font-bold text-lg m-2 mt-2 mb-0">
+          <div className="text-zinc-800 font-bold text-lg m-2 mt-2 mb-0">
             Friends
-           </div>
-          <div className="bg-zinc-500 h-fit w-full mb-2 rounded-lg flex flex-row scroll-smooth overflow-x-auto">
-           {friends.map((friend,i)=>{
-            return(<div key={i}  className="flex flex-col items-center m-2 bg-black rounded-lg">
-                <div className="aspact-square rounded-md border-3 border-black"><img className="size-26 rounded-lg" src={friend?.profile||"./media/chessboard.png"} alt="" />
-                </div>
-                <div className="text-zinc-200 font-bold text-sm">{friend.name}</div>
-</div> )
-           })}
           </div>
-          <Stats />
-          <GameHistory />
+          {friends.length ? (
+            <div className="bg-zinc-500 h-fit w-full mb-2 rounded-lg flex flex-row scroll-smooth overflow-x-auto">
+              {friends.map((friend, i) => {
+                return (
+                  <div
+                    key={i}
+                    className="flex flex-col items-center m-2 bg-black rounded-lg"
+                  >
+                    <div className="aspact-square rounded-md border-3 border-black">
+                      <img
+                        className="size-26 rounded-lg"
+                        src={friend?.profile || "./media/chessboard.png"}
+                        alt=""
+                      />
+                    </div>
+                    <div className="text-zinc-200 font-bold text-sm">
+                      {friend.name}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="bg-zinc-500 h-36 w-full mb-2 rounded-lg flex justify-center items-center">
+              <div>No Friends</div>
+            </div>
+          )}
+          <div className="flex flex-col md:flex-row gap-5 w-full ">
+            <GameHistory />
+            <Stats />
+          </div>
         </div>
       </div>
     </>

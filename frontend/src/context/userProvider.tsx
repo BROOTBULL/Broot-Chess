@@ -12,6 +12,27 @@ export interface User {
   token: string;
 }
 
+export type GameType="CLASSICAL"|"RAPID"|"BLITZ"
+export type GameResult="BLACK WINS"|"WHITE WINS"|"DRAW"
+
+export type GamesData={
+                id: string,
+              opponent: {
+                  id: string,
+                  username: string,
+                  name: string,
+                  email: string,
+                  profile: null|string,
+                  provider: string,
+                  rating: number,
+                  createdAt:Date
+              },
+              timeControl: GameType,
+              startAt:Date,
+              result: string
+              playedAs:string
+}
+
 
 interface UserContextProviderType {
   user: User | null;
@@ -21,6 +42,8 @@ interface UserContextProviderType {
   setSocket: React.Dispatch<React.SetStateAction<WebSocket | null>>
   friends: User[] | [];
   setFriends: React.Dispatch<React.SetStateAction<User[] | []>>
+  games: GamesData[] | [];
+  setGames: React.Dispatch<React.SetStateAction<GamesData[] | []>>
 }
 
 
@@ -33,6 +56,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [loading, setLoading] = useState(true);
   const [friends, setFriends] = useState<User[]>([]);
+  const [games, setGames] = useState<GamesData[]>([]);
   
 
 useEffect(() => {
@@ -93,11 +117,18 @@ useEffect(() => {
         params: { userId: user?.id },
       });
       setFriends(response.data.Friends);
-      console.log(response.data.Friends);
       
+    };
+    
+    const getGames = async () => {
+      const response = await axios.get("/gameData/games", {
+        params: { userId: user?.id },
+      });
+      setGames(response.data.games)
     };
 
       getFriends();
+      getGames()
   }, [user]);
 
 
@@ -109,7 +140,9 @@ useEffect(() => {
         setSocket,
         loading,
         friends,
-        setFriends
+        setFriends,
+        games,
+        setGames
       }}
     >
       {children}

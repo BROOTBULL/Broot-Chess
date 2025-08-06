@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import passport from "passport";
 import prisma from "./db";
 import { Request } from "express";
-import { randomUUID } from "crypto";
+import { v4 as uuidv4 } from "uuid";
 
 export function initPassport() {
   if (
@@ -37,7 +37,7 @@ passport.use(
         const user = await prisma.user.upsert({
           create: {
             email,
-            username: (profile.displayName+randomUUID).slice(0,-7),
+            username: (profile.displayName+uuidv4()).slice(0,9),
             name: profile.displayName,
             profile: profile._json.picture,
             provider: "GOOGLE",

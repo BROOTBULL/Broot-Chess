@@ -4,6 +4,7 @@ import { User } from ".";
 import { connectionManager } from "./connectionManager";
 import { GAME_OVER, INIT_GAME, MOVE, GAME_ENDED } from "./messages";
 import { createGameInDb, endGameDB, saveMovesInDb } from "./API_Routes";
+import { GameType } from "./GameManager";
 
 export type GAME_RESULT = "WHITE_WINS" | "BLACK_WINS" | "DRAW";
 export type GAME_STATUS = 'IN_PROGRESS' | 'COMPLETED' | 'ABANDONED' | 'TIME_UP' | 'PLAYER_EXIT';
@@ -35,17 +36,18 @@ export class Game {
     this.moveCount=0;
   }
 
-  PushSecondPlayer(user:User)
+  PushSecondPlayer(user:User,gameType:GameType)
   {
     this.player2Id=user.userId;
     const Players = connectionManager.getPlayersInfo(this.RoomId);
     this.startTime=new Date(Date.now());
+    const GameType=gameType==="rapid"?"RAPID":gameType==="daily"?"CLASSICAL":"BLITZ" as timeControl
 
     const WhitePlayer=Players?.find((user)=> user.userId !== this.player2Id)
     const BlackPlayer=Players?.find((user)=> user.userId === this.player2Id)
     const gameData={
       id:this.RoomId,
-      timeControl:"CLASSICAL" as timeControl,
+      timeControl:GameType,
       status:"IN_PROGRESS" as GAME_STATUS,
       startAt:this.startTime,
       currentFen:"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",

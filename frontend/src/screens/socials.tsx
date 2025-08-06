@@ -189,7 +189,7 @@ const Socials = () => {
               />
             </button>
           </form>
-          <div className="text-lg text-zinc-800 min-h-30 h-fit w-full flex flex-col mt-3 items-center rounded-sm">
+          <div className="text-lg text-zinc-800 min-h-30 h-fit w-full flex flex-col mt-3 items-center rounded-lg overflow-hidden">
             {searchedPlayers && searchedPlayers.length > 0 && search !== "" ? (
               searchedPlayers.map((player, i) => {
                 return (
@@ -236,7 +236,7 @@ const Socials = () => {
                 return (
                   <div
                     key={i}
-                    className="bg-zinc-800 w-full h-fit border-2 border-zinc-700 flex flex-row p-3"
+                    className="bg-zinc-800 w-full h-fit border-2 border-zinc-700 flex flex-row p-3 rounded-lg"
                   >
                     <div className="bg-zinc-800 border-2 border-zinc-700 rounded-md aspect-square h-full">
                       <img

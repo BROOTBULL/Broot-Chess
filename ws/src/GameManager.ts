@@ -24,16 +24,18 @@ import {
 } from "./API_Routes";
 
 export type NotifType = "MESSAGE" | "REQUEST" | "CHALLENGE" | "ACCEPT" | "";
+export type GameType = "blitz" | "rapid" | "daily" | "PRIVATE";
+type WaitingGame={gametype:GameType,gameId:string|null}
 
 export class GameManager {
   private games: Game[]; //game is defined like games:type  where array of Room (where Room is a class name Game).... like x:number[] x is the array of number
-  private pendingGameId: string | null;
+  private waitingGame: WaitingGame[];
   private users: User[]; // users is a array of websockets
 
   constructor() {
     // as types are defined now variables initialization
     this.games = [];
-    this.pendingGameId = null;
+    this.waitingGame = [{gametype:"blitz",gameId:null},{gametype:"rapid",gameId:null},{gametype:"daily",gameId:null}];
     this.users = [];
   }
 
@@ -61,35 +63,35 @@ export class GameManager {
   private async addHandler(user: User) {
     user.socket.on("message", async (data) => {
       const message = JSON.parse(data.toString());
-      //console.log("message in gameManger", message);
-      //console.log(connectionManager.getmapInfo());
+      const gameType=message.gameType as GameType;
+
 
       if (message.type === INIT_GAME) {
-        if (!this.pendingGameId) {
-          //console.log("no game room with player waiting");
+         const WaitingGame=this.waitingGame.find((gtype)=> gtype.gametype===gameType)
+        if (!WaitingGame?.gameId) {
 
           const game = new Game(user.userId, null);
           this.games.push(game);
-          if (!message.private) {
-            this.pendingGameId = game.RoomId;
+
+          if (!message.private&&WaitingGame) {
+            WaitingGame.gameId = game.RoomId;
           }
-          //console.log("game created..!!", game.RoomId);
+
 
           connectionManager.addUserRoomMap(user, game.RoomId);
-          //console.log("game added in map:", connectionManager.getmapInfo());
+
           connectionManager.sendMessageToAll(
             game.RoomId,
             JSON.stringify({
               type: GAME_ADDED,
               gameId: game.RoomId,
+              gameType:gameType,
               private:message.private
             })
           );
         } else {
-          //console.log("game room available with player waiting",this.pendingGameId);
-
           const waitingGame = this.games.find(
-            (game) => game.RoomId === this.pendingGameId
+            (game) => game.RoomId === WaitingGame.gameId
           );
           if (!waitingGame) {
             console.error("Pending game not found?");
@@ -114,14 +116,14 @@ export class GameManager {
                 },
               })
             );
-            this.removeGame(this.pendingGameId);
-            this.pendingGameId = null;
+            this.removeGame(WaitingGame.gameId);
+            WaitingGame.gameId = null;
             return;
           }
 
           connectionManager.addUserRoomMap(user, waitingGame.RoomId);
-          waitingGame.PushSecondPlayer(user);
-          this.pendingGameId = null;
+          waitingGame.PushSecondPlayer(user,gameType);
+          WaitingGame.gameId = null;
         }
       }
 
@@ -149,9 +151,31 @@ export class GameManager {
 
         const gameWS = this.games.find((game) => game.RoomId === gameId);
 
+        if (user.userId === gameWS?.player1Id) {
+            user.socket.send(
+              JSON.stringify({
+                type: GAME_ALERT,
+                payload: {
+                  message: "Trying to Connect with yourself?",
+                },
+              })
+            );
+            connectionManager.sendMessageToAll(
+              gameWS?.RoomId,
+              JSON.stringify({
+                type: GAME_ALERT,
+                payload: {
+                  message: "Trying to Connect with yourself?",
+                },
+              })
+            );
+            this.removeGame(gameId);
+            return;
+          }
+
         if (gameWS && !gameWS.player2Id) {
           connectionManager.addUserRoomMap(user, gameId);
-          await gameWS.PushSecondPlayer(user);
+          await gameWS.PushSecondPlayer(user,gameType);
           return;
         }
 

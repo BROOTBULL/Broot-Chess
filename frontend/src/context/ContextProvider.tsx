@@ -132,7 +132,7 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
               setBoard(newGame.board());
               setConnecting(false);
               setGameStarted(true);
-              setOpponent(isUser ? payload.BlackPlayer : payload.WhitePlayer);
+              setOpponent(isUser ? payload.BlackPlayer : payload.WhitePlayer);//Opponent userId and users user.id are correct backend ids opponent id is randomId from socket
               setRoomId(payload.RoomId);
               setMessages([])
               setMoves([])
@@ -183,7 +183,8 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
               setBoard(newBoard);
               const moveTo = (payload.moves as Move[]).map((move) => move.to);
               setMoves(moveTo);
-
+              console.log(payload.WhitePlayer.id," ---> ",user?.id," or userId ->",user?.userId);
+              
               // console.log("Game Rejoined successfully..!!!");
               // console.log("roomId:", payload.RoomId);
               setColor(isUser ? "white" : "black");
@@ -227,12 +228,6 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
           case GAME_ADDED:
             {
               setRoomId(message.gameId);
-              const rmid = message.gameId;
-              const expiryTime = Date.now() + 15 * 60 * 1000; // 15 minutes in ms
-              localStorage.setItem(
-                "roomData",
-                JSON.stringify({ rmid, expiryTime })
-              );
               if(!message.private)
               {setConnecting(true);
               setActiveTab("play");}
