@@ -105,7 +105,7 @@ const SignUpPage = () => {
         alt="back button"
       />
 
-      <div className="absolute flex flex-row h-full w-full ">
+      <div className="absolute flex flex-row h-full w-full background bg-cover bg-no-repeat bg-center ">
         <div className="flex flex-col justify-center items-center bg-gradient-to-r from-zinc-300 to-zinc-100 backdrop-blur-md h-full w-full md:w-[56%] ">
           {error && (
             <div className="bg-red-400 h-10 w-[60%] rounded-lg absolute top-0 mt-5 text-center p-2 text-white ">
@@ -190,9 +190,9 @@ const SignUpPage = () => {
                 className="playButton text-center  md:px-15 lg:px-20 h-fit items-center  bg-zinc-800 px-10 py-2 my-2 rounded-lg shadow-lg/30 text-zinc-100 font-serif cursor-pointer hover:shadow-white "
               >
                 {!registering ? (
-                  <div className="text-sm md:text-md ">Submit</div>
+                  <div className="text-sm md:text-md lg:text-lg ">Submit</div>
                 ) : (
-                  <div className="flex flex-row justify-center text-sm md:text-md ">
+                  <div className="flex flex-row justify-center text-sm md:text-md lg:text-lg">
                     Signing Up...
                   </div>
                 )}
@@ -231,6 +231,7 @@ const SignUpPage = () => {
             </button>
           </div>
         </div>
+        <div className="hidden md:flex h-full md:w-[44%] bg-black/70"></div>
       </div>
     </>
   );

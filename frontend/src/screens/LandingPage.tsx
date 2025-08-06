@@ -35,7 +35,7 @@ const LandingPage = () => {
         </span>
       </button>
 
-      <div className="absolute flex flex-row h-full w-full bg-[url(./media/image.png)] bg-center bg-cover bg-no-repeat -z-10">
+      <div className="absolute flex flex-row h-full w-full background bg-center bg-cover bg-no-repeat -z-10">
         <div className="flex justify-end items-center bg-gradient-to-r from-zinc-300 to-zinc-100 backdrop-blur-md h-full w-[60%] md:w-[56%] -z-9 ">
           <span className="text-[100px] md:text-[150px] lg:text-[200px] font-serif text-zinc-950 font-[100] h-60 ml-30">
             CHE

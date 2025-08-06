@@ -8,6 +8,8 @@ import { useUserContext } from "../hooks/contextHook";
 const LogInPage = () => {
   const navigate = useNavigate();
   const {setUser}=useUserContext()
+  const [registering, setRegistering] = useState(false);
+
 
   const [error,setError]=useState<string|null>(null);
 
@@ -25,18 +27,23 @@ const LogInPage = () => {
     }));
   };
 
+  function displayError(error: string) {
+    setError(error);
+
+    // Auto-clear error after 3 seconds (3000 ms)
+    setTimeout(() => {
+      setError(null);
+    }, 3000);
+    setRegistering(false);
+    return;
+  }
+
 const handleSubmit = async (e: React.MouseEvent<HTMLElement>) => {
   e.preventDefault();
+  setRegistering(true)
   const emailError = validateEmail(formData.email);
 if (emailError) {
-  setError(emailError);
-
-  // Auto-clear error after 3 seconds (3000 ms)
-  setTimeout(() => {
-    setError(null);
-  }, 3000);
-
-  return;
+  displayError(emailError)
 }
 
   try {
@@ -48,6 +55,7 @@ if (emailError) {
     setError("Login Failed ..!! Please check your entries!")
     console.error("Login failed:", error);
   }
+  setRegistering(false)
 }
 
 
@@ -84,7 +92,7 @@ if (emailError) {
         alt="back button"
       />
 
-      <div className="absolute flex flex-row h-full w-full  ">
+      <div className="absolute flex flex-row h-full w-full  background bg-cover bg-center bg-no-repeat">
         <div className="flex flex-col justify-center items-center bg-gradient-to-r from-zinc-300 to-zinc-100 backdrop-blur-md h-full w-full md:w-[56%] ">
         {error&&<div className="bg-red-400 h-10 w-[60%] rounded-lg absolute top-0 mt-5 text-center p-2 text-white ">{error}</div>}
           <img
@@ -125,9 +133,15 @@ if (emailError) {
 
               <button
                 onClick={(e) => handleSubmit(e)}
-                className="playButton text-center text-[20px] md:text-[25px] lg:text-[30px] md:px-15 lg:px-20 h-fit items-center  bg-zinc-800 px-10 py-2 m-3 shadow-lg/30 text-zinc-100 font-serif cursor-pointer hover:shadow-white "
+                className="playButton text-center  md:px-15 lg:px-20 h-fit items-center  bg-zinc-800 px-10 py-2 my-2 rounded-lg shadow-lg/30 text-zinc-100 font-serif cursor-pointer hover:shadow-white "
               >
-                Submit
+                {!registering ? (
+                  <div className="text-sm md:text-md lg:text-lg ">Submit</div>
+                ) : (
+                  <div className="flex flex-row justify-center text-sm md:text-md lg:text-lg">
+                    Logging In...
+                  </div>
+                )}
               </button>
             </form>
           </div>
@@ -157,12 +171,13 @@ if (emailError) {
             Register a new Account... {" "}
             <button
               className="text-blue-950 cursor-pointer"
-              onClick={() => navigate("/login")}
+              onClick={() => navigate("/signUp")}
             >
               SignUp
             </button>
           </div>
         </div>
+        <div className="hidden md:flex h-full md:w-[44%] bg-black/70"></div>
       </div>
     </>
   );
