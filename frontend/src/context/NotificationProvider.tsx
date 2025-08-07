@@ -191,11 +191,11 @@ const ChallengeButtons = ({
     <div className="h-full w-[20%] ml-auto">
       <div
         onClick={() => handleAccept()}
-        className="text-sm text-zinc-100 text-center bg-emerald-800 rounded-tr-lg rounded-[2px] p-2 px-4 cursor-pointer hover:bg-emerald-700 m-1"
+        className="text-sm text-zinc-100 text-center bg-emerald-800 rounded-tr-lg rounded-[2px] p-1 px-2 cursor-pointer hover:bg-emerald-700 m-1"
       >
         Accept
       </div>
-      <div className="text-sm text-zinc-100 text-center bg-zinc-700 rounded-br-lg rounded-[2px] p-2 px-4 cursor-pointer hover:bg-zinc-600 m-1 ">
+      <div className="text-sm text-zinc-100 text-center bg-zinc-700 rounded-br-lg rounded-[2px] p-1 px-4 cursor-pointer hover:bg-zinc-600 m-1 ">
         <img
           className="size-5 rotate-45 mx-auto"
           src="./media/plus.png"
