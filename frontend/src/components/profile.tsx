@@ -23,7 +23,7 @@ export const Profile = () => {
           </div>
           <div className={`${
               theme ? "text-zinc-800" : "text-zinc-200"
-            } text-[13px] px-3 font-[500] text-shadow-sm/40  `}>
+            } text-[13px] px-3 font-[500] `}>
             {user?.username}
           </div>
         </div>
