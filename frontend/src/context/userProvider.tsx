@@ -46,6 +46,8 @@ interface UserContextProviderType {
   setGames: React.Dispatch<React.SetStateAction<GamesData[] | []>>
   reloadData:boolean;
   setReloadData:React.Dispatch<React.SetStateAction<boolean>>
+  theme:boolean;
+  setTheme:React.Dispatch<React.SetStateAction<boolean>>
 }
 
 
@@ -60,6 +62,9 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
   const [friends, setFriends] = useState<User[]>([]);
   const [games, setGames] = useState<GamesData[]>([]);
   const [reloadData,setReloadData] = useState(false);
+  const [theme,setTheme] = useState<boolean>(false);
+
+
   
 
 useEffect(() => {
@@ -124,7 +129,7 @@ useEffect(() => {
     };
     
       getFriends();
-  }, [user]);
+  }, [user,reloadData]);
 
     useEffect(() => {
 
@@ -155,7 +160,9 @@ useEffect(() => {
         games,
         setGames,
         reloadData,
-        setReloadData
+        setReloadData,
+        theme,
+        setTheme
       }}
     >
       {children}

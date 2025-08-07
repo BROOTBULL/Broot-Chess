@@ -7,7 +7,7 @@ import { useUserContext } from "../hooks/contextHook";
 import { Trasition } from "../transition";
 
 const ProfilePage = () => {
-  const { user, friends } = useUserContext();
+  const { user, friends,theme } = useUserContext();
   const rating = user?.rating ?? 0;
 
   const trophies = [
@@ -27,21 +27,21 @@ const ProfilePage = () => {
 
   return (
     <>
-      <div className=" flex w-full bg-gradient-to-r from-zinc-300 to-zinc-100 ">
+      <div className={` flex w-full bg-gradient-to-r ${theme?" from-zinc-300 to-zinc-100 ":" from-zinc-800 to-zinc-900 "} `}>
         <Header2 />
         <Header3 />
-        <div className="pt-20 flex flex-col mx-auto h-fit w-full p-3 md:p-6 md:pt-28 xl:pt-10 lg:pl-30 max-w-[1200px] ">
+        <div className="pt-20 flex flex-col mx-auto h-fit w-full p-3 md:p-6 md:pl-25 md:pt-28 xl:pt-10 lg:pl-35 max-w-[1200px] ">
           <Profile2 />
           <div className="flex-col sm:flex-row flex gap-2 ">
             <GameRatings />
-            <div className="bg-zinc-800 h-38 lg:h-48 w-full my-1 flex flex-row rounded-lg px-2">
+            <div className={`${theme?"bg-zinc-800":" bg-zinc-950 shadow-zinc-800 shadow-lg "} h-38 lg:h-48 w-full my-1 flex flex-row rounded-lg px-2`}>
               <div className="flex flex-col items-center">
                 <img
                   className="size-24 lg:size-30 m-4 lg:m-5 lg:mb-2 mb-0"
                   src={`./media/${currentTrophy?.name}.png`}
                   alt=""
                 />
-                <div className="text-red-200 font-bold text-sm lg:text-lg">
+                <div className={`text-red-200 font-bold text-sm lg:text-lg`}>
                   Bronze League
                 </div>
               </div>
@@ -84,7 +84,7 @@ const ProfilePage = () => {
               <div>No Friends</div>
             </div>
           )}
-          <div className="flex flex-col md:flex-row gap-5 w-full ">
+          <div className="flex flex-col md:flex-row gap-5 w-full pb-80 ">
             <GameHistory />
             <Stats />
           </div>

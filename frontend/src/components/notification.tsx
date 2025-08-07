@@ -77,7 +77,7 @@ export const NotifChallenge = ({ notif }: { notif: Message }) => {
 };
 
 export const Notification = ({ setNotifications, notif }: {setNotifications:React.Dispatch<React.SetStateAction<Message[]>>, notif: Message }) => {
-  const { user } = useUserContext();
+  const { user,theme } = useUserContext();
   const {sendNotification}=useSendNotification()
 
   async function handleAccept(playerId: string) {
@@ -155,7 +155,7 @@ export const Notification = ({ setNotifications, notif }: {setNotifications:Reac
   }
 
   return (
-    <div className="bg-zinc-800 w-full h-fit border-2 border-b-0 border-zinc-700 flex flex-row p-3 rounded-lg">
+    <div className={`${theme?" bg-zinc-800":"bg-zinc-950"} w-full h-fit border-2 border-b-0 border-zinc-700 flex flex-row p-3 rounded-lg`}>
       <div className="bg-zinc-800 border-2 border-zinc-700 rounded-md aspect-square h-full">
         <img
           className="size-12 md:size-18"

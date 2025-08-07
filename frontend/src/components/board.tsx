@@ -87,7 +87,7 @@ function handleSquareClick(clickedSquare: Square) {
   return (
     <>
     
-      <div className="flex flex-col place-content-center w-[98%] h-fit aspect-square ring-1 shadow-[5px_5px_20px_black] ">
+      <div className="flex flex-col place-content-center w-[98%] h-fit aspect-square ring-1 shadow-[5px_5px_15px_black] rounded-md overflow-hidden ">
         
         {rows.map((row, i) => {
           const cols = color === "white" ? row : [...row].reverse();

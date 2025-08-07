@@ -152,6 +152,7 @@ interactionRoute.get("/friends", async(req: Request, res: Response) => {
         username: true,
         name: true,
         profile: true,
+        rating:true
       },
     },
     receiver: {
@@ -160,6 +161,7 @@ interactionRoute.get("/friends", async(req: Request, res: Response) => {
         username: true,
         name: true,
         profile: true,
+        rating:true
       },
     },
   },

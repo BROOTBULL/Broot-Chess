@@ -7,7 +7,7 @@ export const GameHistory = () => {
   const { sendNotification } = useSendNotification();
 
   return (
-    <div className="flex flex-col Profile h-full w-full mt-5 bg-zinc-800 rounded-lg pb-2">
+    <div className="flex flex-col Profile h-full w-full mt-5 bg-zinc-800 rounded-lg pb-2 ring-1 ring-zinc-900">
       <div className="flex text-zinc-200 text-md lg:text-2xl lg:p-2 font-bold m-2 cursor-default">
         Game History
       </div>
@@ -21,7 +21,10 @@ export const GameHistory = () => {
           <div className="flex-2">Rematch</div>
         </div>
 
-        {games.length?(games?.map((game,i) => (
+        {games.length?
+        
+        (<div className="w-full min-h-40 bg-zinc-900">
+          {games?.map((game,i) => (
           <div
             key={i}
             className="flex flex-row text-zinc-200 text-sm font-[400] p-1 py-2 border-b border-zinc-800 items-center text-center gap-2"
@@ -52,7 +55,9 @@ export const GameHistory = () => {
               </button>
             </div>
           </div>
-        ))):(<div className="h-40 flex justify-center items-center w-full"> <div className="text-zinc-200">No Matches played yet</div></div>)
+        ))}
+        </div>
+        ):(<div className="h-40 flex justify-center items-center w-full"> <div className="text-zinc-200">No Matches played yet</div></div>)
       }
       </div>
     </div>

@@ -50,7 +50,7 @@ const Socials = () => {
   const [optionOpen, setOptionOpen] = useState(false);
 
   const {
-    user
+    user,theme
   } = useUserContext();
 
   const { sendNotification} = useSendNotification();
@@ -131,13 +131,13 @@ const Socials = () => {
   }
 
   return (
-    <div className=" flex w-full min-h-screen bg-gradient-to-r from-zinc-300 to-zinc-100 h-fit">
+    <div className={`flex w-full min-h-screen bg-gradient-to-r ${theme?" from-zinc-300 to-zinc-100 ":" from-zinc-800 to-zinc-900 "}  h-fit`}>
       <Header2 />
       <Header3 />
-      <div className="pt-20 flex flex-col mx-auto h-full w-full p-3 md:p-6 md:pt-28 xl:pt-10 lg:pl-40 max-w-[1200px] ">
+      <div className="pt-20 flex flex-col mx-auto h-full w-full p-3 md:p-6 md:pt-28 md:pl-25 xl:pt-10 lg:pl-40 max-w-[1200px] ">
         <Profile />
         <div className=" h-fir w-full py-2 mt-5">
-          <div className="text-2xl font-bold py-3 text-zinc-900 ">Messages</div>
+          <div className={`text-2xl font-bold py-3 ${theme?" text-zinc-800 ":"text-zinc-200 "} `}>Messages</div>
           <div className="text-lg text-zinc-800  h-fit flex">
             {notifications && notifications.length > 0 ? (
               <div className="h-fit w-full flex flex-col">
@@ -155,24 +155,24 @@ const Socials = () => {
                 {notifications.length > 3 && (
                   <div
                     onClick={() => setSeeAll(!seeAll)}
-                    className="bg-zinc-800 w-full h-8 md:h-12 border-3 border-zinc-700 justify-center flex items-center text-zinc-400 text-[12px] md:text-md cursor-pointer hover:bg-zinc-700"
+                    className="bg-zinc-800 w-full h-8 md:h-12 border-3 border-zinc-700 justify-center flex items-center text-zinc-300 text-[12px] md:text-md cursor-pointer hover:bg-zinc-700 rounded-lg" 
                   >
                     {seeAll ? "See less" : "See more"}
                   </div>
                 )}
               </div>
             ) : (
-              <div className="mx-auto my-5">No message recieved yet</div>
+              <div className={`mx-auto my-5 ${theme?"":"invert"}`}>No message recieved yet</div>
             )}
           </div>
         </div>
         <div className="w-full flex flex-col py-2 my-5">
-          <div className="text-2xl font-bold py-3 text-zinc-900 ">
+          <div className={`text-2xl font-bold py-3 ${theme?" text-zinc-800 ":"text-zinc-200 "}`}>
             Friends List
           </div>
           <form className="w-full h-8 md:h-10  rounded-sm border-2 border-zinc-400 flex justify-center ">
             <input
-              className="w-[95%] h-full text-sm md:text-md flex-15 outline-0 focus:border-zinc-600 rounded-l-sm focus:border-2 text-zinc-800 p-1 pl-2"
+              className={`w-[95%] h-full text-sm md:text-md flex-15 outline-0 focus:border-zinc-600 rounded-l-sm focus:border-2 ${theme?"text-zinc-800":"text-zinc-200"} p-1 pl-2`}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               type="text"
@@ -183,7 +183,7 @@ const Socials = () => {
               className="border-l-2 border-zinc-400 w-full h-full md:flex-1 flex-2  flex justify-center items-center text-zinc-600 cursor-pointer hover:bg-zinc-400"
             >
               <img
-                className="size-7 brightness-30"
+                className={`size-7 brightness-30 ${theme?"":"invert"}`}
                 src="./media/search.png"
                 alt=""
               />
@@ -195,7 +195,7 @@ const Socials = () => {
                 return (
                   <div
                     key={i}
-                    className="bg-zinc-800 w-full h-fit border-2 border-zinc-700 flex flex-row p-3"
+                    className={`${theme?" bg-zinc-800":"bg-zinc-950"} w-full h-fit border-2 m-1 border-zinc-700 flex flex-row p-3 rounded-lg`}
                   >
                     <div className="bg-zinc-800 border-2 border-zinc-700 rounded-md aspect-square h-full">
                       <img
@@ -219,9 +219,7 @@ const Socials = () => {
                           src="./media/challenge.png"
                           alt=""
                         />
-                        <div className="bg-zinc-700 absolute text-sm p-1 text-zinc-300 opacity-0 rounded-sm interact mt-10 duration-200 transition-opacity delay-200">
-                          Challenge
-                        </div>
+
                       </div>
                       <SearchedPlayer player={player} />
                       <div className="hover:bg-zinc-700 cursor-pointer p-1 interact-btn rounded-full flex justify-center duration-200 size-8 items-center">
@@ -236,7 +234,7 @@ const Socials = () => {
                 return (
                   <div
                     key={i}
-                    className="bg-zinc-800 w-full h-fit border-2 border-zinc-700 flex flex-row p-3 rounded-lg"
+                    className={`${theme?" bg-zinc-800":"bg-zinc-950"} w-full h-fit border-2 border-zinc-700 flex flex-row p-3 rounded-lg`}
                   >
                     <div className="bg-zinc-800 border-2 border-zinc-700 rounded-md aspect-square h-full">
                       <img
@@ -263,9 +261,6 @@ const Socials = () => {
                           src="./media/challenge.png"
                           alt=""
                         />
-                        <div className="bg-zinc-700 absolute text-sm p-1 text-zinc-300 opacity-0 rounded-sm interact mt-10 duration-200 transition-opacity delay-200">
-                          Challenge
-                        </div>
                       </div>
                       <div
                         onClick={() => OpenMessage(friend.id)}
@@ -276,9 +271,6 @@ const Socials = () => {
                           src="./media/message.png"
                           alt=""
                         />
-                        <div className="bg-zinc-700 absolute text-sm p-1 text-zinc-300 opacity-0 rounded-sm interact mt-10 duration-200 transition-opacity delay-200">
-                          Message
-                        </div>
                       </div>
                       <form
                         id={friend.id}
@@ -336,7 +328,7 @@ const Socials = () => {
                 );
               })
             ) : (
-              <div className="m-5">No Friends yet</div>
+              <div className={`m-5 ${theme?"":"invert"}`}>No Friends yet</div>
             )}
           </div>
         </div>

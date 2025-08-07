@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import { useUserContext } from "../hooks/contextHook";
 
 export const Loader = () => {
   return (
@@ -72,8 +73,9 @@ export const SearchingLoader = () => {
 };
 
 export const LandingLoader = () => {
+  const {theme}=useUserContext()
   return (
-    <div className="w-full h-full flex justify-center items-center">
+    <div className={`w-full h-full flex justify-center items-center brightness-95 ${theme?"":"invert"} `}>
       <div className="absolute w-full h-full bg-white -z-10" />
       <div className="absolute w-50 h-100 bg-white z-10 mr-70 " />
       <div className="persp">

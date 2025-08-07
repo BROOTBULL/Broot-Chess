@@ -3,30 +3,30 @@ import { useSendNotification } from "../hooks/NotificationHook";
 
 export const RecentGame = () => {
 
-  const{games}=useUserContext()
+  const{games,theme}=useUserContext()
   const {sendNotification}=useSendNotification()
 
   return (
-    <div className="w-full h-fit my-5 ring-1 ring-zinc-400 rounded-lg ">
+    <div className={`w-full h-fit my-5 ring-1 ${theme?" text-zinc-400":" ring-zinc-600"} rounded-lg `}>
       <div className="flex justify-between m-2 my-1 font-bold">
-        <span className=" text-zinc-700 text-md lg:text-2xl cursor-default">
+        <span className={` ${theme?" text-zinc-700":" text-zinc-300"}  text-md lg:text-2xl cursor-default`}>
           Recent Matchs
         </span>
       </div>
-          <div className="flex flex-row ring-1 ring-zinc-400 overflow-x-auto overflow-hidden custom-scroll-w scroll-smooth rounded-b-lg py-1">
+          <div className={`flex flex-row ring-1 ${theme?" ring-zinc-400":" ring-zinc-600"} overflow-x-auto overflow-hidden custom-scroll-w scroll-smooth rounded-b-lg py-1`}>
 
       {games.length?games.map((game)=>{
         return(
         <div
         key={game.id}
-        className="min-w-[290px] md:min-w-[360px] m-2 flex flex-row bg-zinc-400 rounded-md shadow-md/50 p-2">
+        className={`min-w-[290px] md:min-w-[360px] m-2 flex flex-row ${theme?" bg-zinc-400":"bg-zinc-900"} rounded-md shadow-md/50 p-2`}>
           <img
-            className="size-35 md:size-45 drop-shadow-md mr-4 border-2 border-zinc-700 rounded-md"
-            src="/media/chessboard.png" // Use public path in React
+            className="size-30 md:size-45 drop-shadow-md mr-4 border-2 border-zinc-700 rounded-md"
+            src={game.opponent.profile?game.opponent.profile:"/media/chessboard.png" }// Use public path in React
             alt="chess"
           />
           <div className="flex flex-col w-full">
-            <span className="text-zinc-800 font-bold text-sm">
+            <span className={`${theme?" text-zinc-800":"text-zinc-200"} font-bold text-sm`}>
               {game.opponent.name} ({game.opponent.rating})
             </span>
             <span className="text-sm text-zinc-600 font-[600]">
@@ -43,7 +43,7 @@ export const RecentGame = () => {
           </div>
       </div>
         )
-      }):<div className="h-40 flex justify-center items-center w-full"> <div>No Matches played yet</div></div>}
+      }):<div className={`${theme?"":"invert"} text-zinc-800 h-40 flex justify-center items-center w-full`}> <div>No Matches played yet</div></div>}
         </div>
     </div>
   );

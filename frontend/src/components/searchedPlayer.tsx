@@ -63,9 +63,6 @@ export const SearchedPlayer = ({ player }: { player: Player }) => {
         src={`./media/${status}.png`}
         alt=""
       />
-      <div className="bg-zinc-700 absolute text-[11px] p-1 text-zinc-300 opacity-0 rounded-sm interact mt-10 duration-200 transition-opacity delay-200">
-        {status}
-      </div>
     </div>
   );
 };

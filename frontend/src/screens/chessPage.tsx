@@ -113,7 +113,7 @@ const ChessGame = () => {
       }
 
       <div className="absolute flex flex-col xl:flex-row md:h-full w-full  ">
-        <div className=" flex flex-col lg:flex-row justify-between bg-gradient-to-r  from-zinc-200 to-zinc-100 backdrop-blur-md h-fit w-full xl:w-[60%] md:h-full p-5 ">
+        <div className=" flex flex-col lg:flex-row justify-between bg-gradient-to-r  from-zinc-300 to-zinc-400 backdrop-blur-md h-fit w-full xl:w-[60%] md:h-full p-5 ">
           <div className="flex flex-row lg:flex-col justify-between items-center mb-5">
             <img
               className="h-10 lg:h-13 lg:w-8 xl:h-20 xl:w-12 w-6 ml-2 drop-shadow-lg/40 cursor-pointer "
