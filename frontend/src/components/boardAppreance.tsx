@@ -21,7 +21,7 @@ export const BoardAppreance = ({
   }
   function handleSaveTheme()
   {
-    localStorage.setItem("theme",boardAppearnce)
+    localStorage.setItem("boardAppearance",boardAppearnce)
     setTheme(false)
   }
 

@@ -99,7 +99,7 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
   const [undoRequested, setUndoRequested] = useState(false);
   const [undoBox, setUndoBox] = useState<boolean>(false);
   const [waitingResponse, setWaitingResponse] = useState<boolean>(false);
-  const [boardAppearnce, setBoardAppearnce] = useState<string>( localStorage.getItem("theme")as string||"zinc");
+  const [boardAppearnce, setBoardAppearnce] = useState<string>( localStorage.getItem("boardAppearance")as string||"zinc");
 
 
   function isPromoting(chess: Chess, from: Square, to: Square) {

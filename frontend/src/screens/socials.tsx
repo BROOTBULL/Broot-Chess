@@ -170,7 +170,7 @@ const Socials = () => {
           <div className={`text-2xl font-bold py-3 ${theme?" text-zinc-800 ":"text-zinc-200 "}`}>
             Friends List
           </div>
-          <form className="w-full h-8 md:h-10  rounded-sm border-2 border-zinc-400 flex justify-center ">
+          <form className="w-full h-10  rounded-sm inset-ring-2 inset-ring-zinc-400 flex justify-center ">
             <input
               className={`w-[95%] h-full text-sm md:text-md flex-15 outline-0 focus:border-zinc-600 rounded-l-sm focus:border-2 ${theme?"text-zinc-800":"text-zinc-200"} p-1 pl-2`}
               value={search}
@@ -195,11 +195,11 @@ const Socials = () => {
                 return (
                   <div
                     key={i}
-                    className={`${theme?" bg-zinc-800":"bg-zinc-950"} w-full h-fit border-2 m-1 border-zinc-700 flex flex-row p-3 rounded-lg`}
+                    className={`${theme?" bg-zinc-800":"bg-zinc-950"} w-full h-fit flex flex-row p-3 rounded-lg my-0.5`}
                   >
                     <div className="bg-zinc-800 border-2 border-zinc-700 rounded-md aspect-square h-full">
                       <img
-                        className="rounded-sm size-15 md:size-20"
+                        className="rounded-sm size-13 md:size-20"
                         src={player.profile || `./media/userW.png`}
                         alt=""
                       />
@@ -234,16 +234,16 @@ const Socials = () => {
                 return (
                   <div
                     key={i}
-                    className={`${theme?" bg-zinc-800":"bg-zinc-950"} w-full h-fit border-2 border-zinc-700 flex flex-row p-3 rounded-lg`}
+                    className={`${theme?" bg-zinc-800":"bg-zinc-950"} w-full h-fit flex flex-row py-3 rounded-lg mb-0.5 items-center`}
                   >
-                    <div className="bg-zinc-800 border-2 border-zinc-700 rounded-md aspect-square h-full">
+                    <div className="bg-zinc-800 border-2 border-zinc-700 rounded-md aspect-square h-full mx-3 flex items-center">
                       <img
-                        className="rounded-sm size-15 md:size-20"
+                        className="rounded-sm size-13 md:size-20"
                         src={friend.profile || `./media/userW.png`}
                         alt=""
                       />
                     </div>
-                    <div className="w-fit h-full flex flex-col justify-center p-3">
+                    <div className="w-fit h-full flex flex-col justify-center ">
                       <div className="text-sm md:text-lg text-zinc-200">{friend.name}</div>
                       <div className="text-zinc-300 text-[12px] md:text-sm">
                         {friend.username}
@@ -280,7 +280,7 @@ const Socials = () => {
                           name="message"
                           value={message}
                           onChange={(e) => setMessage(e.target.value)}
-                          className="h-full w-[90%] rounded-md bg-zinc-800 border-2 border-zinc-600 text-zinc-200 text-sm p-2"
+                          className="h-full w-[90%] rounded-md bg-zinc-800 border-2 border-zinc-600 text-zinc-200 text-sm p-2 outline-0"
                           placeholder="Write your message ..."
                         />
                         <button
@@ -303,7 +303,7 @@ const Socials = () => {
                       </div>
                       <div
                         onClick={() => setOptionOpen(!optionOpen)}
-                        className="hover:bg-zinc-700 cursor-pointer md:p-1 interact-btn rounded-md flex justify-center duration-200"
+                        className="hover:bg-zinc-700 cursor-pointer md:p-1 interact-btn rounded-md flex justify-center duration-200 mr-3"
                       >
                         <img
                           className="size-7 md:size-8"

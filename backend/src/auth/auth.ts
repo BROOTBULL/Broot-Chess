@@ -178,10 +178,9 @@ router.post("/signUp", async (req: Request, res: Response) => {
 
     const hashedPassword = await bcrypt.hash(bodyData.password, 10);
     let guestUUID = "guest-" + uuidv4();
-
     const user = await prisma.user.create({
       data: {
-       username: (bodyData.username?.slice(0, 4) ?? 'user') + uuidv4().slice(0, 6),
+       username: ((bodyData.username?.slice(0, 4) ?? 'user') + uuidv4()).replace(/\s+/g, '').slice(0, 6),
         email: bodyData.email,
         profile: bodyData.profile,
         name: bodyData.username || guestUUID,

@@ -37,7 +37,7 @@ passport.use(
         const user = await prisma.user.upsert({
           create: {
             email,
-            username: (profile.displayName+uuidv4()).slice(0,9),
+            username: (profile.displayName + uuidv4()).replace(/\s+/g, '').slice(0, 9),
             name: profile.displayName,
             profile: profile._json.picture,
             provider: "GOOGLE",

@@ -62,7 +62,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
   const [friends, setFriends] = useState<User[]>([]);
   const [games, setGames] = useState<GamesData[]>([]);
   const [reloadData,setReloadData] = useState(false);
-  const [theme,setTheme] = useState<boolean>(false);
+  const [theme,setTheme] = useState<boolean>(localStorage.getItem("theme")==="false");
 
 
   

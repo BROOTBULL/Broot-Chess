@@ -40,14 +40,15 @@ export const Header2 = () => {
           <img
             className={` ${
               theme ? "" : "invert"
-            } self-center h-10 w-6 md:h-14 md:w-8 lg:h-20 lg:w-12 lg:m-8 m-5 mx-3 md:mx-6 drop-shadow-lg/40 z-10 cursor-pointer`}
+            } self-center h-10 w-6 md:h-14 md:w-8 lg:h-20 lg:w-12 lg:m-8 m-5 mx-3.5 md:mx-6 drop-shadow-lg/40 z-10 cursor-pointer`}
             src="/media/Broot.png"
             alt="Broot"
           />
           <div className="flex flex-row">
             <img
               onClick={() => {
-                setTheme(!theme);
+                setTheme(!theme)
+                localStorage.setItem("theme",`${theme}`)
               }}
               className={` self-center flex m-3 ${theme ? " rotate-90 size-8 " : " size-6 rotate-0 "} ${optionDisplay?" mr-4 opacity-100 rotate-0 cursor-pointer ":" mr-0 opacity-0 rotate-90 pointer-events-none "} lg:m-8 drop-shadow-sm/80 z-10 duration-200`}
               src={`/media/${theme ? "light" : "dark"}.png`}
@@ -237,7 +238,9 @@ export const Header3 = () => {
           }`}
         >
           <div
-            onClick={() => setTheme(!theme)}
+            onClick={() => {setTheme(!theme)
+              localStorage.setItem("theme",`${theme}`)}
+            }
             className="nav flex flex-row m-3 mb-0 items-center h-10 w-[90%] rounded-lg font-[500] text-lg text-zinc-800"
           >
             <img className="img h-6 w-6 m-2" src="/media/theme.png" alt="" />

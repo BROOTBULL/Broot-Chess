@@ -35,7 +35,6 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     const id = Date.now(); // generate unique id
     setNotifications((prev) => [...prev, { id, ...notif }]);
     setTriggerRefresh((prev) => !prev);
-    if(notif.notifType==="ACCEPT")
     setReloadData((prev)=>!prev)
     // remove it after 15 seconds
     setTimeout(() => {

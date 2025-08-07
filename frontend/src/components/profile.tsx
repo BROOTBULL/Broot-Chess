@@ -6,7 +6,7 @@ export const Profile = () => {
   return (
     <>
       <div className="flex flex-row items-end Profile h-fit w-full mb-2 py-1">
-        <div className={`Profile bg-black size-18 p-1 rounded-md`}>
+        <div className={`Profile border-3 size-18 rounded-md`}>
           <img
             className="rounded-sm"
             src={user?.profile ? user?.profile : "/media/chessboard.png"}
@@ -21,7 +21,9 @@ export const Profile = () => {
           >
             {user?.name}
           </div>
-          <div className="text-zinc-100 text-[13px] px-3 font-[500] text-shadow-sm/40  ">
+          <div className={`${
+              theme ? "text-zinc-800" : "text-zinc-200"
+            } text-[13px] px-3 font-[500] text-shadow-sm/40  `}>
             {user?.username}
           </div>
         </div>
