@@ -53,13 +53,12 @@ class ConnectionManager {
       return;
     }
     const UsersInRoom = this.roomUserMap.get(RoomID) || [];
-    const OtherUsers = UsersInRoom.filter((u) => u.userId !== user.userId);
+    const OtherUsers = UsersInRoom.filter((u) => u.userId !== user.userId);// Otheruser=[User2]    after removing User1 
+    this.roomUserMap.set(RoomID, OtherUsers);  // (roomid, [User2])
 
-    this.roomUserMap.set(RoomID, OtherUsers);
-
-    if (this.roomUserMap.get(RoomID)?.length === 0)
+    if (this.roomUserMap.get(RoomID)?.length === 0){
       this.roomUserMap.delete(RoomID);
-
+}
     this.userToRoom.delete(user.userId);
   }
 

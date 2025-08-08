@@ -25,15 +25,22 @@ export class Game {
   public player2Id: string | null;
   public result: GAME_RESULT | null = null;
   public board: Chess;
-  public moveCount :number 
+  public moveCount: number;
+  public isPrivate: boolean; 
   private startTime = new Date(Date.now());
 
-  constructor(player1Id: string, player2Id: string | null, RoomId?: string) {
+  constructor(
+    player1Id: string,
+    player2Id: string | null,
+    RoomId?: string,
+    isPrivate: boolean = false
+  ) {
     this.RoomId = RoomId ?? randomUUID();
     this.player1Id = player1Id;
     this.player2Id = player2Id;
+    this.isPrivate = isPrivate;
     this.board = new Chess();
-    this.moveCount=0;
+    this.moveCount = 0;
   }
 
   PushSecondPlayer(user:User,gameType:GameType)
@@ -152,6 +159,7 @@ export class Game {
         },
       }),
     );
+
   }
 
 
