@@ -8,7 +8,7 @@ export const ChessBoard = ({showSquare}:{showSquare:boolean}) => {
     const {socket}=useUserContext()
     const {setBoard,board,chess,color,roomId,moves,boardAppearnce}=useChessContext()
 
-    const rows = color === "white" ? board : [...board].reverse();
+    const rows = color === "w" ? board : [...board].reverse();
     const [validmoves, setValidmoves] = useState<Square[]>([]);
     const [from, setFrom] = useState<null | Square>(null);
 
@@ -90,7 +90,7 @@ function handleSquareClick(clickedSquare: Square) {
       <div className="flex flex-col place-content-center w-[98%] h-fit aspect-square ring-1 shadow-[5px_5px_15px_black] rounded-md overflow-hidden ">
         
         {rows.map((row, i) => {
-          const cols = color === "white" ? row : [...row].reverse();
+          const cols = color === "w" ? row : [...row].reverse();
 
           return (
             <div
@@ -99,7 +99,7 @@ function handleSquareClick(clickedSquare: Square) {
 
               {cols.map((square, j) => {
                 const squareIndex =
-                  color === "white" ? i * 8 + j : 63 - (i * 8 + j);
+                  color === "w" ? i * 8 + j : 63 - (i * 8 + j);
                 const squareId = SQUARES[squareIndex];
                 const inCheck=chess.inCheck();
 

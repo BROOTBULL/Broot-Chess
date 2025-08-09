@@ -312,23 +312,22 @@ export class GameManager {
             console.log("Game Recieved in Undo Approved :", gameDB);
 
             game?.board.load(gameDB.fenHistory[lastmoveCount]);
-
-            connectionManager.sendMessageToAll(
-              roomId,
-              JSON.stringify({
-                type: UNDO_MOVE_APPROVE,
-                payload: {
-                  revertedfen: gameDB.fenHistory[lastmoveCount],
-                  moves: gameDB.moves,
-                },
-              })
-            );
-
             const updatedgame = await deleteMovesfromDb(
               roomId,
               undoCount,
               moveCount,
               gameDB.fenHistory[lastmoveCount]
+            );
+            const updatedgameDB = await getGameFromDb(roomId);
+            connectionManager.sendMessageToAll(
+              roomId,
+              JSON.stringify({
+                type: UNDO_MOVE_APPROVE,
+                payload: {
+                  revertedfen: updatedgameDB.fenHistory[lastmoveCount],
+                  moves: updatedgameDB.moves,
+                },
+              })
             );
             game.moveCount = lastmoveCount;
             console.log("Updatedgame after moves deleted :", updatedgame);

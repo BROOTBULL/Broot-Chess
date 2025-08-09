@@ -88,7 +88,7 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
   const [gameStarted, setGameStarted] = useState(false);
   const [Messages, setMessages] = useState<Message[]>([]);
   const [activeTab, setActiveTab] = useState<Tab>("newgame");
-  const [color, setColor] = useState("white");
+  const [color, setColor] = useState("w");
   const [chess, setChess] = useState(new Chess());
   const [board, setBoard] = useState<(Piece | null)[][]>(chess.board());
   const [moves, setMoves] = useState<string[]>([]);
@@ -147,7 +147,7 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
                 "roomData",
                 JSON.stringify({ rmid, expiryTime })
               );
-              setColor(isUser ? "white" : "black");
+              setColor(isUser ? "w" : "b");
             }
             break;
           case MOVE:
@@ -189,7 +189,7 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
               
               // console.log("Game Rejoined successfully..!!!");
               // console.log("roomId:", payload.RoomId);
-              setColor(isUser ? "white" : "black");
+              setColor(isUser ? "w" : "b");
             }
             break;
           case GAME_ENDED:
@@ -198,7 +198,7 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
               setGameStarted(false);
               setGameEnded(true);
               setPlayerWon(
-                payload.result === color ? user?.name : Opponent?.name
+                (payload.result).slice(0,1) === color ? user?.name : Opponent?.name
               );
               switch (payload.status) {
                 case "PLAYER_EXIT":
@@ -218,6 +218,7 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
               setRoomId(undefined);
               chess.reset();
               setReloadData(!reloadData)
+              setMoves([])
             }
             break;
           case CHAT:

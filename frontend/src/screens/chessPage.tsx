@@ -47,6 +47,7 @@ const ChessGame = () => {
   const [setting, setSetting] = useState(false);
   const [showSquare, setShowSquare] = useState(false);
   const [theme, setTheme] = useState(false);
+  const isMyTurn=color===chess.turn()
 
   function handleClose() {
     setGameEnded(false);
@@ -91,7 +92,7 @@ const ChessGame = () => {
         type: UNDO_MOVE_APPROVE,
         payload: {
           gameId: roomId,
-          color: color == "white" ? "w" : "b",
+          color: color,
           choice: choice,
         },
       })
@@ -321,14 +322,14 @@ const ChessGame = () => {
             <PlayerInfo
               userName={Opponent?.name || "Opponent"}
               rating={Opponent?.rating || 500}
-              color={color}
+              turn={!isMyTurn}
               profile={Opponent?.profile || "/media/userW.png"}
             />
             <ChessBoard showSquare={showSquare} />
             <PlayerInfo
               userName={name}
               rating={rating}
-              color={color}
+              turn={isMyTurn}
               profile={profile || "/media/userW.png"}
             />
           </div>
