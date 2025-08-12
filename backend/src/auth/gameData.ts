@@ -109,6 +109,7 @@ gameRoute.post("/saveMoves", async (req: Request, res: Response) => {
     const moveCount = req.body.moveCount as number;
     const move = req.body.move as Move;
     const fen = req.body.fen as string;
+    const timeTaken=req.body.timeTaken as number;
 
     const movesSaved = await prisma.$transaction([
       prisma.move.create({
@@ -117,6 +118,7 @@ gameRoute.post("/saveMoves", async (req: Request, res: Response) => {
           moveNumber: moveCount,
           from: move.from,
           to: move.to,
+          timeTaken:timeTaken
         },
       }),
       prisma.game.update({

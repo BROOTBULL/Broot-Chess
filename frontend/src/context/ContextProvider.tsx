@@ -48,7 +48,7 @@ interface ChessContextType {
   setChess: React.Dispatch<React.SetStateAction<Chess>>;
   board: (Piece | null)[][];
   setBoard: React.Dispatch<React.SetStateAction<(Piece | null)[][]>>;
-   moves: string[];
+  moves: string[];
   setMoves: React.Dispatch<React.SetStateAction<string[]>>;
   playerWon: string | undefined;
   setPlayerWon: React.Dispatch<React.SetStateAction<string | undefined>>;
@@ -66,25 +66,36 @@ interface ChessContextType {
   setWaitingResponse: React.Dispatch<React.SetStateAction<boolean>>;
   boardAppearnce: string;
   setBoardAppearnce: React.Dispatch<React.SetStateAction<string>>;
+  timers: Timer;
+  setTimers: React.Dispatch<React.SetStateAction<Timer>>;
 }
 
-type GameType = "blitz" | "rapid" | "daily" | "";
+type GameType = "blitz" | "rapid" | "daily" ;
 type Message = { sender: string; message: string };
 type Tab = "newgame" | "history" | "friends" | "play";
+type DBMoves={
+  to:string,
+  from:string,
+  timeTaken:number,
+}
+
+type Timer = {
+  whiteTimeLeft: number;
+  blackTimeLeft: number;
+  abandonedDeadline:number
+};
 
 export const ChessContext = createContext<ChessContextType | undefined>(
   undefined
 );
 
-
-
 export const ContextProvider = ({ children }: { children: ReactNode }) => {
-  const { user, socket,setReloadData,reloadData } = useUserContext();
+  const { user, socket, setReloadData, reloadData } = useUserContext();
 
   const [roomId, setRoomId] = useState<string | undefined>(undefined);
   const [Opponent, setOpponent] = useState<User | null>(null);
   const [connecting, setConnecting] = useState<boolean>(false);
-  const [gameType, setGameType] = useState<GameType>("");
+  const [gameType, setGameType] = useState<GameType>("rapid");
   const [gameStarted, setGameStarted] = useState(false);
   const [Messages, setMessages] = useState<Message[]>([]);
   const [activeTab, setActiveTab] = useState<Tab>("newgame");
@@ -99,8 +110,17 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
   const [undoRequested, setUndoRequested] = useState(false);
   const [undoBox, setUndoBox] = useState<boolean>(false);
   const [waitingResponse, setWaitingResponse] = useState<boolean>(false);
-  const [boardAppearnce, setBoardAppearnce] = useState<string>( localStorage.getItem("boardAppearance")as string||"zinc");
+  const [boardAppearnce, setBoardAppearnce] = useState<string>(
+    (localStorage.getItem("boardAppearance") as string) || "zinc"
+  );
 
+  const [timers, setTimers] = useState<Timer>({
+    whiteTimeLeft:
+      (gameType === "blitz" ? 5 : gameType === "rapid" ? 15 : 60) * 60*1000,
+    blackTimeLeft:
+      (gameType === "blitz" ? 5 : gameType === "rapid" ? 15 : 60) * 60*1000,
+    abandonedDeadline:60000
+  });
 
   function isPromoting(chess: Chess, from: Square, to: Square) {
     const piece = chess.get(from);
@@ -113,6 +133,23 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
       (piece.color === "b" && to.endsWith("1"))
     );
   }
+
+  function sumTimeTaken(moves: DBMoves[]) {
+  let whiteTotal = 0;
+  let blackTotal = 0;
+
+  moves.forEach((m, index) => {
+    if (index % 2 === 0) {
+      // Even index → White
+      whiteTotal += m.timeTaken || 0;
+    } else {
+      // Odd index → Black
+      blackTotal += m.timeTaken || 0;
+    }
+  });
+
+  return { whiteTotal, blackTotal };
+}
 
   const notify = useNotification();
 
@@ -134,11 +171,12 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
               setBoard(newGame.board());
               setConnecting(false);
               setGameStarted(true);
-              setOpponent(isUser ? payload.BlackPlayer : payload.WhitePlayer);//Opponent userId and users user.id are correct backend ids opponent id is randomId from socket
+              setOpponent(isUser ? payload.BlackPlayer : payload.WhitePlayer); //Opponent userId and users user.id are correct backend ids opponent id is randomId from socket
               setRoomId(payload.RoomId);
-              setMessages([])
-              setMoves([])
+              setMessages([]);
+              setMoves([]);
               setActiveTab("play");
+              setGameType(payload.gameType);
 
               //Room Id in localStorage logic with expiary
               const rmid = payload.RoomId;
@@ -154,6 +192,11 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
             {
               const move = payload.move as Move;
               setMoves((prev) => [...prev, move.to]);
+              setTimers({
+                whiteTimeLeft:payload.whiteTimeLeft,
+                blackTimeLeft:payload.blackTimeLeft,
+                abandonedDeadline:60000
+              });
 
               try {
                 if (isPromoting(chess, move.from, move.to)) {
@@ -180,13 +223,29 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
               setOpponent(isUser ? payload.BlackPlayer : payload.WhitePlayer);
               setRoomId(payload.RoomId);
               setMessages(payload.chat);
+              setGameType(payload.gameType);
+              const { whiteTotal, blackTotal } = sumTimeTaken(payload.DBmoves);
+              const now = Date.now();
+              const latency = now - payload.serverTime;
+              console.log(latency);
+              setTimers({
+                whiteTimeLeft:payload.whiteTimeLeft- (chess.turn() === "w" ? latency : 0)||((gameType === "blitz" ? 5 : gameType === "rapid" ? 15 : 60) * 60*1000)-whiteTotal,
+                blackTimeLeft:payload.blackTimeLeft- (chess.turn() === "b" ? latency : 0)||((gameType === "blitz" ? 5 : gameType === "rapid" ? 15 : 60) * 60*1000)-blackTotal,
+                abandonedDeadline:payload.abandonedDeadline||0
+              });
               chess.load(payload.fen);
               const newBoard = chess.board();
               setBoard(newBoard);
-              const moveTo = (payload.moves as Move[]).map((move) => move.to);
+              const moveTo = (payload.DBmoves as Move[]).map((move) => move.to);
               setMoves(moveTo);
-              console.log(payload.WhitePlayer.id," ---> ",user?.id," or userId ->",user?.userId);
-              
+              console.log(
+                payload.WhitePlayer.id,
+                " ---> ",
+                user?.id,
+                " or userId ->",
+                user?.userId
+              );
+
               // console.log("Game Rejoined successfully..!!!");
               // console.log("roomId:", payload.RoomId);
               setColor(isUser ? "w" : "b");
@@ -198,7 +257,9 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
               setGameStarted(false);
               setGameEnded(true);
               setPlayerWon(
-                (payload.result).slice(0,1) === color ? user?.name : Opponent?.name
+                payload.result.slice(0, 1) === color
+                  ? user?.name
+                  : Opponent?.name
               );
               switch (payload.status) {
                 case "PLAYER_EXIT":
@@ -209,20 +270,23 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
                     message.payload.result !== "DRAW" ? "CheckMate" : "Draw";
                   // console.log(wonBy, "!!! GAME OVER:", payload);
                   break;
-                case "TIME_OUT":
+                case "TIME_UP":
                   wonBy = "TimeOut";
+                  break;
+                case "ABANDONED":
+                  wonBy="Abandonedment"
                   break;
               }
               setGameStatus(wonBy);
               localStorage.removeItem("roomData");
               setRoomId(undefined);
               chess.reset();
-              setReloadData(!reloadData)
-              setMoves([])
+              setReloadData(!reloadData);
+              setMoves([]);
             }
             break;
           case CHAT:
-            setMessages((prev) => [...prev||[], payload.message]);
+            setMessages((prev) => [...(prev || []), payload.message]);
             break;
           case GAME_ALERT:
             setConnecting(false);
@@ -232,9 +296,10 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
           case GAME_ADDED:
             {
               setRoomId(message.gameId);
-              if(!message.private)
-              {setConnecting(true);
-              setActiveTab("play");}
+              if (!message.private) {
+                setConnecting(true);
+                setActiveTab("play");
+              }
             }
             break;
           case NOTIFICATION:
@@ -243,7 +308,7 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
             break;
           case UNDO_MOVE:
             setUndoRequested(payload.requestingPlayerId !== user?.id);
-            
+
             break;
           case UNDO_MOVE_APPROVE:
             {
@@ -252,9 +317,9 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
               setBoard(newBoard);
               const moveTo = (payload.moves as Move[]).map((move) => move.to);
               setMoves(moveTo);
-              
-              setWaitingResponse(false)
-              setUndoBox(false)
+
+              setWaitingResponse(false);
+              setUndoBox(false);
               setUndoRequested(false);
             }
             break;
@@ -319,11 +384,14 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
         setGameEnded,
         undoRequested,
         setUndoRequested,
-        undoBox,setUndoBox,
+        undoBox,
+        setUndoBox,
         waitingResponse,
         setWaitingResponse,
         boardAppearnce,
-        setBoardAppearnce
+        setBoardAppearnce,
+        timers,
+        setTimers,
       }}
     >
       {children}

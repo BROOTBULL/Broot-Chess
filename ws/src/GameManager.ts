@@ -82,6 +82,8 @@ export class GameManager {
       const gameType = message.gameType as GameType;
 
            if (message.type === INIT_GAME) {
+
+            //check if player already started a game and trying to add a new game 
         if (!message.private) {
           const alreadyWaitingPublic = this.waitingGame.some(w =>
             w.gameId &&
@@ -98,7 +100,8 @@ export class GameManager {
             return;
           }
         }
-
+         
+        //check if player game started a private already and trying to add a new game 
         if (message.private) {
           const PrivateGame = this.games.find(
             g => g.isPrivate && g.player1Id === user.userId && !g.player2Id
@@ -112,14 +115,14 @@ export class GameManager {
             return;
           }
         }
-
+        //find if gametype already has a roomid stored in waitingGame object 
         const WaitingGame = this.waitingGame.find(
           (gtype) => gtype.gametype === gameType
         );
-
+       //if its empty add a new game or else push the player in that roomid room
         if (!WaitingGame?.gameId) {
-          const game = new Game(user.userId, null);
-          game.isPrivate = message.private || false; // make sure we flag it
+          const game = new Game(user.userId, null,message.private,gameType);
+          game.isPrivate = message.private || false; 
           this.games.push(game);
 
           if (!message.private && WaitingGame) {
@@ -206,7 +209,7 @@ export class GameManager {
         }
 
         const gameDB = await getGameFromDb(gameId);
-        //console.log("Game Recieved in Game Manager :", gameDB);
+        console.log("Game Recieved in Game Manager :", gameDB);
 
         if (!gameDB) {
           user.socket.send(
@@ -221,24 +224,59 @@ export class GameManager {
           const game = new Game(
             gameDB.whitePlayerId,
             gameDB.blackPlayerId,
-            gameDB.id
+            gameDB.id,
+            gameDB.timeControl==="RAPID"?"rapid":gameDB.timeControl==="CLASSICAL"?"daily":"blitz" 
           );
           this.games.push(game);
         }
+        if(gameWS)
+        {
+        const GAME_TOTAL_MS = (gameWS.gameType==="rapid"?15:gameWS.gameType==="blitz"?5:60) * 60 * 1000;
+        const whiteTimeLeft = (GAME_TOTAL_MS - gameWS.player1TimeConsumed);
+        const blackTimeLeft = (GAME_TOTAL_MS - gameWS.player2TimeConsumed);
+        const elapsedSinceLastMove = Date.now() - gameWS.lastMoveTime;
 
-        user.socket.send(
+        const liveWhiteTimeLeft = whiteTimeLeft - (gameWS.board.turn() === "w" ? elapsedSinceLastMove : 0);
+        const liveBlackTimeLeft = blackTimeLeft - (gameWS.board.turn() === "b" ? elapsedSinceLastMove : 0);
+        const now = Date.now();
+        const timeTaken = (now - gameWS.lastMoveTime);
+          user.socket.send(
           JSON.stringify({
             type: GAME_JOINED,
             payload: {
               RoomId: gameDB.id,
+              gameType:gameDB.timeControl==="RAPID"?"rapid":gameDB.timeControl==="CLASSICAL"?"daily":"blitz" ,
               WhitePlayer: gameDB.whitePlayer,
               BlackPlayer: gameDB.blackPlayer,
-              moves: gameDB.moves,
+              DBmoves: gameDB.moves,
               chat: gameDB.chat,
               fen: gameDB.currentFen,
+              whiteTimeLeft:liveWhiteTimeLeft,
+              blackTimeLeft:liveBlackTimeLeft,
+              abandonedDeadline: 60000 - (Date.now() - gameWS.perMoveStart),
+              serverTime:Date.now()
             },
           })
-        );
+        )
+        }
+        else
+        {
+          user.socket.send(
+          JSON.stringify({
+            type: GAME_JOINED,
+            payload: {
+              RoomId: gameDB.id,
+              gameType:gameDB.timeControl==="RAPID"?"rapid":gameDB.timeControl==="CLASSICAL"?"daily":"blitz" ,
+              WhitePlayer: gameDB.whitePlayer,
+              BlackPlayer: gameDB.blackPlayer,
+              DBmoves: gameDB.moves,
+              chat: gameDB.chat,
+              fen: gameDB.currentFen
+            },
+          })
+        )
+        }
+
         connectionManager.addUserRoomMap(user, gameId);
       }
 
@@ -257,6 +295,9 @@ export class GameManager {
             })
           );
         }
+        const gameWS = this.games.find((game) => game.RoomId === roomId);
+        console.log("game details : ",gameWS);
+        
       }
 
       if (message.type === NOTIFICATION) {

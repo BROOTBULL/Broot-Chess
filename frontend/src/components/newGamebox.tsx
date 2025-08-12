@@ -136,11 +136,7 @@ export const NewGame = ({
           )}
           <div
             onClick={() => handleStartGame()}
-            className={`${
-              gameType === ""
-                ? "bg-zinc-700 text-zinc-400 pointer-events-none"
-                : "bg-emerald-900 text-zinc-200 "
-            } duration-200 h-18 flex flex-row items-center justify-center cursor-pointer px-4 shadow-md/50 my-3`}
+            className={`bg-emerald-900 text-zinc-200 duration-200 h-18 flex flex-row items-center justify-center cursor-pointer px-4 shadow-md/50 my-3`}
           >
             <span className={`font-serif font-bold text-3xl drop-shadow-sm`}>
               Start Game
@@ -174,7 +170,7 @@ export const NewGame = ({
               } overflow-hidden duration-300`}
             >
               <div
-                onClick={() => setGameType(gameType==="blitz"?"":"blitz")}
+                onClick={() => setGameType("blitz")}
                 className={` h-12 ${
                   gameType === "blitz"
                     ? "ring-2 ring-inset ring-emerald-700 bg-emerald-950"
@@ -189,7 +185,7 @@ export const NewGame = ({
                 <span className={` text-zinc-200 text-lg `}>Blitz</span>
               </div>
               <div
-                onClick={() => setGameType(gameType==="rapid"?"":"rapid")}
+                onClick={() => setGameType("rapid")}
                 className={` h-12 ${
                   gameType === "rapid"
                     ? "ring-2 ring-inset ring-emerald-700 bg-emerald-950"
@@ -204,7 +200,7 @@ export const NewGame = ({
                 <span className={` text-zinc-200 text-lg `}>Rapid</span>
               </div>
               <div
-                onClick={() => setGameType(gameType==="daily"?"":"daily")}
+                onClick={() => setGameType("daily")}
                 className={` h-12 ${
                   gameType === "daily"
                     ? "ring-2 ring-inset ring-emerald-700 bg-emerald-950"
@@ -228,8 +224,8 @@ export const NewGame = ({
               <div
                 onClick={handleCreateRoom}
                 className={` h-15 flex flex-row items-center shadow-md/50 justify-center w-full my-2 ${
-                  gameType === ""
-                    ? "bg-zinc-700 text-zinc-400 pointer-events-none"
+                   !RoomType
+                    ? "bg-zinc-700 text-zinc-400 "
                     : "bg-emerald-900 text-zinc-200 "
                 }`}
               >
@@ -242,7 +238,7 @@ export const NewGame = ({
                 }}
                 className={`h-15 flex flex-row items-center shadow-md/50 justify-center w-full text-zinc-200 my-2 hover:bg-teal-900 ${
                   !RoomType ? "bg-teal-900" : "bg-zinc-800"
-                } ${gameType ? " text-zinc-500 pointer-events-none" : ""}`}
+                }`}
               >
                 Join Room
               </div>

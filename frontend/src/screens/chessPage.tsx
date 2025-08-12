@@ -41,9 +41,6 @@ const ChessGame = () => {
   } = useChessContext();
   const { name, rating, profile } = user!;
 
-  const [time, setTime] = useState(5);
-  console.log(time);
-
   const [setting, setSetting] = useState(false);
   const [showSquare, setShowSquare] = useState(false);
   const [theme, setTheme] = useState(false);
@@ -86,7 +83,6 @@ const ChessGame = () => {
 
   function handleUndoReq(choice: boolean) {
     console.log("roomId", roomId);
-    setTime(0);
     socket?.send(
       JSON.stringify({
         type: UNDO_MOVE_APPROVE,
@@ -109,8 +105,8 @@ const ChessGame = () => {
 
   return (
     <>
-      {console.log(playerWon,color,user?.id,Opponent?.id)
-      
+      {
+      // console.log(playerWon,color,user?.id,Opponent?.id)
       }
 
       <div className="absolute flex flex-col xl:flex-row md:h-full w-full  ">
@@ -322,6 +318,7 @@ const ChessGame = () => {
             <PlayerInfo
               userName={Opponent?.name || "Opponent"}
               rating={Opponent?.rating || 500}
+              playerColor={color === "w" ? "b" : "w"}
               turn={!isMyTurn}
               profile={Opponent?.profile || "/media/userW.png"}
             />
@@ -329,6 +326,7 @@ const ChessGame = () => {
             <PlayerInfo
               userName={name}
               rating={rating}
+              playerColor={color}
               turn={isMyTurn}
               profile={profile || "/media/userW.png"}
             />

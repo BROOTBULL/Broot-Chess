@@ -84,11 +84,11 @@ export const saveMessageInDb=async(gameId:string,message:message)=>{
     }  
 }
 
-export const saveMovesInDb=async(gameId:string,move:Move,fen:string,moveCount:number)=>{
+export const saveMovesInDb=async(gameId:string,move:Move,fen:string,moveCount:number,timeTaken:number)=>{
 
     try {
 
-        const saveMoves=await axios.post("/gameData/saveMoves",{gameId:gameId,move:move,fen:fen,moveCount:moveCount})
+        const saveMoves=await axios.post("/gameData/saveMoves",{gameId:gameId,move:move,fen:fen,moveCount:moveCount,timeTaken:timeTaken})//didnt want to change my prisma soo i just put timeleft for the player when this move happend in timetaken
         console.log(saveMoves.data.message);
         
     } catch (error) {

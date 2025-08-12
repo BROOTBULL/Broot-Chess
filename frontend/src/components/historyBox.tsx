@@ -9,9 +9,9 @@ export const History = () => {
   const navigate=useNavigate()
 
   return (
-    <div className="p-3 h-full w-full bg-zinc-700 max-w-[1000px]">
+    <div className="p-3 h-[93%] w-full bg-zinc-700 max-w-[1000px]">
       <div className="flex flex-col Profile h-full min-h-[500px] w-full bg-zinc-900 justify-between">
-        <div>
+        <div className="h-[93%] max-h-120 md:max-h-full flex flex-col">
           <div className="font-serif flex flex-row text-zinc-200 bg-zinc-950 text-sm font-[500] p-2 gap-2 text-center">
             <div className="flex-1">
               <img className="size-5 mx-auto" src="/media/timer.png" alt="" />
@@ -21,7 +21,8 @@ export const History = () => {
             <div className="flex-3">Date</div>
             <div className="flex-1">Rematch</div>
           </div>
-
+<div className="smooth-scroll overflow-auto custom-scroll">
+  
           {games.map((game,i) => (
             <div
               key={i}
@@ -49,6 +50,7 @@ export const History = () => {
               </div>
             </div>
           ))}
+</div>
         </div>
 
         <div 
