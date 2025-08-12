@@ -216,7 +216,9 @@ export class Game {
   }
 
   async endGame(status: GAME_STATUS, result: string) {
-    const updategame = await endGameDB(this.RoomId, status, result);
+    const updateEndgameMessage = await endGameDB(this.RoomId, status, result);
+    console.log(updateEndgameMessage);
+    
 
     connectionManager.sendMessageToAll(
       this.RoomId,

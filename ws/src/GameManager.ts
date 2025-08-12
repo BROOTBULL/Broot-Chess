@@ -422,7 +422,7 @@ export class GameManager {
         {
           console.log("i got triggered",game,choice);
           
-          game.endGame("COMPLETED","DRAW")  
+          await game.endGame("COMPLETED","DRAW")  
           this.removeGame(game.RoomId);
         }
             connectionManager.sendMessageToAll(

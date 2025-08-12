@@ -116,6 +116,7 @@ export const endGameDB=async(gameId:string,status:GAME_STATUS,result:string)=>{
 
         const saveMoves=await axios.post("/gameData/endGame",{gameId:gameId,status:status,result:result})
         console.log(saveMoves.data.message);
+        return "Game End Saved in DB"
         
     } catch (error) {
         console.log(error);
