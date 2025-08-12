@@ -71,7 +71,7 @@ const ChessGame = () => {
       case "friends":
         return <Friends />;
       case "play":
-        return <Play socket={socket} />;
+        return <Play />;
       default:
         return null;
     }
