@@ -13,6 +13,9 @@ import {
   NOTIFICATION,
   UNDO_MOVE,
   UNDO_MOVE_APPROVE,
+  REQUEST_DRAW,
+  REQUEST_DRAW_APPROVE,
+  GAME_OVER
 } from "./messages";
 import { User } from ".";
 import { connectionManager } from "./connectionManager";
@@ -197,6 +200,15 @@ export class GameManager {
         }
       }
 
+        if (message.type === GAME_OVER) {
+        const gameId = message.payload.gameId;
+        const game = this.games.find((game) => game.RoomId === gameId);
+
+        if (game) {
+          this.removeGame(game.RoomId);
+        }
+      }
+
       if (message.type === RECONNECTION || message.type === JOINROOM) {
         const gameId = message.payload.roomId;
 
@@ -333,6 +345,20 @@ export class GameManager {
           })
         );
       }
+      if (message.type === REQUEST_DRAW) {
+        //console.log("hello i triggred in undoMove");
+
+        const gameId = message.payload.gameId as string;
+        connectionManager.sendMessageToAll(
+          gameId,
+          JSON.stringify({
+            type: REQUEST_DRAW,
+            payload: {
+              requestingPlayerId: user.userId,
+            },
+          })
+        );
+      }
 
       if (message.type === UNDO_MOVE_APPROVE) {
         const choice = message.payload.choice as boolean;
@@ -385,6 +411,32 @@ export class GameManager {
           );
         }
       }
+
+        if (message.type === REQUEST_DRAW_APPROVE) {
+        const choice = message.payload.choice as boolean;
+        const roomId = message.payload.gameId as string;
+
+        const game=this.games.find((g)=> g.RoomId===roomId)
+
+        if(game&&choice)
+        {
+          console.log("i got triggered",game,choice);
+          
+          game.endGame("COMPLETED","DRAW")  
+          this.removeGame(game.RoomId);
+        }
+            connectionManager.sendMessageToAll(
+              roomId,
+              JSON.stringify({
+                type: REQUEST_DRAW_APPROVE,
+                payload: {
+                 choice:choice
+                },
+              })
+            );
+          }
+
+
     });
   }
 }

@@ -13,6 +13,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { UNDO_MOVE_APPROVE } from "../context/ContextProvider";
 import { BoardAppreance } from "../components/boardAppreance";
 import { LandingLoader } from "../assets/loader";
+import { DrawRequest } from "../components/drawReq";
 
 export const StartFen =
   "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -105,7 +106,7 @@ const ChessGame = () => {
 
   return (
     <>
-      {
+      {        
       // console.log(playerWon,color,user?.id,Opponent?.id)
       }
 
@@ -199,12 +200,18 @@ const ChessGame = () => {
                   <div
                     className={`w-55 h-60 z-50 flex bg-zinc-800 rounded-lg p-1 flex-col`}
                   >
-                    <div className="text-2xl text-zinc-200 font-bold mt-5 text-center">
+                   {playerWon==="Draw"?(<div className="text-2xl text-zinc-200 font-bold mt-5 text-center">
+                       Draw
+                      <div className="text-[12px] text-zinc-400 font-bold text-center">
+                      Match ended in a Draw
+                      </div>
+                    </div>):
+                    (<div className="text-2xl text-zinc-200 font-bold mt-5 text-center">
                       {playerWon} Won
                       <div className="text-[12px] text-zinc-400 font-bold text-center">
                         by {gameStatus}
                       </div>
-                    </div>
+                    </div>)}
                     <img
                       onClick={handleClose}
                       className="absolute size-7 flex z-50 self-end rotate-45 invert cursor-pointer hover:drop-shadow-[0px_0px_2px] hover:drop-shadow-zinc-500"
@@ -215,9 +222,9 @@ const ChessGame = () => {
                       <div className="flex flex-col">
                         <img
                           className={`absolute size-7 drop-shadow-sm/90 -rotate-25 heartbeat ${
-                            playerWon === name ? "hidden" : ""
+                            playerWon!==undefined?(playerWon==="Draw"?"":(playerWon === name ? "hidden" : "")):"hidden"
                           }`}
-                          src="./media/won.png"
+                          src={playerWon==="Draw"?`./media/draw.png`:"./media/won.png"}
                           alt=""
                         />
                         <img
@@ -235,9 +242,9 @@ const ChessGame = () => {
                       <div className="flex flex-col">
                         <img
                           className={`absolute size-7 drop-shadow-sm/90 -rotate-25 heartbeat ${
-                            playerWon === name ? "" : "hidden"
+                            playerWon!==undefined?(playerWon==="Draw"?"":(playerWon === name ? "" : "hidden")):"hidden"
                           }`}
-                          src="./media/won.png"
+                          src={playerWon==="Draw"?`./media/draw.png`:"./media/won.png"}
                           alt=""
                         />
                         <img
@@ -314,6 +321,9 @@ const ChessGame = () => {
 
             {/* ///////////////// Theme changing Window Logic //////////////////////// */}
             <BoardAppreance setTheme={setTheme} theme={theme} />
+            
+            {/* ///////////////// Draw Requested Window Logic //////////////////////// */}
+            <DrawRequest />
 
             <PlayerInfo
               userName={Opponent?.name || "Opponent"}

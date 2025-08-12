@@ -26,6 +26,8 @@ export const GAME_ALERT = "game_alert";
 export const GAME_ADDED = "game_added";
 export const UNDO_MOVE = "undo_move";
 export const UNDO_MOVE_APPROVE = "undo_move_approve";
+export const REQUEST_DRAW = "request_draw";
+export const REQUEST_DRAW_APPROVE = "request_draw_approve";
 
 interface ChessContextType {
   Opponent: User | null;
@@ -68,21 +70,25 @@ interface ChessContextType {
   setBoardAppearnce: React.Dispatch<React.SetStateAction<string>>;
   timers: Timer;
   setTimers: React.Dispatch<React.SetStateAction<Timer>>;
+  drawRequested: boolean;
+  setDrawRequested: React.Dispatch<React.SetStateAction<boolean>>;
+  drawBox: boolean;
+  setDrawBox: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-type GameType = "blitz" | "rapid" | "daily" ;
+type GameType = "blitz" | "rapid" | "daily";
 type Message = { sender: string; message: string };
 type Tab = "newgame" | "history" | "friends" | "play";
-type DBMoves={
-  to:string,
-  from:string,
-  timeTaken:number,
-}
+type DBMoves = {
+  to: string;
+  from: string;
+  timeTaken: number;
+};
 
 type Timer = {
   whiteTimeLeft: number;
   blackTimeLeft: number;
-  abandonedDeadline:number
+  abandonedDeadline: number;
 };
 
 export const ChessContext = createContext<ChessContextType | undefined>(
@@ -103,7 +109,7 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
   const [chess, setChess] = useState(new Chess());
   const [board, setBoard] = useState<(Piece | null)[][]>(chess.board());
   const [moves, setMoves] = useState<string[]>([]);
-  const [playerWon, setPlayerWon] = useState<string | undefined>();
+  const [playerWon, setPlayerWon] = useState<string | undefined>(undefined);
   const [gameStatus, setGameStatus] = useState<string | undefined>();
   const [gameEnded, setGameEnded] = useState(false);
   const [gameAlert, setGameAlert] = useState<string | undefined>();
@@ -113,13 +119,15 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
   const [boardAppearnce, setBoardAppearnce] = useState<string>(
     (localStorage.getItem("boardAppearance") as string) || "zinc"
   );
+  const [drawRequested, setDrawRequested] = useState(false);
+  const [drawBox, setDrawBox] = useState<boolean>(false);
 
   const [timers, setTimers] = useState<Timer>({
     whiteTimeLeft:
-      (gameType === "blitz" ? 5 : gameType === "rapid" ? 15 : 60) * 60*1000,
+      (gameType === "blitz" ? 5 : gameType === "rapid" ? 15 : 60) * 60 * 1000,
     blackTimeLeft:
-      (gameType === "blitz" ? 5 : gameType === "rapid" ? 15 : 60) * 60*1000,
-    abandonedDeadline:60000
+      (gameType === "blitz" ? 5 : gameType === "rapid" ? 15 : 60) * 60 * 1000,
+    abandonedDeadline: 60000,
   });
 
   function isPromoting(chess: Chess, from: Square, to: Square) {
@@ -135,21 +143,21 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
   }
 
   function sumTimeTaken(moves: DBMoves[]) {
-  let whiteTotal = 0;
-  let blackTotal = 0;
+    let whiteTotal = 0;
+    let blackTotal = 0;
 
-  moves.forEach((m, index) => {
-    if (index % 2 === 0) {
-      // Even index → White
-      whiteTotal += m.timeTaken || 0;
-    } else {
-      // Odd index → Black
-      blackTotal += m.timeTaken || 0;
-    }
-  });
+    moves.forEach((m, index) => {
+      if (index % 2 === 0) {
+        // Even index → White
+        whiteTotal += m.timeTaken || 0;
+      } else {
+        // Odd index → Black
+        blackTotal += m.timeTaken || 0;
+      }
+    });
 
-  return { whiteTotal, blackTotal };
-}
+    return { whiteTotal, blackTotal };
+  }
 
   const notify = useNotification();
 
@@ -186,6 +194,7 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
                 JSON.stringify({ rmid, expiryTime })
               );
               setColor(isUser ? "w" : "b");
+              setPlayerWon(undefined)
             }
             break;
           case MOVE:
@@ -193,9 +202,9 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
               const move = payload.move as Move;
               setMoves((prev) => [...prev, move.to]);
               setTimers({
-                whiteTimeLeft:payload.whiteTimeLeft,
-                blackTimeLeft:payload.blackTimeLeft,
-                abandonedDeadline:60000
+                whiteTimeLeft: payload.whiteTimeLeft,
+                blackTimeLeft: payload.blackTimeLeft,
+                abandonedDeadline: 60000,
               });
 
               try {
@@ -229,9 +238,21 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
               const latency = now - payload.serverTime;
               console.log(latency);
               setTimers({
-                whiteTimeLeft:payload.whiteTimeLeft- (chess.turn() === "w" ? latency : 0)||((gameType === "blitz" ? 5 : gameType === "rapid" ? 15 : 60) * 60*1000)-whiteTotal,
-                blackTimeLeft:payload.blackTimeLeft- (chess.turn() === "b" ? latency : 0)||((gameType === "blitz" ? 5 : gameType === "rapid" ? 15 : 60) * 60*1000)-blackTotal,
-                abandonedDeadline:payload.abandonedDeadline||0
+                whiteTimeLeft:
+                  payload.whiteTimeLeft -
+                    (chess.turn() === "w" ? latency : 0) ||
+                  (gameType === "blitz" ? 5 : gameType === "rapid" ? 15 : 60) *
+                    60 *
+                    1000 -
+                    whiteTotal,
+                blackTimeLeft:
+                  payload.blackTimeLeft -
+                    (chess.turn() === "b" ? latency : 0) ||
+                  (gameType === "blitz" ? 5 : gameType === "rapid" ? 15 : 60) *
+                    60 *
+                    1000 -
+                    blackTotal,
+                abandonedDeadline: payload.abandonedDeadline || 0,
               });
               chess.load(payload.fen);
               const newBoard = chess.board();
@@ -256,25 +277,41 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
               let wonBy;
               setGameStarted(false);
               setGameEnded(true);
+              if(payload.result!=="DRAW")
+              {
               setPlayerWon(
-                payload.result.slice(0, 1) === color
+                payload.result.slice(0,1) === color
                   ? user?.name
                   : Opponent?.name
-              );
+              )
+            }
+            else{
+              setPlayerWon("Draw")
+            }
               switch (payload.status) {
                 case "PLAYER_EXIT":
                   wonBy = "Resigantion";
                   break;
                 case "COMPLETED":
-                  wonBy =
-                    message.payload.result !== "DRAW" ? "CheckMate" : "Draw";
-                  // console.log(wonBy, "!!! GAME OVER:", payload);
+                  {
+                    wonBy =
+                      message.payload.result !== "DRAW" ? "CheckMate" : "Draw";
+                    socket?.send(
+                      JSON.stringify({
+                        type: GAME_OVER,
+                        payload: {
+                          gameId: roomId
+                        },
+                      })
+                    );
+                    // console.log(wonBy, "!!! GAME OVER:", payload);
+                  }
                   break;
                 case "TIME_UP":
                   wonBy = "TimeOut";
                   break;
                 case "ABANDONED":
-                  wonBy="Abandonedment"
+                  wonBy = "Abandonedment";
                   break;
               }
               setGameStatus(wonBy);
@@ -308,7 +345,9 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
             break;
           case UNDO_MOVE:
             setUndoRequested(payload.requestingPlayerId !== user?.id);
-
+            break;
+          case REQUEST_DRAW:
+            setDrawRequested(payload.requestingPlayerId !== user?.id);
             break;
           case UNDO_MOVE_APPROVE:
             {
@@ -321,6 +360,13 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
               setWaitingResponse(false);
               setUndoBox(false);
               setUndoRequested(false);
+            }
+            break;
+          case REQUEST_DRAW_APPROVE:
+            {
+              setWaitingResponse(false);
+              setDrawBox(false);
+              setDrawRequested(false);
             }
             break;
         }
@@ -392,6 +438,10 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
         setBoardAppearnce,
         timers,
         setTimers,
+        drawBox,
+        setDrawBox,
+        drawRequested,
+        setDrawRequested,
       }}
     >
       {children}
