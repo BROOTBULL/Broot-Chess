@@ -97,7 +97,7 @@ useEffect(() => {
             gameTimer <= 20 && gameTimer % 2 == 0 ? "text-rose-700" : "text-zinc-200"
           } text-sm font-[600] w-35 p-2 shadow-lg/40 rounded-md flex flex-row`}
         >
-          <div className={`text-sm text-rose-400 px-0.5 ${gameTimer<=20?"flex":"hidden"}`}>{perMoveTimer.toString().padStart(2, "0")}</div>
+          <div className={`text-sm text-rose-400 px-0.5 ${perMoveTimer<=20?"flex":"hidden"}`}>{perMoveTimer.toString().padStart(2, "0")}</div>
           <div className=" ml-auto">{formatedTimer(gameTimer)}</div>
         </div>
       </div>
