@@ -3,10 +3,19 @@ import { WebSocketServer, WebSocket } from "ws";
 import { GameManager } from "./GameManager";
 import url from "url";
 import jwt from "jsonwebtoken";
-import { randomUUID } from "crypto";
 import dotenv from "dotenv";
 import { connectionManager } from "./connectionManager";
 import http from "http";
+import { z } from "zod";
+
+export const ratingSchema = z.object({
+  blitz: z.number().int().min(0),
+  rapid: z.number().int().min(0),
+  daily: z.number().int().min(0),
+});
+
+export type Rating = z.infer<typeof ratingSchema>;
+
 
 dotenv.config();
 
@@ -22,16 +31,15 @@ const gameManager = new GameManager();
 export interface userJwtClaims {
   userId: string;
   name: string;
-  rating: number;
+  rating: Rating;
   isGuest?: boolean;
   profile: string;
 }
 
 export class User {
   public socket: WebSocket;
-  public id: string;
   public profile: string;
-  public rating: number;
+  public rating: Rating;
   public userId: string;
   public name: string;
   public isGuest?: boolean;
@@ -39,9 +47,8 @@ export class User {
   constructor(socket: WebSocket, user: userJwtClaims) {
     this.socket = socket;
     this.userId = user.userId;
-    this.id = randomUUID();
     this.name = user.name;
-    this.rating = user.rating;
+    this.rating = user.rating as Rating;
     this.profile = user.profile;
     this.isGuest = user.isGuest;
   }

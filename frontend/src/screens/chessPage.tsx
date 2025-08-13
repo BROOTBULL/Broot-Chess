@@ -14,6 +14,7 @@ import { UNDO_MOVE_APPROVE } from "../context/ContextProvider";
 import { BoardAppreance } from "../components/boardAppreance";
 import { LandingLoader } from "../assets/loader";
 import { DrawRequest } from "../components/drawReq";
+import { Rating } from "../context/userProvider";
 
 export const StartFen =
   "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -40,7 +41,7 @@ const ChessGame = () => {
     undoRequested,
     setUndoRequested,
   } = useChessContext();
-  const { name, rating, profile } = user!;
+  const { name , profile } = user!;
 
   const [setting, setSetting] = useState(false);
   const [showSquare, setShowSquare] = useState(false);
@@ -326,16 +327,16 @@ const ChessGame = () => {
             <DrawRequest />
 
             <PlayerInfo
-              userName={Opponent?.name || "Opponent"}
-              rating={Opponent?.rating || 500}
+              name={Opponent?.name || "Opponent"}
+              rating={Opponent?Opponent.rating as Rating:{rapid:500,blitz:600,daily:700} as Rating}
               playerColor={color === "w" ? "b" : "w"}
               turn={!isMyTurn}
               profile={Opponent?.profile || "/media/userW.png"}
             />
             <ChessBoard showSquare={showSquare} />
             <PlayerInfo
-              userName={name}
-              rating={rating}
+              name={name}
+              rating={user?.rating as Rating}
               playerColor={color}
               turn={isMyTurn}
               profile={profile || "/media/userW.png"}

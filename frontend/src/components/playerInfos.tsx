@@ -1,26 +1,28 @@
 import { useEffect, useRef, useState } from "react";
 import { useChessContext } from "../hooks/contextHook";
+import { Rating } from "../context/userProvider";
 
 export const PlayerInfo = ({
-  userName,
+  name,
   turn,
   rating,
   profile,
   playerColor
 }: {
-  userName: string;
+  name:string,
   turn: boolean;
-  rating: number;
+  rating:Rating;
   profile: string | null;
   playerColor: string;
 }) => {
   const { gameEnded, moves, gameType, timers, gameStarted } = useChessContext();
 
   const displayName =
-    userName.length > 12 ? userName.slice(0, -8) + "..." : userName;
+    name.length > 12 ? name.slice(0, -8) + "..." : name;
 
   const [gameTimer, setGameTimer] = useState(15 * 60);
   const [perMoveTimer, setPerMoveTimer] = useState(60);
+  const [gameRating,setGameRating]=useState<number>(rating.rapid)
 
   const gameTimerRef = useRef<number | undefined>(undefined);
   const perMoveTimerRef = useRef<number | undefined>(undefined);
@@ -35,6 +37,12 @@ export const PlayerInfo = ({
           : 60 * 60;
       setGameTimer(initialTime);
       setPerMoveTimer(60);
+      setGameRating(
+        gameType === "blitz"
+          ? rating.blitz
+          : gameType === "daily"
+          ? rating.daily
+          : rating.rapid)
     }
   }, [gameType, gameStarted]);
 
@@ -88,7 +96,7 @@ export const PlayerInfo = ({
 
       <div className="text-sm md:text-lg font-bold ml-2">
         {displayName}
-        <div className="text-[8px] md:text-[10px]">{rating}</div>
+        <div className="text-[8px] md:text-[10px]">{gameRating}</div>
       </div>
 
       <div

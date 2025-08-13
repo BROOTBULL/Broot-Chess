@@ -31,7 +31,7 @@ export const FriendsGame = () => {
           />
           <div className={`${theme?" text-zinc-800":"text-zinc-200"} font-[500] text-[13px] flex flex-wrap items-center`}>
             {friend.name} 
-            <div>({friend.rating})</div>
+            <div>({friend.rating.rapid})</div>
           </div>
           <span className="text-sm text-zinc-600 font-[600]">
             <span className="text-green-700">{Math.floor(Math.random()*10)}</span> /{" "}

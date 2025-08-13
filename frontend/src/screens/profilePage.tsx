@@ -8,7 +8,7 @@ import { Trasition } from "../transition";
 
 const ProfilePage = () => {
   const { user, friends,theme } = useUserContext();
-  const rating = user?.rating ?? 0;
+  const rating = user?.rating.rapid ?? 0;
 
   const trophies = [
     { name: "legend", rating: 3000 },

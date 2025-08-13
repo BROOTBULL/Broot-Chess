@@ -4,6 +4,7 @@ import passport from "passport";
 import prisma from "./db";
 import { Request } from "express";
 import { v4 as uuidv4 } from "uuid";
+import { Rating, ratingSchema } from "./auth/zodValidation";
 
 export function initPassport() {
   if (
@@ -14,46 +15,55 @@ export function initPassport() {
     throw new Error("Missing env vars for authentication provider");
   }
 
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "https://broot-chess-backend.onrender.com/auth/google/callback",
-      passReqToCallback: true,
-    },
-    async function (
-      req: Request,
-      accessToken: string,
-      refreshToken: string,
-      profile: Profile,
-      done: (error: any, user?: any) => void
-    ) {
-      const email = profile.emails?.[0]?.value;
+  passport.use(
+    new GoogleStrategy(
+      {
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL:
+          "https://broot-chess-backend.onrender.com/auth/google/callback",
+        passReqToCallback: true,
+      },
+      async function (
+        req: Request,
+        accessToken: string,
+        refreshToken: string,
+        profile: Profile,
+        done: (error: any, user?: any) => void
+      ) {
+        const email = profile.emails?.[0]?.value;
 
-      if (!email) return done(new Error("Email not found in Google profile"));
+        if (!email) return done(new Error("Email not found in Google profile"));
 
-      try {
-        const user = await prisma.user.upsert({
-          create: {
-            email,
-            username: (profile.displayName + uuidv4()).replace(/\s+/g, '').slice(0, 9),
-            name: profile.displayName,
-            profile: profile._json.picture,
-            provider: "GOOGLE",
-          },
-          update: {
-            name: profile.displayName,
-          },
-          where: { email },
+        const defaultRating: Rating = ratingSchema.parse({
+          blitz: 500,
+          rapid: 500,
+          daily: 500,
         });
 
-        return done(null, user); // ✅ Just pass the user
-      } catch (error) {
-        return done(error);
-      }
-    }
-  )
-);
+        try {
+          const user = await prisma.user.upsert({
+            create: {
+              email,
+              username: (profile.displayName + uuidv4())
+                .replace(/\s+/g, "")
+                .slice(0, 9),
+              name: profile.displayName,
+              rating:defaultRating,
+              profile: profile._json.picture,
+              provider: "GOOGLE",
+            },
+            update: {
+              name: profile.displayName,
+            },
+            where: { email },
+          });
 
+          return done(null, user); // ✅ Just pass the user
+        } catch (error) {
+          return done(error);
+        }
+      }
+    )
+  );
 }

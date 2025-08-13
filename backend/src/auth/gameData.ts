@@ -4,6 +4,7 @@ import prisma from "../db";
 type Move = { to: string; from: string };
 const gameRoute = Router();
 type message = { sender: string; message: string };
+type gameType="blitz"|"rapid"|"daily"
 export type GAME_RESULT = "WHITE_WINS" | "BLACK_WINS" | "DRAW";
 export type GAME_STATUS =
   | "IN_PROGRESS"
@@ -15,6 +16,8 @@ export type GAME_STATUS =
 gameRoute.post("/savegame", async (req: Request, res: Response) => {
   try {
     const gameData = req.body;
+    console.log(req.body);
+    
 
     const game = await prisma.game.create({
       data: {
@@ -302,5 +305,54 @@ function getPerspectiveResult(
 
   return outcomes[result as keyof typeof outcomes] ?? "Unknown";
 }
+
+gameRoute.post("/updateRating", async (req: Request, res: Response) => {
+  try {
+    const whitePlayerId = req.body.whitePlayerId as string;
+    const blackPlayerId = req.body.blackPlayerId as string;
+    const gameType = req.body.gameType as gameType;
+    const result = req.body.result
+
+    // Fetch current ratings for both players
+    const [white, black] = await Promise.all([
+      prisma.user.findUnique({ where: { id: whitePlayerId }, select: { rating: true } }),
+      prisma.user.findUnique({ where: { id: blackPlayerId }, select: { rating: true } })
+    ]);
+
+    if (!white || !black) {
+      res.status(404).json({ message: "One or both players not found" });
+      return
+    }
+
+    const whiteRating = white.rating as { blitz: number; rapid: number; daily: number };
+    const blackRating = black.rating as { blitz: number; rapid: number; daily: number };
+
+    if (result === "white") {
+      whiteRating[gameType] += 10;
+      blackRating[gameType] -= 10;
+    } else if (result === "black") {
+      whiteRating[gameType] -= 10;
+      blackRating[gameType] += 10;
+    }
+
+    // Update both players
+    await Promise.all([
+      prisma.user.update({
+        where: { id: whitePlayerId },
+        data: { rating: whiteRating }
+      }),
+      prisma.user.update({
+        where: { id: blackPlayerId },
+        data: { rating: blackRating }
+      })
+    ]);
+
+    res.json({ message: "Ratings updated successfully" });
+  } catch (err) {
+    console.error("Error updating rating:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 
 export default gameRoute;

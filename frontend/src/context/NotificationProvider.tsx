@@ -222,7 +222,7 @@ const RequestButtons = ({
 
   async function handleRequest(player: User) {
     const response = await axios.post("/social/reqPlayer", {
-      senderId: user?.id,
+      senderId: user?.id||user?.userId,
       receiverId: player.userId,
     });
     const responseReqMessage = await axios.post("/social/message", {

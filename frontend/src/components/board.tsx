@@ -104,6 +104,7 @@ function handleSquareClick(clickedSquare: Square) {
                 const inCheck=chess.inCheck();
 
                 const theme=boardTheme.find((t)=>t.theme===boardAppearnce)
+                const lastMove=moves.length&&(moves[moves.length-1].to);
 
                 return (
                   <div
@@ -128,7 +129,7 @@ function handleSquareClick(clickedSquare: Square) {
                         <div
                           className={`${
                             from === squareId ? " bg-blue-200 inset-ring-3 inset-ring-blue-500": ""
-                          } ${moves[moves.length-1]===squareId?"bg-radial from-green-200 to-green-400":""}`}
+                          } ${lastMove===squareId?"bg-radial from-green-200 to-green-400":""}`}
                           draggable={true}
                           onDragStart={() => handleDragstart(squareId)}
                         >

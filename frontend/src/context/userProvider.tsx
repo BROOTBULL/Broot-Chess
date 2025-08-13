@@ -1,5 +1,15 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 import axios from "axios";
+import { z } from "zod";
+
+export const ratingSchema = z.object({
+  blitz: z.number().int().min(0),
+  rapid: z.number().int().min(0),
+  daily: z.number().int().min(0),
+});
+
+export type Rating = z.infer<typeof ratingSchema>;
+
 
 export interface User {
   id: string;
@@ -7,7 +17,7 @@ export interface User {
   username: string;
   name: string;
   email: string;
-  rating: number;
+  rating: Rating;
   profile: string;
   token: string;
 }
@@ -24,7 +34,7 @@ export type GamesData={
                   email: string,
                   profile: null|string,
                   provider: string,
-                  rating: number,
+                  rating: Rating,
                   createdAt:Date
               },
               timeControl: GameType,

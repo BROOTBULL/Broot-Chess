@@ -10,7 +10,7 @@ export const GameRatings=()=>{
 
             <div className="flex flex-col text-center">
             <span className={`font-serif text-zinc-200 text-shadow-sm/50 text-[12px] lg:text-[16px] relative font-[600]`}>Rapid</span>
-             <span className={`text-zinc-200 text-shadow-sm/50 text-2xl p-2 font-[800] pt-0`}>{user?.rating}</span>
+             <span className={`text-zinc-200 text-shadow-sm/50 text-2xl p-2 font-[800] pt-0`}>{user?.rating.rapid}</span>
             </div>
           </div>
 
@@ -19,7 +19,7 @@ export const GameRatings=()=>{
 
             <div className="flex flex-col text-center">
             <span className={`font-serif text-zinc-200 text-shadow-sm/50 text-[12px] lg:text-[16px] relative font-[600]`}>Blitz</span>
-             <span className={`text-zinc-200 text-shadow-sm/50 text-2xl p-2 font-[800] pt-0`}>{user?.rating}</span>
+             <span className={`text-zinc-200 text-shadow-sm/50 text-2xl p-2 font-[800] pt-0`}>{user?.rating.blitz}</span>
             </div>
           </div>
           <div className={`Profile flex-col flex ${theme?"bg-zinc-400":"bg-zinc-700"} rounded-lg size-fit p-3 px-5  shadow-md/40`}>
@@ -27,7 +27,7 @@ export const GameRatings=()=>{
 
             <div className="flex flex-col text-center ">
             <span className={`font-serif text-zinc-200 text-shadow-sm/50 text-[12px] lg:text-[16px] relative font-[600]`}>Daily</span>
-             <span className={`text-zinc-200 text-shadow-sm/50 text-2xl p-2 font-[800] pt-0`}>{user?.rating}</span>
+             <span className={`text-zinc-200 text-shadow-sm/50 text-2xl p-2 font-[800] pt-0`}>{user?.rating.daily}</span>
             </div>
           </div>
 

@@ -3,17 +3,7 @@ import { useNotification } from "./NotificationProvider";
 import { NOTIFICATION } from "../screens/socials";
 import { Chess, Piece, Square } from "chess.js";
 import { useUserContext } from "../hooks/contextHook";
-
-export interface User {
-  id: string; //id for backend processes
-  userId: string; //userId for ws processes
-  username: string;
-  name: string;
-  email: string;
-  rating: number;
-  profile: string;
-  token: string;
-}
+import { User } from "./userProvider";
 
 export const INIT_GAME = "init_game";
 export const MOVE = "move";

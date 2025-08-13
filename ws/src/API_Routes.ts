@@ -1,13 +1,15 @@
 import axios from "axios";
 import { GAME_RESULT, GAME_STATUS, gamedata } from "./Game";
 import { Move } from "chess.js";
+import { GameType } from "./GameManager";
 
 axios.defaults.withCredentials=true;
 axios.defaults.baseURL="https://broot-chess-backend.onrender.com"
 type message = { sender: string; message: string };
 
-
 export const createGameInDb=async(gameData:gamedata)=>{
+    console.log("igotlogged");
+    
 
     try {
 
@@ -15,7 +17,7 @@ export const createGameInDb=async(gameData:gamedata)=>{
         console.log("game data sent to backed ", gameSent.data.message);
         
     } catch (error) {
-        console.log(error);
+        console.log("Error occured while saving game");
     }  
 }
 
@@ -114,8 +116,8 @@ export const endGameDB=async(gameId:string,status:GAME_STATUS,result:string)=>{
 
     try {
 
-        const saveMoves=await axios.post("/gameData/endGame",{gameId:gameId,status:status,result:result})
-        console.log(saveMoves.data.message);
+        const saveGameResult=await axios.post("/gameData/endGame",{gameId:gameId,status:status,result:result})
+        console.log(saveGameResult.data.message);
         return "Game End Saved in DB"
         
     } catch (error) {
@@ -123,6 +125,19 @@ export const endGameDB=async(gameId:string,status:GAME_STATUS,result:string)=>{
     }  
 }
 
+
+export const updateRaingDB=async(whitePlayerId:string,blackPlayerId:string,result:string,gameType:GameType)=>{
+
+    try {
+
+        const updatePlayerRating=await axios.post("/gameData/updateRating",{whitePlayerId:whitePlayerId,blackPlayerId:blackPlayerId,result:result,gameType:gameType})
+        console.log(updatePlayerRating.data.message);
+        return "Players rating Updated succesfully"
+        
+    } catch (error) {
+        console.log(error);
+    }  
+}
 
 
 

@@ -3,7 +3,7 @@ import { randomUUID } from "crypto";
 import { User } from ".";
 import { connectionManager } from "./connectionManager";
 import { GAME_OVER, INIT_GAME, MOVE, GAME_ENDED } from "./messages";
-import { createGameInDb, endGameDB, saveMovesInDb } from "./API_Routes";
+import { createGameInDb, endGameDB, saveMovesInDb, updateRaingDB } from "./API_Routes";
 import { GameType } from "./GameManager";
 
 export type GAME_RESULT = "WHITE_WINS" | "BLACK_WINS" | "DRAW";
@@ -70,11 +70,11 @@ export class Game {
     const Players = connectionManager.getPlayersInfo(this.RoomId);
     this.startTime = new Date(Date.now());
     const GameType =
-      gameType === "rapid"
+     ( gameType === "rapid"
         ? "RAPID"
         : gameType === "daily"
         ? "CLASSICAL"
-        : ("BLITZ" as timeControl);
+        : "BLITZ") as timeControl;
 
     const WhitePlayer = Players?.find((user) => user.userId !== this.player2Id);
     const BlackPlayer = Players?.find((user) => user.userId === this.player2Id);
@@ -87,8 +87,10 @@ export class Game {
       whitePlayerId: this.player1Id,
       blackPlayerId: this.player2Id,
     };
+    console.log(gameData);
+    
 
-    createGameInDb(gameData);
+    const gameCreateRes= createGameInDb(gameData);
 
     connectionManager.sendMessageToAll(
       this.RoomId,
@@ -227,8 +229,10 @@ export class Game {
 
     const updateEndgameMessage = await endGameDB(this.RoomId, status, result);
     console.log(updateEndgameMessage);
-    
-
+    if(this.player1Id&&this.player2Id&&result&&this.gameType){
+    const updatePlayersRating =await updateRaingDB(this.player1Id,this.player2Id as string,result,this.gameType)
+    console.log(updatePlayersRating);
+    }
     connectionManager.sendMessageToAll(
       this.RoomId,
       JSON.stringify({
