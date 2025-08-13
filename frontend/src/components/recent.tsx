@@ -27,7 +27,7 @@ export const RecentGame = () => {
           />
           <div className="flex flex-col w-full">
             <span className={`${theme?" text-zinc-800":"text-zinc-200"} font-bold text-sm`}>
-              {game.opponent.name} ({game.opponent.rating})
+              {game.opponent.name} ({game.opponent.rating.rapid})
             </span>
             <span className="text-sm text-zinc-600 font-[600]">
               <span className="text-green-900">11</span> /{" "}

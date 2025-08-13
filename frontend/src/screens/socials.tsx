@@ -7,7 +7,7 @@ import { Trasition } from "../transition";
 import axios from "axios";
 import { useUserContext } from "../hooks/contextHook";
 import { SearchedPlayer } from "../components/searchedPlayer";
-import { User } from "../context/ContextProvider";
+import { User } from "../context/userProvider";
 import { Notification } from "../components/notification";
 import { useSendNotification } from "../hooks/NotificationHook";
 import { useNotificationRefresh } from "../context/NotificationProvider";
