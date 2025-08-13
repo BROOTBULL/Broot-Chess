@@ -23,9 +23,9 @@ export const History = () => {
           </div>
 <div className="smooth-scroll overflow-auto custom-scroll">
   
-          {games.map((game,i) => (
+          {games.sort((a, b) => (new Date(b.startAt)).getTime() - (new Date(a.startAt)).getTime()).map((game) => (
             <div
-              key={i}
+              key={(new Date(game.startAt)).getTime()}
               className={`flex flex-row text-zinc-200 ${game.result==="Draw"?"bg-zinc-400/20":(game.result==="Loss"?"bg-rose-500/10":"bg-emerald-600/20")} text-sm font-[500] p-2 gap-2 text-center`}
             >
               <div className="flex-1">

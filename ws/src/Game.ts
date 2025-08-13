@@ -165,7 +165,7 @@ export class Game {
 
   // restart abandon timer (60s no move)
   this.abandonTimer = setTimeout(() => {
-    this.endGame("ABANDONED", isWhiteTurn ? "black" : "white");
+    this.endGame("ABANDONED", this.board.turn()==="w" ? "black" : "white");
   }, 60 * 1000);
 
   // restart total time limit (example: 15 min)
@@ -174,7 +174,7 @@ export class Game {
   const blackTimeLeft = GAME_TOTAL_MS - this.player2TimeConsumed;
 
   this.moveTimer = setTimeout(() => {
-    this.endGame("TIME_UP",isWhiteTurn ? "black" : "white");
+    this.endGame("TIME_UP",this.board.turn() ? "black" : "white");
   }, isWhiteTurn ? whiteTimeLeft : blackTimeLeft);
 
   // save move in DB
@@ -216,6 +216,15 @@ export class Game {
   }
 
   async endGame(status: GAME_STATUS, result: string) {
+  if (this.moveTimer) {
+    clearTimeout(this.moveTimer);
+    this.moveTimer = null;
+  }
+  if (this.abandonTimer) {
+    clearTimeout(this.abandonTimer);
+    this.abandonTimer = null;
+  }
+
     const updateEndgameMessage = await endGameDB(this.RoomId, status, result);
     console.log(updateEndgameMessage);
     

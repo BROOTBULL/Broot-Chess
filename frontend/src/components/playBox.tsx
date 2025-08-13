@@ -16,6 +16,14 @@ export const Play = () => {
       <SearchingLoader/>
     );
 
+  function formatTime(ms: number) {
+  const totalSeconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+}
+
   return (
     <>
       {console.log()}
@@ -36,21 +44,23 @@ export const Play = () => {
           <div className="min-h-60 h-70 custom-scroll scroll-smooth overflow-auto">
             {moves.map((_, i) => {
               if (i % 2 !== 0) return null;
+               const whiteMove = moves[i];
+               const blackMove = moves[i + 1];
               return (
                 <div key={i}>
                   <div className="flex flex-row items-center text-sm font-[500] text-center m-1">
                     <div className="flex items-center justify-center h-7  text-zinc-200 flex-5">
-                      {moves[i]}
+                      {whiteMove.to}
                     </div>
                     <div className="flex items-center justify-center h-7  text-zinc-200 flex-5">
-                      {moves[++i]}
+                      {blackMove ? blackMove.to : ""}
                     </div>
                     <div className="flex flex-col items-center justify-center h-7 text-zinc-200 flex-2">
                       <div className="text-[10px] bg-zinc-700 w-[80%]">
-                        00:02
+                        {formatTime(whiteMove.timeTaken)}
                       </div>
                       <div className="text-[10px] bg-black w-[80%]">
-                        {moves[i] ? "00:03" : ""}
+                        {blackMove ? formatTime(blackMove.timeTaken) : ""}
                       </div>
                     </div>
                   </div>

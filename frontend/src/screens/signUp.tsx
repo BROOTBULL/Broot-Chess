@@ -16,6 +16,8 @@ const SignUpPage = () => {
   });
   const [strength, setStrength] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [passwordType, setPasswordType] = useState<"password"|"text">("password");
+
 
   function calculateStrength(password: string): number {
     let score = 0;
@@ -96,6 +98,12 @@ const SignUpPage = () => {
     return null; // No error
   }
 
+  function handlePasswordType(e: React.MouseEvent<HTMLElement>)
+  {
+    e.preventDefault()
+    setPasswordType(passwordType==="password"?"text":"password")
+  }
+
   return (
     <>
       <img
@@ -150,17 +158,18 @@ const SignUpPage = () => {
                   autoComplete="off"
                 />
               </div>
-              <div className="bg-white pl-2 rounded-b-lg">
+              <div className="bg-white pl-2 rounded-b-lg flex flex-row">
                 <input
-                  className="passInput w-full h-12 lg:h-14 lg:text-[18px] p-2 focus:outline-none"
+                  className="passInput w-[90%] h-12 lg:h-14 lg:text-[18px] p-2 focus:outline-none"
                   placeholder="Password"
-                  type="password"
+                  type={passwordType}
                   name="password"
                   id="password"
                   value={formData.password}
-                  onChange={handleChange}
+                  onChange={(e)=>handleChange(e)}
                   autoComplete="off"
                 />
+                <button className="cursor-pointer" onClick={handlePasswordType}><img className="size-6 mx-4" src={`./media/${passwordType==="password"?"eyeClosed":"eye"}.png`} alt="" /></button>
               </div>
               <div className="h-2 mt-1 w-full rounded px-1">
                 <div

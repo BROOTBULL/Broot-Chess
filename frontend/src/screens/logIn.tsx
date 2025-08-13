@@ -12,6 +12,8 @@ const LogInPage = () => {
 
 
   const [error,setError]=useState<string|null>(null);
+  const [passwordType, setPasswordType] = useState<"password"|"text">("password");
+
 
 
   const [formData, setFormData] = useState({
@@ -82,6 +84,11 @@ if (emailError) {
 
   return null; // No error
 }
+  function handlePasswordType(e: React.MouseEvent<HTMLElement>)
+  {
+    e.preventDefault()
+    setPasswordType(passwordType==="password"?"text":"password")
+  }
 
   return (
     <>
@@ -119,16 +126,17 @@ if (emailError) {
                   onChange={handleChange}
                 />
               </div>
-              <div className="bg-white pl-2">
+              <div className="bg-white pl-2 flex flex-row">
                 <input
-                  className="passInput w-full h-12 lg:h-14 lg:text-[18px] p-2 focus:outline-none"
+                  className="passInput w-[90%] h-12 lg:h-14 lg:text-[18px] p-2 focus:outline-none"
                   placeholder="Password"
-                  type="password"
+                  type={passwordType}
                   name="password"
                   id="password"
                   value={formData.password}
                   onChange={handleChange}
                 />
+                <button className="cursor-pointer" onClick={handlePasswordType}><img className="size-6 mx-4" src={`./media/${passwordType==="password"?"eyeClosed":"eye"}.png`} alt="" /></button>
               </div>
 
               <button

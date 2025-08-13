@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 import { useNotification } from "./NotificationProvider";
 import { NOTIFICATION } from "../screens/socials";
-import { Chess, Move, Piece, Square } from "chess.js";
+import { Chess, Piece, Square } from "chess.js";
 import { useUserContext } from "../hooks/contextHook";
 
 export interface User {
@@ -50,8 +50,8 @@ interface ChessContextType {
   setChess: React.Dispatch<React.SetStateAction<Chess>>;
   board: (Piece | null)[][];
   setBoard: React.Dispatch<React.SetStateAction<(Piece | null)[][]>>;
-  moves: string[];
-  setMoves: React.Dispatch<React.SetStateAction<string[]>>;
+  moves: DBMoves[];
+  setMoves: React.Dispatch<React.SetStateAction<DBMoves[]>>;
   playerWon: string | undefined;
   setPlayerWon: React.Dispatch<React.SetStateAction<string | undefined>>;
   gameStatus: string | undefined;
@@ -79,7 +79,7 @@ interface ChessContextType {
 type GameType = "blitz" | "rapid" | "daily";
 type Message = { sender: string; message: string };
 type Tab = "newgame" | "history" | "friends" | "play";
-type DBMoves = {
+export type DBMoves = {
   to: string;
   from: string;
   timeTaken: number;
@@ -108,7 +108,7 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
   const [color, setColor] = useState("w");
   const [chess, setChess] = useState(new Chess());
   const [board, setBoard] = useState<(Piece | null)[][]>(chess.board());
-  const [moves, setMoves] = useState<string[]>([]);
+  const [moves, setMoves] = useState<DBMoves[]>([]);
   const [playerWon, setPlayerWon] = useState<string | undefined>(undefined);
   const [gameStatus, setGameStatus] = useState<string | undefined>();
   const [gameEnded, setGameEnded] = useState(false);
@@ -194,13 +194,16 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
                 JSON.stringify({ rmid, expiryTime })
               );
               setColor(isUser ? "w" : "b");
-              setPlayerWon(undefined)
+              setPlayerWon(undefined);
             }
             break;
           case MOVE:
             {
-              const move = payload.move as Move;
-              setMoves((prev) => [...prev, move.to]);
+              const move = payload.move;
+              setMoves((prev) => [
+                ...prev,
+                { ...move, timeTaken: payload.timeTaken },
+              ]);
               setTimers({
                 whiteTimeLeft: payload.whiteTimeLeft,
                 blackTimeLeft: payload.blackTimeLeft,
@@ -208,7 +211,9 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
               });
 
               try {
-                if (isPromoting(chess, move.from, move.to)) {
+                if (
+                  isPromoting(chess, move.from as Square, move.to as Square)
+                ) {
                   chess.move({
                     from: move.from,
                     to: move.to,
@@ -236,18 +241,17 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
               const { whiteTotal, blackTotal } = sumTimeTaken(payload.DBmoves);
               const now = Date.now();
               const latency = now - payload.serverTime;
-              console.log(latency);
               setTimers({
                 whiteTimeLeft:
                   payload.whiteTimeLeft -
-                    (chess.turn() === "w" ? latency : 0) ||
+                    (chess.turn() === "w" ? latency + 2 : 0) ||
                   (gameType === "blitz" ? 5 : gameType === "rapid" ? 15 : 60) *
                     60 *
                     1000 -
                     whiteTotal,
                 blackTimeLeft:
                   payload.blackTimeLeft -
-                    (chess.turn() === "b" ? latency : 0) ||
+                    (chess.turn() === "b" ? latency + 2 : 0) ||
                   (gameType === "blitz" ? 5 : gameType === "rapid" ? 15 : 60) *
                     60 *
                     1000 -
@@ -257,16 +261,8 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
               chess.load(payload.fen);
               const newBoard = chess.board();
               setBoard(newBoard);
-              const moveTo = (payload.DBmoves as Move[]).map((move) => move.to);
+              const moveTo = payload.DBmoves;
               setMoves(moveTo);
-              console.log(
-                payload.WhitePlayer.id,
-                " ---> ",
-                user?.id,
-                " or userId ->",
-                user?.userId
-              );
-
               // console.log("Game Rejoined successfully..!!!");
               // console.log("roomId:", payload.RoomId);
               setColor(isUser ? "w" : "b");
@@ -277,17 +273,15 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
               let wonBy;
               setGameStarted(false);
               setGameEnded(true);
-              if(payload.result!=="DRAW")
-              {
-              setPlayerWon(
-                payload.result.slice(0,1) === color
-                  ? user?.name
-                  : Opponent?.name
-              )
-            }
-            else{
-              setPlayerWon("Draw")
-            }
+              if (payload.result !== "DRAW") {
+                setPlayerWon(
+                  payload.result.slice(0, 1) === color
+                    ? user?.name
+                    : Opponent?.name
+                );
+              } else {
+                setPlayerWon("Draw");
+              }
               switch (payload.status) {
                 case "PLAYER_EXIT":
                   wonBy = "Resigantion";
@@ -300,7 +294,7 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
                       JSON.stringify({
                         type: GAME_OVER,
                         payload: {
-                          gameId: roomId
+                          gameId: roomId,
                         },
                       })
                     );
@@ -320,6 +314,17 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
               chess.reset();
               setReloadData(!reloadData);
               setMoves([]);
+              setTimers({
+                whiteTimeLeft:
+                  (gameType === "blitz" ? 5 : gameType === "rapid" ? 15 : 60) *
+                  60 *
+                  1000,
+                blackTimeLeft:
+                  (gameType === "blitz" ? 5 : gameType === "rapid" ? 15 : 60) *
+                  60 *
+                  1000,
+                abandonedDeadline: 60000,
+              });
             }
             break;
           case CHAT:
@@ -354,9 +359,8 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
               chess.load(payload.revertedfen);
               const newBoard = chess.board();
               setBoard(newBoard);
-              const moveTo = (payload.moves as Move[]).map((move) => move.to);
+              const moveTo = payload.moves;
               setMoves(moveTo);
-
               setWaitingResponse(false);
               setUndoBox(false);
               setUndoRequested(false);
@@ -393,7 +397,7 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
         })
       );
     }
-  }, [socket, chess]);
+  }, [socket, chess, Opponent]);
 
   return (
     <ChessContext.Provider

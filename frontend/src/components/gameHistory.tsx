@@ -24,7 +24,7 @@ export const GameHistory = () => {
         {games.length?
         
         (<div className="w-full min-h-40 bg-zinc-900">
-          {games?.sort((a, b) => (new Date(a.startAt)).getTime() - (new Date(b.startAt)).getTime()).slice(-12).map((game) => (
+          {games?.sort((a, b) => (new Date(b.startAt)).getTime() - (new Date(a.startAt)).getTime()).map((game) => (
           <div
             key={(new Date(game.startAt)).getTime()}
             className={`flex flex-row text-zinc-200 text-sm font-[400] p-1 py-2 border-b-2 border-zinc-900 ${game.result==="Draw"?"bg-zinc-400/20":(game.result==="Loss"?"bg-rose-500/10":"bg-emerald-600/20")} items-center text-center gap-2`}
