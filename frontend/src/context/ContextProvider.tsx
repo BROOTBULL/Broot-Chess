@@ -263,6 +263,7 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
               let wonBy;
               setGameStarted(false);
               setGameEnded(true);
+              setReloadData(!reloadData)
               if (payload.result !== "DRAW") {
                 setPlayerWon(
                   payload.result.slice(0, 1) === color

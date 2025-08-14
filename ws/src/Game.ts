@@ -88,7 +88,6 @@ export class Game {
       blackPlayerId: this.player2Id,
     };
     console.log(gameData);
-    
 
     const gameCreateRes= createGameInDb(gameData);
 
@@ -200,10 +199,10 @@ export class Game {
   // end game check
   if (this.board.isGameOver()) {
     const winner = this.board.isDraw()
-      ? "DRAW"
+      ? "draw"
       : this.board.turn() === "b"
-      ? "WHITE_WINS"
-      : "BLACK_WINS";
+      ? "white"
+      : "black";
 
     this.endGame("COMPLETED", winner);
   }

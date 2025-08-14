@@ -149,7 +149,7 @@ useEffect(() => {
         params: { userId: user?.id },
       });
       setGames(response.data.games)
-      // console.log(response.data.games);
+      console.log(response.data.games);
       
     };
 

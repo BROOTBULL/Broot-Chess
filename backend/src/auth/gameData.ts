@@ -208,11 +208,11 @@ gameRoute.post("/endGame", async (req: Request, res: Response) => {
     const status = req.body.status as GAME_STATUS;
     const colorWins = req.body.result as string;
     const result =
-      colorWins === "white"
+      (colorWins === "white"
         ? "WHITE_WINS"
         : colorWins === "black"
         ? "BLACK_WINS"
-        : ("DRAW" as GAME_RESULT);
+        : "DRAW" )as GAME_RESULT;
 
     const gameSaved = await prisma.game.update({
       data: {
