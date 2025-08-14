@@ -33,15 +33,10 @@ export const FriendsGame = () => {
           />
           <div 
           onClick={() => navigate(`/profile/${friend?.id}`)}
-          className={`${theme?" text-zinc-800":"text-zinc-200"} font-[500] text-[13px] flex flex-wrap items-center hover:font-bold duration-75`}>
+          className={`${theme?" text-zinc-800":"text-zinc-200"} font-[500] text-[13px] flex flex-col md:flex-row items-center hover:font-bold duration-75`}>
             {friend.name} 
             <div>({friend.rating.rapid})</div>
           </div>
-          <span className="text-sm text-zinc-600 font-[600]">
-            <span className="text-green-700">{Math.floor(Math.random()*10)}</span> /{" "}
-            <span className="text-zinc-400">{Math.floor(Math.random()*10)}</span> /{" "}
-            <span className="text-red-700">{Math.floor(Math.random()*10)}</span>
-          </span>
           <div
             onClick={()=>sendNotification(friend.id,"CHALLENGE","Challenged you for a friendly Rapid Match")}
             className="bg-emerald-800 rounded-md drop-shadow-sm w-fit p-2 md:p-3 shadow-md/30 flex flex-row cursor-pointer playButton"

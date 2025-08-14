@@ -28,7 +28,7 @@ export const SearchingLoader = () => {
           <div>
             <img
               className="absolute size-20 z-1 drop-shadow-md/100"
-              src="./media/pw.png"
+              src="/media/pieces/pw.png"
               alt=""
             />
           </div>
@@ -47,7 +47,7 @@ export const SearchingLoader = () => {
               repeatType: "loop",
             }}
           >
-            <img src="./media/pb.png" alt="" className="w-full h-full" />
+            <img src="/media/pieces/pb.png" alt="" className="w-full h-full" />
           </motion.div>
           <div className=" w-fit h-full [transform:rotateX(80deg)] flex flex-wrap justify-center">
             <div className="bg-zinc-900 aspect-square size-18 "></div>

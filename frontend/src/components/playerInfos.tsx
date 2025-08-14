@@ -23,19 +23,20 @@ export const PlayerInfo = ({
   const [gameTimer, setGameTimer] = useState(15 * 60);
   const [perMoveTimer, setPerMoveTimer] = useState(60);
   const [gameRating,setGameRating]=useState<number>(rating.rapid)
-  const [won,setWon]=useState<boolean|undefined>(false)
+  const [won,setWon]=useState<boolean|"d"|undefined>(false)
 
   const gameTimerRef = useRef<number | undefined>(undefined);
   const perMoveTimerRef = useRef<number | undefined>(undefined);
 
 
-  useEffect(()=>{
-   if(playerWon)
-   {
-    setWon(playerWon===name)
-   }
-   else setWon(undefined)
-  },[playerWon])
+useEffect(() => {
+  if (gameEnded && playerWon !== undefined) {
+    if (playerWon === "Draw") setWon("d");
+    else setWon(playerWon === name);
+  } else {
+    setWon(undefined);
+  }
+}, [playerWon, name, gameEnded]);
 
   useEffect(() => {
     if (!gameStarted) {
@@ -54,7 +55,7 @@ export const PlayerInfo = ({
           ? rating.daily
           : rating.rapid)
     }
-  }, [gameType, gameStarted]);
+  }, [gameType, gameStarted,rating]);
 
   useEffect(() => {
     if (gameStarted) {
@@ -107,7 +108,7 @@ export const PlayerInfo = ({
 
       <div className="text-sm md:text-lg font-bold ml-2">
         {displayName}
-        <div className="text-[10px] md:text-[12px] flex flex-row gap-2"><>{gameRating}</> <div className={`${won===undefined?"hidden":(won?"text-green-600":"text-rose-800")}`}>{won?"+":"-"}10</div></div>
+        <div className="text-[10px] md:text-[12px] flex flex-row gap-2"><>{gameRating}</> <div className={`${won===undefined?"hidden":(won==="d"?"text-zinc-500":(won?"text-green-600":"text-rose-800"))}`}>{won==="d"?"+0":won?"+10":"-10"}</div></div>
       </div>
 
       <div

@@ -37,11 +37,11 @@ export const History = () => {
               </div>
               <div
                onClick={() => navigate(`/profile/${game.opponent?.id}`)}
-               className="flex-5">
+               className="flex-5 cursor-pointer">
                 {game.opponent.name || game.opponent.username}
               </div>
               <div className="flex-2 flex justify-center"><div className={`size-5 aspect-square rounded ${game.result==="Draw"?"bg-zinc-400":(game.result==="Loss"?"bg-rose-500/60":"bg-emerald-600")}`}><img className={`size-5 invert mr-1`} src={`./media/${game.result==="Loss"?"minus":"plus"}.png`} alt="" /></div></div>
-              <div className="flex-3 text-[12px]">
+              <div className="flex-3 text-[12px] cursor-pointer">
                 {format(new Date(game.startAt), "dd MMM yyyy")}
               </div>
               <div

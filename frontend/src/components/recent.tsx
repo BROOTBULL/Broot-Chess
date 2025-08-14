@@ -34,11 +34,7 @@ export const RecentGame = () => {
             className={`${theme?" text-zinc-800":"text-zinc-200"} font-bold text-sm cursor-pointer`}>
               {game.opponent.name} ({game.opponent.rating.rapid})
             </div>
-            <div className="text-sm text-zinc-600 font-[600]">
-              <span className="text-green-900">11</span> /{" "}
-              <span >1</span> /{" "}
-              <span className="text-red-700">2</span>
-            </div>
+            <div className="text-[10px] text-zinc-600 font-bold">{game.timeControl}</div>
             <div
               onClick={() =>sendNotification(game.opponent.id,"CHALLENGE","Challenged you for a Rematch") }
               className="bg-emerald-800 hover:bg-emerald-700 duration-200 cursor-pointer w-fit p-2 shadow-md/30 flex self-end mt-auto items-center justify-center flex-row rounded-md"
