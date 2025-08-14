@@ -255,7 +255,7 @@ const ChessGame = () => {
                           alt=""
                         />
                         <div className="text-[10px] text-center text-zinc-300 font-bold">
-                          {Opponent?.name || "Opponent"}
+                          {Opponent?.name.slice(0,8) || "Opponent"}
                         </div>
                       </div>
                       <div className="text-lg text-zinc-200 font-bold mt-2">

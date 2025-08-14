@@ -26,7 +26,7 @@ export const History = () => {
           {games.sort((a, b) => (new Date(b.startAt)).getTime() - (new Date(a.startAt)).getTime()).map((game) => (
             <div
               key={(new Date(game.startAt)).getTime()}
-              className={`flex flex-row text-zinc-200 ${game.result==="Draw"?"bg-zinc-400/20":(game.result==="Loss"?"bg-rose-500/10":"bg-emerald-600/20")} text-sm font-[500] p-2 gap-2 text-center`}
+              className={`flex flex-row text-zinc-200 ${game.result==="Draw"?"bg-zinc-400/20":(game.result==="Loss"?"bg-rose-600/10":"bg-emerald-600/20")} text-sm font-[500] p-2 gap-2 text-center`}
             >
               <div className="flex-1">
                 <img
@@ -35,10 +35,12 @@ export const History = () => {
                   alt=""
                 />
               </div>
-              <div className="flex-5">
+              <div
+               onClick={() => navigate(`/profile/${game.opponent?.id}`)}
+               className="flex-5">
                 {game.opponent.name || game.opponent.username}
               </div>
-              <div className="flex-2 flex justify-center"><div className={`size-5 aspect-square rounded ${game.result==="Draw"?"bg-zinc-400":(game.result==="Loss"?"bg-rose-500/70":"bg-emerald-600")}`}><img className={`size-5 invert mr-1`} src={`./media/${game.result==="Loss"?"minus":"plus"}.png`} alt="" /></div></div>
+              <div className="flex-2 flex justify-center"><div className={`size-5 aspect-square rounded ${game.result==="Draw"?"bg-zinc-400":(game.result==="Loss"?"bg-rose-500/60":"bg-emerald-600")}`}><img className={`size-5 invert mr-1`} src={`./media/${game.result==="Loss"?"minus":"plus"}.png`} alt="" /></div></div>
               <div className="flex-3 text-[12px]">
                 {format(new Date(game.startAt), "dd MMM yyyy")}
               </div>

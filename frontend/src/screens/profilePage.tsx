@@ -8,7 +8,7 @@ import { useUserContext } from "../hooks/contextHook";
 import { Trasition } from "../transition";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-import { User } from "../context/userProvider";
+import { GamesData, User } from "../context/userProvider";
 import { LandingLoader } from "../assets/loader";
 
 const ProfilePage = () => {
@@ -18,6 +18,7 @@ const ProfilePage = () => {
   const [Player,setPlayer]=useState<User>()
   const [friends,setFriends]=useState<User[]|[]>([])
   const rating = Player?.rating.rapid ?? 500;
+  const [games, setGames] = useState<GamesData[]>([]);
   const navigate=useNavigate()
 
   useEffect(() => {
@@ -27,7 +28,6 @@ const ProfilePage = () => {
       const response = await axios.get("/social/player", {
         params: { playerId: playerId.playerId },
       });
-      console.log(response.data.player); 
       setPlayer(response.data.player)
     };
     
@@ -39,8 +39,16 @@ const ProfilePage = () => {
       setFriends(response.data.Friends);
       
     }; 
+    const getGames = async () => {
+      const response = await axios.get("/gameData/games", {
+        params: { userId: playerId.playerId },
+      });
+      setGames(response.data.games)
+      
+    };
     getPlayer();
     getFriends();
+    getGames()
   }, []);
 
   const trophies = [
@@ -74,7 +82,7 @@ const ProfilePage = () => {
         <div className="pt-20 flex flex-col mx-auto h-fit w-full p-3 md:p-6 md:pl-25 md:pt-28 xl:pt-10 lg:pl-35 max-w-[1200px] ">
           <Profile2 player={Player as User}/>
           <div className="flex-col sm:flex-row flex gap-2 ">
-            <GameRatings />
+            <GameRatings Ratings={Player.rating} />
             <div
               className={`${
                 theme
@@ -110,7 +118,7 @@ const ProfilePage = () => {
                   <div
                     key={i}
                     onClick={() => navigate(`/profile/${friend?.id}`)}
-                    className="flex flex-col items-center m-2 bg-black rounded-lg"
+                    className="flex flex-col items-center m-2 bg-black rounded-lg cursor-pointer hover:drop-shadow-md hover:drop-shadow-zinc-200"
                   >
                     <div className="aspact-square rounded-md border-3 border-black">
                       <img
@@ -132,7 +140,7 @@ const ProfilePage = () => {
             </div>
           )}
           <div className="flex flex-col md:flex-row gap-5 w-full pb-80 ">
-            <GameHistory />
+            <GameHistory games={games}/>
             <Stats />
           </div>
         </div>

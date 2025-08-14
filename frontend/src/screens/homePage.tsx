@@ -12,7 +12,7 @@ import { useUserContext } from "../hooks/contextHook";
 
 const HomePage = () => {
 
-  const{theme}=useUserContext()
+  const{theme,Ratings,games}=useUserContext()
 
   return (
     <>
@@ -21,7 +21,7 @@ const HomePage = () => {
         <Header3 />
         <div className="pt-20 flex flex-col mx-auto h-fit w-full p-3 md:p-6 md:pl-25 md:pt-28 xl:pt-10 lg:pl-30 max-w-[1200px] ">
           <Profile />
-          <GameRatings />
+          <GameRatings Ratings={Ratings}/>
           <LevelLoader />
           <div className="flex flex-col lg:flex-row md:gap-5 md:my-5">
             <FriendsGame />
@@ -29,7 +29,7 @@ const HomePage = () => {
           </div>
               <RecentGame />
           <div className="flex flex-col md:flex-row gap-5 w-full ">
-            <GameHistory />
+            <GameHistory games={games}/>
             <Stats />
           </div>
 

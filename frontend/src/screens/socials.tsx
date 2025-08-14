@@ -11,6 +11,7 @@ import { User } from "../context/userProvider";
 import { Notification } from "../components/notification";
 import { useSendNotification } from "../hooks/NotificationHook";
 import { useNotificationRefresh } from "../context/NotificationProvider";
+import { useNavigate } from "react-router-dom";
 
 export type FriendStatus = "REJECTED" | "PENDING" | "ACCEPTED";
 export const NOTIFICATION="notification"
@@ -52,6 +53,7 @@ const Socials = () => {
   const {
     user,theme
   } = useUserContext();
+  const navigate=useNavigate()
 
   const { sendNotification} = useSendNotification();
   const triggerRefresh = useNotificationRefresh();
@@ -197,7 +199,9 @@ const Socials = () => {
                     key={i}
                     className={`${theme?" bg-zinc-800":"bg-zinc-950"} w-full h-fit flex flex-row p-3 rounded-lg my-0.5`}
                   >
-                    <div className="bg-zinc-800 border-2 border-zinc-700 rounded-md aspect-square h-full">
+                    <div 
+                    onClick={() => navigate(`/profile/${player.id}`)}
+                    className="bg-zinc-800 border-2 border-zinc-700 rounded-md aspect-square h-full">
                       <img
                         className="rounded-sm size-13 md:size-20"
                         src={player.profile || `./media/userW.png`}
@@ -236,7 +240,9 @@ const Socials = () => {
                     key={i}
                     className={`${theme?" bg-zinc-800":"bg-zinc-950"} w-full h-fit flex flex-row py-3 rounded-lg mb-0.5 items-center`}
                   >
-                    <div className="bg-zinc-800 border-2 border-zinc-700 rounded-md aspect-square h-full mx-3 flex items-center">
+                    <div 
+                    onClick={() => navigate(`/profile/${friend.id}`)}
+                    className="bg-zinc-800 border-2 border-zinc-700 rounded-md aspect-square h-full mx-3 flex items-center">
                       <img
                         className="rounded-sm size-13 md:size-20"
                         src={friend.profile || `./media/userW.png`}

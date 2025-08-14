@@ -11,9 +11,9 @@ export const RecentGame = () => {
   return (
     <div className={`w-full h-fit my-5 ring-1 ${theme?" text-zinc-400":" ring-zinc-600"} rounded-lg `}>
       <div className="flex justify-between m-2 my-1 font-bold">
-        <span className={` ${theme?" text-zinc-700":" text-zinc-300"}  text-md lg:text-2xl cursor-default`}>
+        <div className={` ${theme?" text-zinc-700":" text-zinc-300"}  text-md lg:text-2xl cursor-default`}>
           Recent Matchs
-        </span>
+        </div>
       </div>
           <div className={`flex flex-row ring-1 ${theme?" ring-zinc-400":" ring-zinc-600"} overflow-x-auto overflow-hidden custom-scroll-w scroll-smooth rounded-b-lg py-1`}>
 
@@ -22,26 +22,28 @@ export const RecentGame = () => {
         <div
         key={game.id}
         onClick={() => navigate(`/profile/${game.opponent?.id}`)}
-        className={`min-w-[290px] md:min-w-[360px] m-2 flex flex-row ${theme?" bg-zinc-400":"bg-zinc-900"} rounded-md shadow-md/50 p-2`}>
+        className={`min-w-[290px] md:min-w-[360px] m-2 flex flex-row cursor-pointer ${theme?" bg-zinc-400":"bg-zinc-900"} rounded-md shadow-md/50 p-2`}>
           <img
             className="size-30 md:size-45 drop-shadow-md mr-4 border-2 border-zinc-700 rounded-md"
             src={game.opponent.profile?game.opponent.profile:"/media/chessboard.png" }// Use public path in React
             alt="chess"
           />
           <div className="flex flex-col w-full">
-            <span className={`${theme?" text-zinc-800":"text-zinc-200"} font-bold text-sm`}>
+            <div 
+            onClick={() => navigate(`/profile/${game.opponent?.id}`)}
+            className={`${theme?" text-zinc-800":"text-zinc-200"} font-bold text-sm cursor-pointer`}>
               {game.opponent.name} ({game.opponent.rating.rapid})
-            </span>
-            <span className="text-sm text-zinc-600 font-[600]">
+            </div>
+            <div className="text-sm text-zinc-600 font-[600]">
               <span className="text-green-900">11</span> /{" "}
-              <span className="text-zinc-800">1</span> /{" "}
+              <span >1</span> /{" "}
               <span className="text-red-700">2</span>
-            </span>
+            </div>
             <div
               onClick={() =>sendNotification(game.opponent.id,"CHALLENGE","Challenged you for a Rematch") }
               className="bg-emerald-800 hover:bg-emerald-700 duration-200 cursor-pointer w-fit p-2 shadow-md/30 flex self-end mt-auto items-center justify-center flex-row rounded-md"
             >
-              <span className="text-zinc-200 font-bold text-sm">Challenge</span>
+              <div className="text-zinc-200 font-bold text-sm">Challenge</div>
             </div>
           </div>
       </div>

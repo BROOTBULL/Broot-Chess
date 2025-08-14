@@ -25,13 +25,15 @@ export const FriendsGame = () => {
               return (
         <div 
         onClick={() => navigate(`/profile/${friend?.id}`)}
-        key={i} className={`min-w-[120px] md:min-w-[180px] flex flex-col ${theme?" bg-zinc-400":"bg-zinc-900"} items-center shadow-md/50 p-2 m-2 rounded-md`}>
+        key={i} className={`min-w-[120px] md:min-w-[180px] flex flex-col ${theme?" bg-zinc-400":"bg-zinc-900"} items-center shadow-md/50 p-2 m-2 rounded-md cursor-pointer`}>
           <img
             className="size-20 md:size-35 xl:size-45 drop-shadow-md rounded-md border-2 border-zinc-700 "
             src={friend.profile?friend.profile:"/media/chessboard.png"} // Use public path in React
             alt="chess"
           />
-          <div className={`${theme?" text-zinc-800":"text-zinc-200"} font-[500] text-[13px] flex flex-wrap items-center`}>
+          <div 
+          onClick={() => navigate(`/profile/${friend?.id}`)}
+          className={`${theme?" text-zinc-800":"text-zinc-200"} font-[500] text-[13px] flex flex-wrap items-center hover:font-bold duration-75`}>
             {friend.name} 
             <div>({friend.rating.rapid})</div>
           </div>

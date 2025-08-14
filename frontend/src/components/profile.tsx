@@ -1,13 +1,17 @@
+import { useNavigate } from "react-router-dom";
 import { User } from "../context/userProvider";
 import { useUserContext } from "../hooks/contextHook";
 
 export const Profile = () => {
   const { user, theme } = useUserContext();
+  const navigate =useNavigate()
 
   return (
     <>
       <div className="flex flex-row items-end Profile h-fit w-full mb-2 py-1">
-        <div className={`Profile border-3 size-18 rounded-md`}>
+        <div 
+        onClick={() => navigate(`/profile/${user?.id}`)}
+        className={`Profile border-3 size-18 rounded-md cursor-pointer hover:brightness-90`}>
           <img
             className="rounded-sm"
             src={user?.profile ? user?.profile : "/media/chessboard.png"}
@@ -18,7 +22,7 @@ export const Profile = () => {
           <div
             className={`${
               theme ? "text-zinc-800" : "text-zinc-200"
-            } text-3xl px-2 font-[800]`}
+            } text-3xl px-2 font-[800] cursor-default`}
           >
             {user?.name}
           </div>
@@ -34,8 +38,6 @@ export const Profile = () => {
 };
 
 export const Profile2 = ({player}:{player:User}) => {
-
-  console.log(player);
   
 
   return (

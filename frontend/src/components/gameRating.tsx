@@ -1,7 +1,8 @@
+import { Rating } from "../context/userProvider";
 import { useUserContext } from "../hooks/contextHook"
 
-export const GameRatings=()=>{
-    const {theme,Ratings}=useUserContext();
+export const GameRatings=({Ratings}:{Ratings:Rating})=>{
+    const {theme}=useUserContext();
     
     return(<>
       <div className="flex flex-row items-center Profile h-fit w-full md:w-[80%] py-1 gap-3 max-w-full justify-between min-[400px]:justify-start mt-auto my-1">

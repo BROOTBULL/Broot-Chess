@@ -131,7 +131,7 @@ export const Header3 = () => {
   const [optionDisplay, setOptionDisplay] = useState<boolean>(false);
   const navigate = useNavigate();
   const { setUser, theme, setTheme,user } = useUserContext();
-  const activetab = window.location.pathname.split("/").filter(Boolean).pop();
+  const activetab = window.location.pathname.split("/").filter(Boolean)[0];
 
   async function handleLogout() {
     const responce = await axios.post("/auth/logout", {});
@@ -141,6 +141,7 @@ export const Header3 = () => {
 
   return (
     <>
+
       <div className="hader fixed h-full z-10 hidden md:flex ">
         <div className="flex flex-col w-full justify-between">
           <img
