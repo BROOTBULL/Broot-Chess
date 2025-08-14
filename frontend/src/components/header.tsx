@@ -19,7 +19,7 @@ export const Header = () => {
 
 export const Header2 = () => {
   const [optionDisplay, setOptionDisplay] = useState<boolean>(false);
-  const { setUser, theme, setTheme } = useUserContext();
+  const { setUser, theme, setTheme ,user} = useUserContext();
   const activetab = window.location.pathname.split("/").filter(Boolean).pop();
   const navigate = useNavigate();
 
@@ -93,7 +93,7 @@ export const Header2 = () => {
             Play
           </div>
           <div
-            onClick={() => navigate("/profile")}
+            onClick={() => navigate(`/profile/${user?.id}`)}
             className={`${activetab === "profile" ? "active" : ""} ${
               theme ? "" : "invert"
             } nav flex flex-row items-center h-10 w-[95%] rounded-lg font-[500] text-lg text-zinc-800`}
@@ -130,7 +130,7 @@ export const Header2 = () => {
 export const Header3 = () => {
   const [optionDisplay, setOptionDisplay] = useState<boolean>(false);
   const navigate = useNavigate();
-  const { setUser, theme, setTheme } = useUserContext();
+  const { setUser, theme, setTheme,user } = useUserContext();
   const activetab = window.location.pathname.split("/").filter(Boolean).pop();
 
   async function handleLogout() {
@@ -157,7 +157,7 @@ export const Header3 = () => {
             }`}
           >
             <div
-              onClick={() => navigate("/profile")}
+              onClick={() => navigate(`/profile/${user?.id}`)}
               className={`${
                 activetab === "profile" ? "active" : ""
               } nav flex flex-row items-center hover:ml-4 rounded-3xl xl:w-35 duration-300 m-1 cursor-pointer`}

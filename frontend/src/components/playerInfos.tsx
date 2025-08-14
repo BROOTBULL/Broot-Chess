@@ -15,7 +15,7 @@ export const PlayerInfo = ({
   profile: string | null;
   playerColor: string;
 }) => {
-  const { gameEnded, moves, gameType, timers, gameStarted } = useChessContext();
+  const { gameEnded, moves, gameType, timers, gameStarted,playerWon } = useChessContext();
 
   const displayName =
     name.length > 12 ? name.slice(0, -8) + "..." : name;
@@ -23,9 +23,19 @@ export const PlayerInfo = ({
   const [gameTimer, setGameTimer] = useState(15 * 60);
   const [perMoveTimer, setPerMoveTimer] = useState(60);
   const [gameRating,setGameRating]=useState<number>(rating.rapid)
+  const [won,setWon]=useState<boolean|undefined>(false)
 
   const gameTimerRef = useRef<number | undefined>(undefined);
   const perMoveTimerRef = useRef<number | undefined>(undefined);
+
+
+  useEffect(()=>{
+   if(playerWon)
+   {
+    setWon(playerWon===name)
+   }
+   else setWon(undefined)
+  },[playerWon])
 
   useEffect(() => {
     if (!gameStarted) {
@@ -85,9 +95,10 @@ export const PlayerInfo = ({
     const s = (seconds % 60).toString().padStart(2, "0");
     return `${m}:${s}`;
   }
-
   return (
+ 
     <div className="h-14 m-1 p-1 flex items-center text-black w-full text-[13px]">
+     
       <div className="size-10 ring-2 rounded-lg bg-black shadow-lg/40 overflow-hidden flex justify-center items-center">
         {profile && (
           <img className="size-10 self-center" src={profile} alt="profile" />
@@ -96,7 +107,7 @@ export const PlayerInfo = ({
 
       <div className="text-sm md:text-lg font-bold ml-2">
         {displayName}
-        <div className="text-[8px] md:text-[10px]">{gameRating}</div>
+        <div className="text-[10px] md:text-[12px] flex flex-row gap-2"><>{gameRating}</> <div className={`${won===undefined?"hidden":(won?"text-green-600":"text-rose-800")}`}>{won?"+":"-"}10</div></div>
       </div>
 
       <div

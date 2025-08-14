@@ -1,8 +1,8 @@
 import { useUserContext } from "../hooks/contextHook";
 
 export const LevelLoader = () => {
-  const { user, theme } = useUserContext();
-  const rating = user?.rating.rapid ?? 0;
+  const { Ratings, theme } = useUserContext();
+  const rating = Ratings.rapid ?? 0;
 
   const trophies = [
     { name: "legend", rating: 3000 },

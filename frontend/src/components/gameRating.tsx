@@ -1,7 +1,7 @@
 import { useUserContext } from "../hooks/contextHook"
 
 export const GameRatings=()=>{
-    const {user ,theme}=useUserContext();
+    const {theme,Ratings}=useUserContext();
     
     return(<>
       <div className="flex flex-row items-center Profile h-fit w-full md:w-[80%] py-1 gap-3 max-w-full justify-between min-[400px]:justify-start mt-auto my-1">
@@ -10,7 +10,7 @@ export const GameRatings=()=>{
 
             <div className="flex flex-col text-center">
             <span className={`font-serif text-zinc-200 text-shadow-sm/50 text-[12px] lg:text-[16px] relative font-[600]`}>Rapid</span>
-             <span className={`text-zinc-200 text-shadow-sm/50 text-2xl p-2 font-[800] pt-0`}>{user?.rating.rapid}</span>
+             <span className={`text-zinc-200 text-shadow-sm/50 text-2xl p-2 font-[800] pt-0`}>{Ratings.rapid}</span>
             </div>
           </div>
 
@@ -19,7 +19,7 @@ export const GameRatings=()=>{
 
             <div className="flex flex-col text-center">
             <span className={`font-serif text-zinc-200 text-shadow-sm/50 text-[12px] lg:text-[16px] relative font-[600]`}>Blitz</span>
-             <span className={`text-zinc-200 text-shadow-sm/50 text-2xl p-2 font-[800] pt-0`}>{user?.rating.blitz}</span>
+             <span className={`text-zinc-200 text-shadow-sm/50 text-2xl p-2 font-[800] pt-0`}>{Ratings.blitz}</span>
             </div>
           </div>
           <div className={`Profile flex-col flex ${theme?"bg-zinc-400":"bg-zinc-700"} rounded-lg size-fit p-3 px-5  shadow-md/40`}>
@@ -27,7 +27,7 @@ export const GameRatings=()=>{
 
             <div className="flex flex-col text-center ">
             <span className={`font-serif text-zinc-200 text-shadow-sm/50 text-[12px] lg:text-[16px] relative font-[600]`}>Daily</span>
-             <span className={`text-zinc-200 text-shadow-sm/50 text-2xl p-2 font-[800] pt-0`}>{user?.rating.daily}</span>
+             <span className={`text-zinc-200 text-shadow-sm/50 text-2xl p-2 font-[800] pt-0`}>{Ratings.daily}</span>
             </div>
           </div>
 

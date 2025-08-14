@@ -58,6 +58,8 @@ interface UserContextProviderType {
   setReloadData:React.Dispatch<React.SetStateAction<boolean>>
   theme:boolean;
   setTheme:React.Dispatch<React.SetStateAction<boolean>>
+  Ratings:Rating;
+  setRatings:React.Dispatch<React.SetStateAction<Rating>>
 }
 
 
@@ -73,6 +75,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
   const [games, setGames] = useState<GamesData[]>([]);
   const [reloadData,setReloadData] = useState(false);
   const [theme,setTheme] = useState<boolean>(localStorage.getItem("theme")==="false");
+  const [Ratings,setRatings]=useState<Rating>({rapid:500,blitz:500,daily:500})
 
 
   
@@ -152,7 +155,14 @@ useEffect(() => {
       console.log(response.data.games);
       
     };
-
+     const getRatings = async () => {
+      const response = await axios.get("/gameData/ratings", {
+        params: { userId: user?.id },
+      });
+      setRatings(response.data.ratings.rating)
+      
+    };
+      getRatings()
       getGames()
   }, [user,reloadData]);
 
@@ -172,7 +182,9 @@ useEffect(() => {
         reloadData,
         setReloadData,
         theme,
-        setTheme
+        setTheme,
+        Ratings,
+        setRatings
       }}
     >
       {children}

@@ -23,7 +23,9 @@ export const FriendsGame = () => {
           {friends && friends.length > 0 ? (
             friends.map((friend,i) => {
               return (
-        <div key={i} className={`min-w-[120px] md:min-w-[180px] flex flex-col ${theme?" bg-zinc-400":"bg-zinc-900"} items-center shadow-md/50 p-2 m-2 rounded-md`}>
+        <div 
+        onClick={() => navigate(`/profile/${friend?.id}`)}
+        key={i} className={`min-w-[120px] md:min-w-[180px] flex flex-col ${theme?" bg-zinc-400":"bg-zinc-900"} items-center shadow-md/50 p-2 m-2 rounded-md`}>
           <img
             className="size-20 md:size-35 xl:size-45 drop-shadow-md rounded-md border-2 border-zinc-700 "
             src={friend.profile?friend.profile:"/media/chessboard.png"} // Use public path in React

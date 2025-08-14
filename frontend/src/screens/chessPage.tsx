@@ -21,7 +21,7 @@ export const StartFen =
 
 const ChessGame = () => {
   const navigate = useNavigate();
-  const { user, setUser, socket } = useUserContext();
+  const { user, setUser, socket, Ratings } = useUserContext();
   const {
     roomId,
     gameStarted,
@@ -41,12 +41,12 @@ const ChessGame = () => {
     undoRequested,
     setUndoRequested,
   } = useChessContext();
-  const { name , profile } = user!;
+  const { name, profile } = user!;
 
   const [setting, setSetting] = useState(false);
   const [showSquare, setShowSquare] = useState(false);
   const [theme, setTheme] = useState(false);
-  const isMyTurn=color===chess.turn()
+  const isMyTurn = color === chess.turn();
 
   function handleClose() {
     setGameEnded(false);
@@ -103,12 +103,12 @@ const ChessGame = () => {
     console.log(responce);
   }
 
-  if (!socket) return <LandingLoader/>;
+  if (!socket) return <LandingLoader />;
 
   return (
     <>
-      {        
-      // console.log(playerWon,color,user?.id,Opponent?.id)
+      {
+        // console.log(playerWon,color,user?.id,Opponent?.id)
       }
 
       <div className="absolute flex flex-col xl:flex-row md:h-full w-full  ">
@@ -123,7 +123,8 @@ const ChessGame = () => {
             <div className="flex flex-row lg:flex-col ml-1">
               <div
                 onClick={() => navigate("/profile")}
-              className="nav size-fit p-1 rounded-full cursor-pointer duration-200">
+                className="nav size-fit p-1 rounded-full cursor-pointer duration-200"
+              >
                 <img className="img size-8" src="./media/profile.png" alt="" />
               </div>
               <div
@@ -193,26 +194,36 @@ const ChessGame = () => {
               {gameEnded && (
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -30 }}
-                  transition={{ duration: 0.2 }}
-                  className={`absolute w-[90%] lg:w-[82%] aspect-square z-50 rounded-lg p-1 justify-center items-center backdrop-blur-[2px] flex`}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                    transition: { duration: 0.2, delay: 0 },
+                  }}
+                  exit={{
+                    opacity: 0,
+                    y: -30,
+                    transition: { duration: 0.2, delay: 0 },
+                  }}
+                  className={`absolute w-[90%] max-w-[630px] xl:w-[66%] aspect-square z-50 rounded-lg p-1 justify-center items-center backdrop-blur-[2px] flex`}
                 >
                   <div
                     className={`w-55 h-60 z-50 flex bg-zinc-800 rounded-lg p-1 flex-col`}
                   >
-                   {playerWon==="Draw"?(<div className="text-2xl text-zinc-200 font-bold mt-5 text-center">
-                       Draw
-                      <div className="text-[12px] text-zinc-400 font-bold text-center">
-                      Match ended in a Draw
+                    {playerWon === "Draw" ? (
+                      <div className="text-2xl text-zinc-200 font-bold mt-5 text-center">
+                        Draw
+                        <div className="text-[12px] text-zinc-400 font-bold text-center">
+                          Match ended in a Draw
+                        </div>
                       </div>
-                    </div>):
-                    (<div className="text-2xl text-zinc-200 font-bold mt-5 text-center">
-                      {playerWon} Won
-                      <div className="text-[12px] text-zinc-400 font-bold text-center">
-                        by {gameStatus}
+                    ) : (
+                      <div className="text-2xl text-zinc-200 font-bold mt-5 text-center">
+                        {playerWon} Won
+                        <div className="text-[12px] text-zinc-400 font-bold text-center">
+                          by {gameStatus}
+                        </div>
                       </div>
-                    </div>)}
+                    )}
                     <img
                       onClick={handleClose}
                       className="absolute size-7 flex z-50 self-end rotate-45 invert cursor-pointer hover:drop-shadow-[0px_0px_2px] hover:drop-shadow-zinc-500"
@@ -223,9 +234,19 @@ const ChessGame = () => {
                       <div className="flex flex-col">
                         <img
                           className={`absolute size-7 drop-shadow-sm/90 -rotate-25 heartbeat ${
-                            playerWon!==undefined?(playerWon==="Draw"?"":(playerWon === name ? "hidden" : "")):"hidden"
+                            playerWon !== undefined
+                              ? playerWon === "Draw"
+                                ? ""
+                                : playerWon === name
+                                ? "hidden"
+                                : ""
+                              : "hidden"
                           }`}
-                          src={playerWon==="Draw"?`./media/draw.png`:"./media/won.png"}
+                          src={
+                            playerWon === "Draw"
+                              ? `./media/draw.png`
+                              : "./media/won.png"
+                          }
                           alt=""
                         />
                         <img
@@ -243,9 +264,19 @@ const ChessGame = () => {
                       <div className="flex flex-col">
                         <img
                           className={`absolute size-7 drop-shadow-sm/90 -rotate-25 heartbeat ${
-                            playerWon!==undefined?(playerWon==="Draw"?"":(playerWon === name ? "" : "hidden")):"hidden"
+                            playerWon !== undefined
+                              ? playerWon === "Draw"
+                                ? ""
+                                : playerWon === name
+                                ? ""
+                                : "hidden"
+                              : "hidden"
                           }`}
-                          src={playerWon==="Draw"?`./media/draw.png`:"./media/won.png"}
+                          src={
+                            playerWon === "Draw"
+                              ? `./media/draw.png`
+                              : "./media/won.png"
+                          }
                           alt=""
                         />
                         <img
@@ -322,13 +353,17 @@ const ChessGame = () => {
 
             {/* ///////////////// Theme changing Window Logic //////////////////////// */}
             <BoardAppreance setTheme={setTheme} theme={theme} />
-            
+
             {/* ///////////////// Draw Requested Window Logic //////////////////////// */}
             <DrawRequest />
 
             <PlayerInfo
               name={Opponent?.name || "Opponent"}
-              rating={Opponent?Opponent.rating as Rating:{rapid:500,blitz:600,daily:700} as Rating}
+              rating={
+                Opponent
+                  ? (Opponent.rating as Rating)
+                  : ({ rapid: 500, blitz: 600, daily: 700 } as Rating)
+              }
               playerColor={color === "w" ? "b" : "w"}
               turn={!isMyTurn}
               profile={Opponent?.profile || "/media/userW.png"}
@@ -336,7 +371,7 @@ const ChessGame = () => {
             <ChessBoard showSquare={showSquare} />
             <PlayerInfo
               name={name}
-              rating={user?.rating as Rating}
+              rating={Ratings as Rating}
               playerColor={color}
               turn={isMyTurn}
               profile={profile || "/media/userW.png"}

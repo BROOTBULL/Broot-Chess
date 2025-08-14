@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { GameHistory } from "../components/gameHistory";
 import { GameRatings } from "../components/gameRating";
 import { Header2, Header3 } from "../components/header";
@@ -5,10 +6,42 @@ import { Profile2 } from "../components/profile";
 import { Stats } from "../components/stats";
 import { useUserContext } from "../hooks/contextHook";
 import { Trasition } from "../transition";
+import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
+import { User } from "../context/userProvider";
+import { LandingLoader } from "../assets/loader";
 
 const ProfilePage = () => {
-  const { user, friends,theme } = useUserContext();
-  const rating = user?.rating.rapid ?? 0;
+  const { theme } = useUserContext();
+  const playerId=useParams()  
+  
+  const [Player,setPlayer]=useState<User>()
+  const [friends,setFriends]=useState<User[]|[]>([])
+  const rating = Player?.rating.rapid ?? 500;
+  const navigate=useNavigate()
+
+  useEffect(() => {
+    if (!playerId) return;
+
+    const getPlayer = async () => {
+      const response = await axios.get("/social/player", {
+        params: { playerId: playerId.playerId },
+      });
+      console.log(response.data.player); 
+      setPlayer(response.data.player)
+    };
+    
+    
+    const getFriends = async () => {
+      const response = await axios.get("/social/friends", {
+        params: { userId: playerId.playerId },
+      });
+      setFriends(response.data.Friends);
+      
+    }; 
+    getPlayer();
+    getFriends();
+  }, []);
 
   const trophies = [
     { name: "legend", rating: 3000 },
@@ -25,20 +58,34 @@ const ProfilePage = () => {
     ? Math.floor((currentTrophy.rating / rating) * 100)
     : 0;
 
+      if (!Player) {
+        return <LandingLoader />; // Replace with spinner or splash screen
+      }
+
   return (
     <>
-      <div className={` flex w-full bg-gradient-to-r ${theme?" from-zinc-300 to-zinc-100 ":" from-zinc-800 to-zinc-900 "} `}>
+      <div
+        className={` flex w-full bg-gradient-to-r ${
+          theme ? " from-zinc-300 to-zinc-100 " : " from-zinc-800 to-zinc-900 "
+        } `}
+      >
         <Header2 />
         <Header3 />
         <div className="pt-20 flex flex-col mx-auto h-fit w-full p-3 md:p-6 md:pl-25 md:pt-28 xl:pt-10 lg:pl-35 max-w-[1200px] ">
-          <Profile2 />
+          <Profile2 player={Player as User}/>
           <div className="flex-col sm:flex-row flex gap-2 ">
             <GameRatings />
-            <div className={`${theme?"bg-zinc-800":" bg-zinc-950 shadow-zinc-800 shadow-lg "} h-38 lg:h-48 w-full my-1 flex flex-row rounded-lg px-2`}>
+            <div
+              className={`${
+                theme
+                  ? "bg-zinc-800"
+                  : " bg-zinc-950 shadow-zinc-800 shadow-lg "
+              } h-38 lg:h-48 w-full my-1 flex flex-row rounded-lg px-2`}
+            >
               <div className="flex flex-col items-center">
                 <img
                   className="size-24 lg:size-30 m-4 lg:m-5 lg:mb-2 mb-0"
-                  src={`./media/${currentTrophy?.name}.png`}
+                  src={`/media/${currentTrophy?.name}.png`}
                   alt=""
                 />
                 <div className={`text-red-200 font-bold text-sm lg:text-lg`}>
@@ -49,8 +96,7 @@ const ProfilePage = () => {
                 <div
                   className="h-full rounded-full bg-linear-to-bl from-emerald-500 to-emerald-600 "
                   style={{ width: `${Ptg}%` }}
-                >
-                </div>
+                ></div>
               </div>
             </div>
           </div>
@@ -63,12 +109,13 @@ const ProfilePage = () => {
                 return (
                   <div
                     key={i}
+                    onClick={() => navigate(`/profile/${friend?.id}`)}
                     className="flex flex-col items-center m-2 bg-black rounded-lg"
                   >
                     <div className="aspact-square rounded-md border-3 border-black">
                       <img
                         className="size-26 rounded-lg"
-                        src={friend?.profile || "./media/chessboard.png"}
+                        src={friend?.profile || "/media/chessboard.png"}
                         alt=""
                       />
                     </div>

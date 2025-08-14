@@ -42,7 +42,7 @@ function App() {
         <Route path="/signup" element={<RedirectIfAuth><SignUpPage /></RedirectIfAuth>} />
         <Route path="/login" element={<RedirectIfAuth><LogInPage /></RedirectIfAuth>} />
         <Route path="/home" element={<RequireAuth><HomePage /></RequireAuth>} />
-        <Route path="/profile" element={<RequireAuth><ProfilePage /></RequireAuth>} />
+        <Route path={`/profile/:playerId`} element={<RequireAuth><ProfilePage /></RequireAuth>} />
         <Route path={`/game`} element={<RequireAuth><ChessGame /></RequireAuth>} />
         <Route path={`/social`} element={<RequireAuth><Socials/></RequireAuth>} />
       </Routes>

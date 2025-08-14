@@ -298,6 +298,32 @@ interactionRoute.post("/deletefriend", async (req: Request, res: Response) => {
   }
 });
 
+interactionRoute.get("/player", async(req: Request, res: Response) => {
+  try {
+    const playerId = req.query.playerId as string;
+    console.log("i got triggered");
+    
+    const playerData =await prisma.user.findUnique({
+      where:{
+       id:playerId
+      }
+      });
+    if (playerData)
+    {
+        console.log("Received Message : ",playerData);
+     res.status(200)
+        .send({ message: "Player Data Recieved :",player:playerData});
+    }
+   else
+{
+      res.status(400)
+        .send({ message: "Player not found"});
+}
+  } catch (error) {
+     console.error("fetching player error:", error); // 👈 Add this
+    res.status(400).send({ message: "Something went wrong..!!", error: error });
+  }
+})
 
 
 

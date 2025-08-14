@@ -4,7 +4,7 @@ import prisma from "../db";
 type Move = { to: string; from: string };
 const gameRoute = Router();
 type message = { sender: string; message: string };
-type gameType="blitz"|"rapid"|"daily"
+type gameType = "blitz" | "rapid" | "daily";
 export type GAME_RESULT = "WHITE_WINS" | "BLACK_WINS" | "DRAW";
 export type GAME_STATUS =
   | "IN_PROGRESS"
@@ -17,7 +17,6 @@ gameRoute.post("/savegame", async (req: Request, res: Response) => {
   try {
     const gameData = req.body;
     console.log(req.body);
-    
 
     const game = await prisma.game.create({
       data: {
@@ -112,7 +111,7 @@ gameRoute.post("/saveMoves", async (req: Request, res: Response) => {
     const moveCount = req.body.moveCount as number;
     const move = req.body.move as Move;
     const fen = req.body.fen as string;
-    const timeTaken=req.body.timeTaken as number;
+    const timeTaken = req.body.timeTaken as number;
 
     const movesSaved = await prisma.$transaction([
       prisma.move.create({
@@ -121,7 +120,7 @@ gameRoute.post("/saveMoves", async (req: Request, res: Response) => {
           moveNumber: moveCount,
           from: move.from,
           to: move.to,
-          timeTaken:timeTaken
+          timeTaken: timeTaken,
         },
       }),
       prisma.game.update({
@@ -207,12 +206,13 @@ gameRoute.post("/endGame", async (req: Request, res: Response) => {
     const gameId = req.body.gameId as string;
     const status = req.body.status as GAME_STATUS;
     const colorWins = req.body.result as string;
-    const result =
-      (colorWins === "white"
+    const result = (
+      colorWins === "white"
         ? "WHITE_WINS"
         : colorWins === "black"
         ? "BLACK_WINS"
-        : "DRAW" )as GAME_RESULT;
+        : "DRAW"
+    ) as GAME_RESULT;
 
     const gameSaved = await prisma.game.update({
       data: {
@@ -255,8 +255,8 @@ gameRoute.get("/games", async (req: Request, res: Response) => {
 
     if (!user) {
       res.status(404).send({ message: "User not found." });
-    return;
-  }
+      return;
+    }
 
     const mergedGames = [
       ...(user.gamesAsWhite || []).map((game) => ({
@@ -265,7 +265,7 @@ gameRoute.get("/games", async (req: Request, res: Response) => {
         timeControl: game.timeControl,
         startAt: game.startAt,
         result: getPerspectiveResult(game.result, "white"),
-        playedAs:"white"
+        playedAs: "white",
       })),
       ...(user.gamesAsBlack || []).map((game) => ({
         id: game.id,
@@ -273,7 +273,7 @@ gameRoute.get("/games", async (req: Request, res: Response) => {
         timeControl: game.timeControl,
         startAt: game.startAt,
         result: getPerspectiveResult(game.result, "black"),
-        playedAs:"black"
+        playedAs: "black",
       })),
     ];
 
@@ -311,21 +311,35 @@ gameRoute.post("/updateRating", async (req: Request, res: Response) => {
     const whitePlayerId = req.body.whitePlayerId as string;
     const blackPlayerId = req.body.blackPlayerId as string;
     const gameType = req.body.gameType as gameType;
-    const result = req.body.result
+    const result = req.body.result;
 
     // Fetch current ratings for both players
     const [white, black] = await Promise.all([
-      prisma.user.findUnique({ where: { id: whitePlayerId }, select: { rating: true } }),
-      prisma.user.findUnique({ where: { id: blackPlayerId }, select: { rating: true } })
+      prisma.user.findUnique({
+        where: { id: whitePlayerId },
+        select: { rating: true },
+      }),
+      prisma.user.findUnique({
+        where: { id: blackPlayerId },
+        select: { rating: true },
+      }),
     ]);
 
     if (!white || !black) {
       res.status(404).json({ message: "One or both players not found" });
-      return
+      return;
     }
 
-    const whiteRating = white.rating as { blitz: number; rapid: number; daily: number };
-    const blackRating = black.rating as { blitz: number; rapid: number; daily: number };
+    const whiteRating = white.rating as {
+      blitz: number;
+      rapid: number;
+      daily: number;
+    };
+    const blackRating = black.rating as {
+      blitz: number;
+      rapid: number;
+      daily: number;
+    };
 
     if (result === "white") {
       whiteRating[gameType] += 10;
@@ -339,12 +353,12 @@ gameRoute.post("/updateRating", async (req: Request, res: Response) => {
     await Promise.all([
       prisma.user.update({
         where: { id: whitePlayerId },
-        data: { rating: whiteRating }
+        data: { rating: whiteRating },
       }),
       prisma.user.update({
         where: { id: blackPlayerId },
-        data: { rating: blackRating }
-      })
+        data: { rating: blackRating },
+      }),
     ]);
 
     res.json({ message: "Ratings updated successfully" });
@@ -354,5 +368,33 @@ gameRoute.post("/updateRating", async (req: Request, res: Response) => {
   }
 });
 
+gameRoute.get("/ratings", async (req: Request, res: Response) => {
+  const userId = req.query.userId as string;
+
+  try {
+    const ratings = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        rating: true,
+      },
+    });
+
+    if (!ratings) {
+      res.status(404).send({ message: "User not found." });
+      return;
+    }
+
+    res.status(200).json({
+      message: "Ratings found..!!",
+      ratings: ratings,
+    });
+  } catch (error) {
+    console.error("Error fetching Ratings:", error);
+    res.status(500).json({
+      message: "Error while fetching Ratings",
+      error,
+    });
+  }
+});
 
 export default gameRoute;

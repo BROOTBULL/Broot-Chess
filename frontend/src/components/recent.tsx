@@ -1,9 +1,11 @@
+import { useNavigate } from "react-router-dom";
 import { useUserContext } from "../hooks/contextHook";
 import { useSendNotification } from "../hooks/NotificationHook";
 
 export const RecentGame = () => {
 
   const{games,theme}=useUserContext()
+  const navigate=useNavigate()
   const {sendNotification}=useSendNotification()
 
   return (
@@ -19,6 +21,7 @@ export const RecentGame = () => {
         return(
         <div
         key={game.id}
+        onClick={() => navigate(`/profile/${game.opponent?.id}`)}
         className={`min-w-[290px] md:min-w-[360px] m-2 flex flex-row ${theme?" bg-zinc-400":"bg-zinc-900"} rounded-md shadow-md/50 p-2`}>
           <img
             className="size-30 md:size-45 drop-shadow-md mr-4 border-2 border-zinc-700 rounded-md"
