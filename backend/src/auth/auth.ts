@@ -7,6 +7,8 @@ import dotenv from "dotenv";
 import { verifyToken } from "./verifyToken";
 import bcrypt from "bcrypt";
 import { ratingSchema, Rating } from "./zodValidation";
+import fs from "fs";
+
 
 dotenv.config();
 
@@ -47,10 +49,21 @@ function getCookieOptions(): CookieOptions {
   };
 }
 
+//profile logic
+router.get("/avatars", (req, res) => {
+  const files = fs.readdirSync("public/avatars");
+  const urls = files.map(file => `${req.protocol}://${req.get("host")}/avatars/${file}`);
+  res.json(urls);
+});
+
 // Email signup
 router.post("/signUp", async (req: Request, res: Response) => {
   try {
     const bodyData = req.body;
+    const randomIndex = Math.floor(Math.random() * 21) + 1; // 1 to 21
+    const fileName = `p${randomIndex}.png`;
+    const profileUrl = `${req.protocol}://${req.get("host")}/avatars/${fileName}`;// this create full url for profile pics 
+
     if (!secret) throw new Error("JWT_SECRET not defined");
 
     if (!bodyData.email || !bodyData.password || !bodyData.username) {
@@ -82,7 +95,7 @@ router.post("/signUp", async (req: Request, res: Response) => {
           .replace(/\s+/g, "")
           .slice(0, 14),
         email: bodyData.email,
-        profile: bodyData.profile,
+        profile: profileUrl,
         name: bodyData.username || guestUUID,
         rating: defaultRating,
         password: hashedPassword,
@@ -258,7 +271,9 @@ router.get(
 router.post("/signUpGuest", async (req: Request, res: Response) => {
   const bodyData = req.body;
   let guestUUID = ("guest-" + uuidv4()).slice(0, 14);
-
+      const randomIndex = Math.floor(Math.random() * 21) + 1; // 1 to 21
+    const fileName = `p${randomIndex}.png`;
+    const profileUrl = `${req.protocol}://${req.get("host")}/avatars/${fileName}`;// this create full url for profile pics 
       //  Validate default rating
     const defaultRating: Rating = ratingSchema.parse({
       blitz: 500,
@@ -270,6 +285,7 @@ router.post("/signUpGuest", async (req: Request, res: Response) => {
     data: {
       username: guestUUID,
       email: guestUUID + "@brootchess.com",
+      profile:profileUrl,
       rating: defaultRating,
       name: bodyData.name || guestUUID,
       provider: "GUEST",

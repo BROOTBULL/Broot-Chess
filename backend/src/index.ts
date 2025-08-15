@@ -18,6 +18,7 @@ const isProd = process.env.NODE_ENV === "production";
 app.use(express.json());
 app.use(cookieParser());
 
+
 // CORS first
 const allowedOrigins = (process.env.ALLOWED_HOST || "").split(",");
 
@@ -35,7 +36,7 @@ app.use(
   })
 );
 
-
+app.use("/avatars", express.static("public/avatars"));
 
 
 // Passport initialization (for Google login only)
