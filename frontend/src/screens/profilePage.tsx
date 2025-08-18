@@ -17,7 +17,6 @@ const ProfilePage = () => {
 
   const [Player, setPlayer] = useState<User>();
   const [friends, setFriends] = useState<User[] | []>([]);
-  const rating = Player?.rating.rapid ?? 500;
   const [games, setGames] = useState<GamesData[]>([]);
   const navigate = useNavigate();
 
