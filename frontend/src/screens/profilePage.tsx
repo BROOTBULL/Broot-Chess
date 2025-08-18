@@ -149,32 +149,119 @@ const currentTrophyName=(rating:number):string=>{
               </div>
             </div>
           </div>
-          <div className="text-zinc-800 font-bold text-lg m-2 mt-2 mb-0 scroll-smooth overflow-x-auto custom-scroll">
+          <div className="text-zinc-800 font-bold text-lg m-2 mt-2 mb-0">
             Friends
           </div>
           {friends.length ? (
-            <div className="bg-zinc-500 h-fit w-full mb-2 rounded-lg flex flex-row scroll-smooth overflow-x-auto">
-              {friends.map((friend, i) => {
-                return (
-                  <div
-                    key={i}
-                    onClick={() => navigate(`/profile/${friend?.id}`)}
+            <div className="bg-zinc-500 h-fit w-full mb-2 rounded-lg flex flex-row scroll-smooth overflow-x-hidden custom-scroll">
+
+ <div
+                    onClick={() => navigate(`/profile/${friends[0]?.id}`)}
+                    className="flex flex-col items-center m-2 w-26 bg-black rounded-lg cursor-pointer hover:drop-shadow-md hover:drop-shadow-zinc-200"
+                  >
+                    <div className="aspact-square rounded-md w-26 border-3 border-black">
+                      <img
+                        className="size-26 rounded-sm"
+                        src={friends[0]?.profile || "/media/chessboard.png"}
+                        alt=""
+                      />
+                    </div>
+                    <div className="text-zinc-200 font-bold text-sm">
+                      {friends[0].name}
+                    </div>
+                  </div>
+
+ <div
+                    onClick={() => navigate(`/profile/${friends[0]?.id}`)}
                     className="flex flex-col items-center m-2 w-27 bg-black rounded-lg cursor-pointer hover:drop-shadow-md hover:drop-shadow-zinc-200"
                   >
                     <div className="aspact-square rounded-md border-3 border-black">
                       <img
                         className="size-26 rounded-sm"
-                        src={friend?.profile || "/media/chessboard.png"}
+                        src={friends[0]?.profile || "/media/chessboard.png"}
                         alt=""
                       />
                     </div>
                     <div className="text-zinc-200 font-bold text-sm">
-                      {friend.name}
+                      {friends[0].name}
                     </div>
                   </div>
-                );
-              })}
-            </div>
+                   <div
+                    onClick={() => navigate(`/profile/${friends[0]?.id}`)}
+                    className="flex flex-col items-center m-2 w-27 bg-black rounded-lg cursor-pointer hover:drop-shadow-md hover:drop-shadow-zinc-200"
+                  >
+                    <div className="aspact-square rounded-md border-3 border-black">
+                      <img
+                        className="size-26 rounded-sm"
+                        src={friends[0]?.profile || "/media/chessboard.png"}
+                        alt=""
+                      />
+                    </div>
+                    <div className="text-zinc-200 font-bold text-sm">
+                      {friends[0].name}
+                    </div>
+                  </div>
+                   <div
+                    onClick={() => navigate(`/profile/${friends[0]?.id}`)}
+                    className="flex flex-col items-center m-2 w-27 bg-black rounded-lg cursor-pointer hover:drop-shadow-md hover:drop-shadow-zinc-200"
+                  >
+                    <div className="aspact-square rounded-md border-3 border-black">
+                      <img
+                        className="size-26 rounded-sm"
+                        src={friends[0]?.profile || "/media/chessboard.png"}
+                        alt=""
+                      />
+                    </div>
+                    <div className="text-zinc-200 font-bold text-sm">
+                      {friends[0].name}
+                    </div>
+                  </div>
+                 <div
+                    onClick={() => navigate(`/profile/${friends[0]?.id}`)}
+                    className="flex flex-col items-center m-2 w-27 bg-black rounded-lg cursor-pointer hover:drop-shadow-md hover:drop-shadow-zinc-200"
+                  >
+                    <div className="aspact-square rounded-md border-3 border-black">
+                      <img
+                        className="size-26 rounded-sm"
+                        src={friends[0]?.profile || "/media/chessboard.png"}
+                        alt=""
+                      />
+                    </div>
+                    <div className="text-zinc-200 font-bold text-sm">
+                      {friends[0].name}
+                    </div>
+                  </div>
+                   <div
+                    onClick={() => navigate(`/profile/${friends[0]?.id}`)}
+                    className="flex flex-col items-center m-2 w-27 bg-black rounded-lg cursor-pointer hover:drop-shadow-md hover:drop-shadow-zinc-200"
+                  >
+                    <div className="aspact-square rounded-md border-3 border-black">
+                      <img
+                        className="size-26 rounded-sm"
+                        src={friends[0]?.profile || "/media/chessboard.png"}
+                        alt=""
+                      />
+                    </div>
+                    <div className="text-zinc-200 font-bold text-sm">
+                      {friends[0].name}
+                    </div>
+                  </div>
+                   <div
+                    onClick={() => navigate(`/profile/${friends[0]?.id}`)}
+                    className="flex flex-col items-center m-2 w-27 bg-black rounded-lg cursor-pointer hover:drop-shadow-md hover:drop-shadow-zinc-200"
+                  >
+                    <div className="aspact-square rounded-md border-3 border-black">
+                      <img
+                        className="size-26 rounded-sm"
+                        src={friends[0]?.profile || "/media/chessboard.png"}
+                        alt=""
+                      />
+                    </div>
+                    <div className="text-zinc-200 font-bold text-sm">
+                      {friends[0].name}
+                    </div>
+                  </div>
+                              </div>
           ) : (
             <div className="bg-zinc-500 h-36 w-full mb-2 rounded-lg flex justify-center items-center">
               <div>No Friends</div>
