@@ -159,11 +159,11 @@ const currentTrophyName=(rating:number):string=>{
                   <div
                     key={i}
                     onClick={() => navigate(`/profile/${friend?.id}`)}
-                    className="flex flex-col items-center m-2 bg-black rounded-lg cursor-pointer hover:drop-shadow-md hover:drop-shadow-zinc-200"
+                    className="flex flex-col items-center m-2 w-27 bg-black rounded-lg cursor-pointer hover:drop-shadow-md hover:drop-shadow-zinc-200"
                   >
                     <div className="aspact-square rounded-md border-3 border-black">
                       <img
-                        className="size-26 rounded-lg"
+                        className="size-26 rounded-sm"
                         src={friend?.profile || "/media/chessboard.png"}
                         alt=""
                       />
