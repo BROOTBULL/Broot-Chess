@@ -149,7 +149,7 @@ const currentTrophyName=(rating:number):string=>{
               </div>
             </div>
           </div>
-          <div className="text-zinc-800 font-bold text-lg m-2 mt-2 mb-0">
+          <div className="text-zinc-800 font-bold text-lg m-2 mt-2 mb-0 scroll-smooth overflow-x-auto custom-scroll">
             Friends
           </div>
           {friends.length ? (
