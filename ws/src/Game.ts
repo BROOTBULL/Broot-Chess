@@ -167,7 +167,7 @@ export class Game {
   // restart abandon timer (60s no move)
   this.abandonTimer = setTimeout(() => {
     this.endGame("ABANDONED", this.board.turn()==="w" ? "black" : "white");
-  }, 60 * 1000);
+  }, this.gameType!=="daily"?(120 * 1000):(600*1000));
 
   // restart total time limit (example: 15 min)
   const GAME_TOTAL_MS = (this.gameType==="rapid"?15:this.gameType==="blitz"?5:60) * 60 * 1000;

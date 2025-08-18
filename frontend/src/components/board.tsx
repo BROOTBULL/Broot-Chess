@@ -6,7 +6,7 @@ import { boardTheme } from "../assets/boardtheme";
 export const ChessBoard = ({ showSquare }: { showSquare: boolean }) => {
   const MOVE = "move";
   const { socket } = useUserContext();
-  const { setBoard, board, chess, color, roomId, moves, boardAppearnce } =
+  const { board, chess, color, roomId, moves, boardAppearnce } =
     useChessContext();
 
   const rows = color === "w" ? board : [...board].reverse();
@@ -37,9 +37,6 @@ export const ChessBoard = ({ showSquare }: { showSquare: boolean }) => {
     } else {
       console.warn("WebSocket is not open.");
     }
-
-    chess.move({ from, to });
-    setBoard(chess.board());
   }
 
   function handleSquareClick(clickedSquare: Square) {

@@ -2,22 +2,22 @@ import { useUserContext } from "../hooks/contextHook";
 
 export const LevelLoader = () => {
   const { Ratings, theme } = useUserContext();
-  const rating = Ratings.rapid ?? 0;
+  const rating = Ratings.rapid;
 
   const trophies = [
     { name: "legend", rating: 3000 },
-    { name: "crown", rating: 2500 },
-    { name: "platinum", rating: 2000 },
-    { name: "diamond", rating: 1600 },
-    { name: "gold", rating: 1100 },
-    { name: "silver", rating: 700 },
-    { name: "bronz", rating: 400 },
+    { name: "crown", rating: 2550 },
+    { name: "platinum", rating: 2100 },
+    { name: "diamond", rating: 1650 },
+    { name: "gold", rating: 1200 },
+    { name: "silver", rating: 750 },
+    { name: "bronz", rating: 300 },
   ];
 
   const currentTrophy = trophies.find((t) => rating >= t.rating);
-  const Ptg = currentTrophy
-    ? Math.floor((currentTrophy.rating / rating) * 100)
-    : 0;
+  const Ptg = currentTrophy&&currentTrophy.name!=="legend"
+    ? Math.floor((1-(((currentTrophy.rating+450)-rating) / 450)) * 100)
+    : 100;
 
   return (
     <div className={`flex flex-col h-fit w-full self-end p-5 px-4 md:p-6 my-3 ${theme?"bg-zinc-800 shadow-lg/50":"bg-zinc-950 shadow-lg/30"}   rounded-lg`}>

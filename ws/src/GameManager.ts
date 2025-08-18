@@ -391,6 +391,7 @@ export class GameManager {
               JSON.stringify({
                 type: UNDO_MOVE_APPROVE,
                 payload: {
+                  choice: choice,
                   revertedfen: updatedgameDB.fenHistory[lastmoveCount],
                   moves: updatedgameDB.moves,
                 },

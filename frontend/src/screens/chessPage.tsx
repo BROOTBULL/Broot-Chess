@@ -122,7 +122,7 @@ const ChessGame = () => {
             />
             <div className="flex flex-row lg:flex-col ml-1">
               <div
-                onClick={() => navigate("/profile")}
+                onClick={() => navigate(`/profile/${user?.id}`)}
                 className="nav size-fit p-1 rounded-full cursor-pointer duration-200"
               >
                 <img className="img size-8" src="./media/profile.png" alt="" />
@@ -356,6 +356,9 @@ const ChessGame = () => {
 
             {/* ///////////////// Draw Requested Window Logic //////////////////////// */}
             <DrawRequest />
+
+            {/* ///////////////// Reqest Denied Window Logic //////////////////////// */}
+             <DrawRequest />
 
             <PlayerInfo
               name={Opponent?.name || "Opponent"}

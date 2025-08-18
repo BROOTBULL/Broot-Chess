@@ -1,7 +1,6 @@
-import { useUserContext } from "../hooks/contextHook"
+import { GamesData, Rating } from "../context/userProvider";
 
-export const Stats=()=>{
-    const {Ratings,games}=useUserContext();
+export const Stats=({Ratings,games}:{Ratings:Rating,games:GamesData[]})=>{
 
     return(<>
       <div className="flex flex-col h-fit bg-zinc-800 text-zinc-200 my-2 md:my-5 ring-1 ring-zinc-900 shadow-lg/40 w-full md:max-w-60 rounded-lg">

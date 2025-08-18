@@ -117,7 +117,7 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
       (gameType === "blitz" ? 5 : gameType === "rapid" ? 15 : 60) * 60 * 1000,
     blackTimeLeft:
       (gameType === "blitz" ? 5 : gameType === "rapid" ? 15 : 60) * 60 * 1000,
-    abandonedDeadline: 60000,
+    abandonedDeadline: gameType!=="daily"?120000:600000,
   });
 
   function isPromoting(chess: Chess, from: Square, to: Square) {
@@ -197,7 +197,7 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
               setTimers({
                 whiteTimeLeft: payload.whiteTimeLeft,
                 blackTimeLeft: payload.blackTimeLeft,
-                abandonedDeadline: 60000,
+                abandonedDeadline:gameType!=="daily"?120000:600000,
               });
 
               try {
@@ -314,7 +314,7 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
                   (gameType === "blitz" ? 5 : gameType === "rapid" ? 15 : 60) *
                   60 *
                   1000,
-                abandonedDeadline: 60000,
+                abandonedDeadline: gameType!=="daily"?120000:600000,
               });
             }
             break;
@@ -347,11 +347,13 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
             break;
           case UNDO_MOVE_APPROVE:
             {
+              if(payload.choice){
               chess.load(payload.revertedfen);
               const newBoard = chess.board();
               setBoard(newBoard);
               const moveTo = payload.moves;
               setMoves(moveTo);
+              }
               setWaitingResponse(false);
               setUndoBox(false);
               setUndoRequested(false);

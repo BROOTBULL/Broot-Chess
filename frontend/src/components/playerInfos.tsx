@@ -21,7 +21,7 @@ export const PlayerInfo = ({
     name.length > 12 ? name.slice(0, -8) + "..." : name;
 
   const [gameTimer, setGameTimer] = useState(15 * 60);
-  const [perMoveTimer, setPerMoveTimer] = useState(60);
+  const [perMoveTimer, setPerMoveTimer] = useState(gameType!=="daily"?120:600);
   const [gameRating,setGameRating]=useState<number>(rating.rapid)
   const [won,setWon]=useState<boolean|"d"|undefined>(false)
 
@@ -47,7 +47,7 @@ useEffect(() => {
           ? 15 * 60
           : 60 * 60;
       setGameTimer(initialTime);
-      setPerMoveTimer(60);
+      setPerMoveTimer(gameType!=="daily"?120:600);
       setGameRating(
         gameType === "blitz"
           ? rating.blitz
@@ -65,9 +65,9 @@ useEffect(() => {
       if(turn)
         setPerMoveTimer(Math.floor(timers.abandonedDeadline / 1000));
       else
-        setPerMoveTimer(60);
+        setPerMoveTimer(gameType!=="daily"?120:600);
     }
-  }, [timers, gameStarted, playerColor,turn]);
+  }, [timers, gameStarted, playerColor,turn,gameType]);
 
   useEffect(() => {
     clearInterval(gameTimerRef.current);
@@ -117,14 +117,14 @@ useEffect(() => {
             ? "bg-emerald-900"
             : "bg-zinc-600 brightness-50"
         } ml-auto text-end ${
-          gameTimer <= 20 && gameTimer % 2 === 0
+          gameTimer <= 60 && gameTimer % 2 === 0
             ? "text-rose-700"
             : "text-zinc-200"
         } text-sm font-[600] w-35 p-2 shadow-lg/40 rounded-md flex flex-row`}
       >
         <div
           className={`text-sm text-rose-400 px-0.5 ${
-            perMoveTimer <= 20 ? "flex" : "hidden"
+            perMoveTimer <= 60 ? "flex" : "hidden"
           }`}
         >
           {perMoveTimer.toString().padStart(2, "0")}

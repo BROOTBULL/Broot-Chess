@@ -30,7 +30,7 @@ const HomePage = () => {
               <RecentGame />
           <div className="flex flex-col md:flex-row gap-5 w-full ">
             <GameHistory games={games}/>
-            <Stats />
+            <Stats Ratings={Ratings} games={games}/>
           </div>
 
 

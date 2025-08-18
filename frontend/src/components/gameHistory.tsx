@@ -32,7 +32,7 @@ export const GameHistory = ({games}:{games:GamesData[]}) => {
 
         {games.length?
         
-        (<div className="w-full min-h-40 bg-zinc-900">
+        (<div className="w-full min-h-40 max-h-150 scroll-smooth overflow-auto custom-scroll bg-zinc-900">
           {games?.sort((a, b) => (new Date(b.startAt)).getTime() - (new Date(a.startAt)).getTime()).map((game) => (
           <div
             key={(new Date(game.startAt)).getTime()}
