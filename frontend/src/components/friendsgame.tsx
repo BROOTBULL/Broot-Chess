@@ -18,7 +18,7 @@ export const FriendsGame = () => {
           See all
         </button>
       </div>
-      <div className={`flex flex-row md:gap-1 overflow-x-auto overflow-hidden scroll-smooth `}>
+      <div className={`flex flex-row md:gap-1 overflow-x-auto overflow-hidden scroll-smooth ${theme?"custom-scroll-w":"custom-scroll"} `}>
          
           {friends && friends.length > 0 ? (
             friends.map((friend,i) => {

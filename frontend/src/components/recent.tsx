@@ -15,7 +15,7 @@ export const RecentGame = () => {
           Recent Matchs
         </div>
       </div>
-          <div className={`flex flex-row overflow-x-auto overflow-hidden custom-scroll-w scroll-smooth rounded-b-lg `}>
+          <div className={`flex flex-row overflow-x-auto overflow-hidden ${theme?"custom-scroll-w":"custom-scroll"} scroll-smooth rounded-b-lg `}>
 
       {games.length?games.slice(-5).map((game)=>{
         return(
