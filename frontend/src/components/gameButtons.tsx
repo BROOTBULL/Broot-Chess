@@ -10,7 +10,7 @@ export const GameButtons = () => {
     <>
       <div className="flex flex-col h-fit gap-3 w-auto my-auto lg:w-[50%] ">
         <div
-          className="bg-emerald-900 rounded-lg playButton h-15 md:h-18 flex flex-row items-center justify-center cursor-pointer px-4 shadow-md/50  "
+          className="bg-emerald-800 rounded-lg playButton h-15 md:h-18 flex flex-row items-center justify-center cursor-pointer px-4 shadow-md/50  "
           onClick={() => navigate(`/game`)}
         >
           <img className="size-6 m-1 " src="/media/pawn.png" alt="" />
