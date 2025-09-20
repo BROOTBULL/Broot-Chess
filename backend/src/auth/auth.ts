@@ -62,7 +62,7 @@ router.post("/signUp", async (req: Request, res: Response) => {
     const bodyData = req.body;
     const randomIndex = Math.floor(Math.random() * 21) + 1; // 1 to 21
     const fileName = `p${randomIndex}.png`;
-    const profileUrl = `${process.env.CLIENT_URL}/avatars/${fileName}`;// this create full url for profile pics 
+    const profileUrl = `http://chessb.arjbroot.com/avatars/${fileName}`;// this create full url for profile pics 
 
     if (!secret) throw new Error("JWT_SECRET not defined");
 
@@ -263,7 +263,7 @@ router.get(
     console.log(token, "token formed in googlecallback");
 
     res.cookie("token", token, getCookieOptions()); // ✅ updated
-    res.redirect(CLIENT_URL!);
+    res.redirect(CLIENT_URL!+"/home");
   }
 );
 
