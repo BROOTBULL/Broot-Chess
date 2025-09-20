@@ -10,6 +10,7 @@ export function initPassport() {
   if (
     !process.env.GOOGLE_CLIENT_ID ||
     !process.env.GOOGLE_CLIENT_SECRET ||
+    !process.env.GOOGLE_CALLBACK_URL||
     !process.env.JWT_SECRET
   ) {
     throw new Error("Missing env vars for authentication provider");
@@ -21,7 +22,7 @@ export function initPassport() {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         callbackURL:
-          "https://broot-chess-backend.onrender.com/auth/google/callback",
+          process.env.GOOGLE_CALLBACK_URL,
         passReqToCallback: true,
       },
       async function (
