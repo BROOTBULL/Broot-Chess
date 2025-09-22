@@ -248,10 +248,6 @@ html, body {
   }
 }
 
-.background{
-  background-image: url("../public/media/image.png");
-}
-
 .landingloader {
   animation: fallingMove 4s ease-in-out infinite;
   animation-fill-mode: both;

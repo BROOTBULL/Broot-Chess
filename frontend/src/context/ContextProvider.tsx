@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 import { useNotification } from "./NotificationProvider";
 import { NOTIFICATION } from "../screens/socials";
-import { Chess, Piece, Square } from "chess.js";
+import { Chess, Piece } from "chess.js";
 import { useUserContext } from "../hooks/contextHook";
 import { User } from "./userProvider";
 
@@ -120,18 +120,6 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
     abandonedDeadline: gameType!=="daily"?120000:600000,
   });
 
-  function isPromoting(chess: Chess, from: Square, to: Square) {
-    const piece = chess.get(from);
-
-    if (!piece || piece.type !== "p") return false;
-
-    // White pawn reaching 8th rank or black pawn reaching 1st
-    return (
-      (piece.color === "w" && to.endsWith("8")) ||
-      (piece.color === "b" && to.endsWith("1"))
-    );
-  }
-
   function sumTimeTaken(moves: DBMoves[]) {
     let whiteTotal = 0;
     let blackTotal = 0;
@@ -199,23 +187,9 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
                 blackTimeLeft: payload.blackTimeLeft,
                 abandonedDeadline:gameType!=="daily"?120000:600000,
               });
-
-              try {
-                if (
-                  isPromoting(chess, move.from as Square, move.to as Square)
-                ) {
-                  chess.move({
-                    from: move.from,
-                    to: move.to,
-                    promotion: "q",
-                  });
-                } else {
-                  chess.move({ from: move.from, to: move.to });
-                }
-              } catch (error) {
-                console.log("Error", error);
-              }
-              setBoard(chess.board()); //chess.board give a big function that handles how whole board looks it basically used for updating the board ui
+              chess.load(payload.fen);
+              const newBoard = chess.board();
+              setBoard(newBoard); //chess.board give a big function that handles how whole board looks it basically used for updating the board ui
             }
             break;
           case GAME_JOINED:

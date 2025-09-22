@@ -1,28 +1,23 @@
-import { useChessContext } from "../hooks/contextHook";
+import { useChessContext } from "../../hooks/contextHook";
 import { MessageBox } from "./messagebox";
-import { SearchingLoader } from "../assets/loader";
+import { SearchingLoader } from "../../assets/loader";
 import { GameControl } from "./gameControl";
 
-
 export const Play = () => {
-  const {
-    connecting,
-    moves
-  } = useChessContext();
-  
+  const { connecting, moves } = useChessContext();
 
-  if (connecting)
-    return (
-      <SearchingLoader/>
-    );
+  if (connecting) return <SearchingLoader />;
 
   function formatTime(ms: number) {
-  const totalSeconds = Math.floor(ms / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
 
-  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-}
+    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
+      2,
+      "0"
+    )}`;
+  }
 
   return (
     <>
@@ -44,8 +39,8 @@ export const Play = () => {
           <div className="min-h-60 h-70 custom-scroll scroll-smooth overflow-auto">
             {moves.map((_, i) => {
               if (i % 2 !== 0) return null;
-               const whiteMove = moves[i];
-               const blackMove = moves[i + 1];
+              const whiteMove = moves[i];
+              const blackMove = moves[i + 1];
               return (
                 <div key={i}>
                   <div className="flex flex-row items-center text-sm font-[500] text-center m-1">
@@ -70,7 +65,7 @@ export const Play = () => {
             })}
           </div>
 
-          <GameControl/>
+          <GameControl />
           <MessageBox />
         </div>
       </div>

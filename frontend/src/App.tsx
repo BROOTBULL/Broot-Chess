@@ -10,6 +10,7 @@ import LandingPage from "./screens/LandingPage";
 import Socials from "./screens/socials";
 import ProfilePage from "./screens/profilePage";
 import { LandingLoader } from "./assets/loader";
+import { usePreloadImages } from "./hooks/imagePreloader";
 
 // 1. Route guard for authenticated users
 const RequireAuth = ({ children }: { children: ReactNode }) => {
@@ -27,9 +28,29 @@ const RedirectIfAuth = ({ children }: { children: ReactNode }) => {
   return <>{children}</>;
 };
 
+
+
+
 function App() {
   const location = useLocation();
-  const { loading} = useUserContext(); // Optional: show spinner while auth check runs
+  const {loading} = useUserContext(); // Optional: show spinner while auth check runs
+  const piecePaths = [
+  "/media/pieces/bb.png",
+  "/media/pieces/bw.png",
+  "/media/pieces/kb.png",
+  "/media/pieces/kw.png",
+  "/media/pieces/nb.png",
+  "/media/pieces/nw.png",
+  "/media/pieces/pb.png",
+  "/media/pieces/pw.png",
+  "/media/pieces/qb.png",
+  "/media/pieces/qw.png",
+  "/media/pieces/rb.png",
+  "/media/pieces/rw.png",
+];
+
+  usePreloadImages(piecePaths);// preload the pieces in the html caches so that on reload it doest re-download it 
+  
 
   if (loading) {
     return <LandingLoader />; // Replace with spinner or splash screen

@@ -191,7 +191,8 @@ export class Game {
         move,
         whiteTimeLeft,
         blackTimeLeft,
-        timeTaken:timeTaken
+        timeTaken:timeTaken,
+        fen:this.board.fen()
       },
     })
   );

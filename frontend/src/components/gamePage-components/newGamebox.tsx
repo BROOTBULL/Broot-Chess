@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useChessContext } from "../hooks/contextHook";
+import { useChessContext } from "../../hooks/contextHook";
 
 type Tab = "newgame" | "history" | "friends" | "play";
 type Props = {
@@ -41,7 +41,7 @@ export const NewGame = ({
       JSON.stringify({
         type: INIT_GAME,
         private: false,
-        gameType:gameType
+        gameType: gameType,
       })
     );
     setActiveTab("play");
@@ -54,14 +54,14 @@ export const NewGame = ({
       JSON.stringify({
         type: INIT_GAME,
         private: true,
-        gameType:gameType
+        gameType: gameType,
       })
     );
     setRoomIdBox(true);
     setRoomType(true);
   }
 
-  function joinRoom(e:React.SyntheticEvent) {
+  function joinRoom(e: React.SyntheticEvent) {
     e.preventDefault();
     // console.log("game sending");
     if (code)
@@ -77,84 +77,71 @@ export const NewGame = ({
     setConnecting(true);
   }
 
-
   return (
     <>
-      <div className="bg-zinc-700 w-full min-h-[400px] h-full flex flex-col gap-3 p-3 max-w-[1000px]">
+      <div className="bg-zinc-700 rounded-lg rounded-tl-none drop-shadow-[0_0_20px_black] z-1 w-full min-h-[400px] h-full flex flex-col gap-3 p-3 max-w-[1000px]">
         <div
-          className={`bg-zinc-900 px-2 ${
+          className={`bg-zinc-900 rounded-lg px-2 ${
             !playFriend ? "max-h-100" : "max-h-0"
           } overflow-hidden duration-300`}
         >
           <div className="flex flex-row gap-2 my-2">
-            <div
+            <button
               onClick={() => setGameType("blitz")}
               className={` h-12 ${
                 gameType === "blitz"
-                  ? "ring-2 ring-emerald-700 bg-emerald-950"
+                  ? "inset-ring-1 inset-ring-emerald-700 bg-emerald-950"
                   : "bg-zinc-800"
-              } flex flex-row items-center flex-1 justify-center cursor-pointer shadow-sm/40`}
+              } flex flex-row items-center flex-1 justify-center cursor-pointer shadow-sm/40 rounded-md`}
             >
-              <img
-                className="size-7"
-                src="/media/blitz.png"
-                alt=""
-              />
+              <img className="size-7" src="/media/blitz.png" alt="" />
               <span className={` text-zinc-200 text-lg `}>Blitz</span>
-            </div>
-            <div
+            </button>
+            <button
               onClick={() => setGameType("rapid")}
               className={` h-12 ${
                 gameType === "rapid"
-                  ? "ring-2 ring-emerald-700 bg-emerald-950"
+                  ? "inset-ring-1 inset-ring-emerald-700 bg-emerald-950"
                   : "bg-zinc-800"
-              } flex flex-row items-center flex-1 justify-center cursor-pointer shadow-sm/40`}
+              } flex flex-row items-center flex-1 justify-center cursor-pointer shadow-sm/40 rounded-md`}
             >
-              <img
-                className="size-7"
-                src="./media/rapid.png"
-                alt=""
-              />
+              <img className="size-7" src="./media/rapid.png" alt="" />
               <span className={` text-zinc-200 text-lg `}>Rapid</span>
-            </div>
-            <div
+            </button>
+            <button
               onClick={() => setGameType("daily")}
               className={` h-12 ${
                 gameType === "daily"
-                  ? "ring-2 ring-emerald-700 bg-emerald-950"
+                  ? "inset-ring-1 inset-ring-emerald-700 bg-emerald-950"
                   : "bg-zinc-800"
-              } flex flex-row items-center flex-1 justify-center cursor-pointer shadow-sm/40 `}
+              } flex flex-row items-center flex-1 justify-center cursor-pointer shadow-sm/40 rounded-md `}
             >
               <img className="size-7" src="/media/classical.png" alt="" />
               <span className={` text-zinc-200 text-lg `}>Daily</span>
-            </div>
+            </button>
           </div>
           {gameAlert && (
             <div className="text-red-500 text-sm w-full text-center h-5">
               {gameAlert + " Try again.."}
             </div>
           )}
-          <div
+          <button
             onClick={() => handleStartGame()}
-            className={`bg-emerald-900 text-zinc-200 duration-200 h-18 flex flex-row items-center justify-center cursor-pointer px-4 shadow-md/50 my-3`}
+            className={`bg-emerald-900 w-full rounded-md text-zinc-200 duration-200 h-18 flex flex-row items-center justify-center cursor-pointer px-4 shadow-md/50 my-3`}
           >
             <span className={`font-serif font-bold text-3xl drop-shadow-sm`}>
               Start Game
             </span>
-          </div>
+          </button>
         </div>
-        <div className="bg-zinc-900 h-fit mt-5 flex flex-col items-center justify-center cursor-pointer w-full ">
+        <div className="bg-zinc-900 h-fit mt-5 flex flex-col items-center justify-center cursor-pointer w-full rounded-lg ">
           <div
             onClick={() => setPlayFriend(!playFriend)}
-            className={`h-18  flex flex-row items-center shadow-md justify-center w-full ${
+            className={`h-18  flex flex-row items-center rounded-lg shadow-md justify-center w-full ${
               playFriend ? "bg-black" : "bg-zinc-800"
             } playButton duration-300`}
           >
-            <img
-              className="size-8 m-1 "
-              src="/media/friends.png"
-              alt=""
-            />
+            <img className="size-8 m-1 " src="/media/friends.png" alt="" />
             <div className="font-serif text-zinc-100 text-lg md:text-2xl">
               Play a Friend
             </div>
@@ -167,51 +154,39 @@ export const NewGame = ({
             <div
               className={`flex flex-row gap-2 ${
                 RoomType ? "max-h-50" : "max-h-0"
-              } overflow-hidden duration-300`}
+              } overflow-hidden duration-300 drop-shadow-sm/40`}
             >
               <div
                 onClick={() => setGameType("blitz")}
                 className={` h-12 ${
                   gameType === "blitz"
-                    ? "ring-2 ring-inset ring-emerald-700 bg-emerald-950"
+                    ? "inset-ring-1 inset-ring-emerald-700 bg-emerald-950"
                     : "bg-zinc-800"
-                } flex flex-row items-center flex-1 justify-center cursor-pointer shadow-sm/40 mt-2`}
+                } flex flex-row items-center flex-1 justify-center cursor-pointer shadow-sm/40 rounded-md mt-2`}
               >
-                <img
-                  className="size-7"
-                  src="/media/blitz.png"
-                  alt=""
-                />
+                <img className="size-7" src="/media/blitz.png" alt="" />
                 <span className={` text-zinc-200 text-lg `}>Blitz</span>
               </div>
               <div
                 onClick={() => setGameType("rapid")}
                 className={` h-12 ${
                   gameType === "rapid"
-                    ? "ring-2 ring-inset ring-emerald-700 bg-emerald-950"
+                    ? "inset-ring-1 inset-ring-emerald-700 bg-emerald-950"
                     : "bg-zinc-800"
-                } flex flex-row items-center flex-1 justify-center cursor-pointer shadow-sm/40 mt-2`}
+                } flex flex-row items-center flex-1 justify-center cursor-pointer shadow-sm/40 rounded-md mt-2`}
               >
-                <img
-                  className="size-7"
-                  src="/media/rapid.png"
-                  alt=""
-                />
+                <img className="size-7" src="/media/rapid.png" alt="" />
                 <span className={` text-zinc-200 text-lg `}>Rapid</span>
               </div>
               <div
                 onClick={() => setGameType("daily")}
                 className={` h-12 ${
                   gameType === "daily"
-                    ? "ring-2 ring-inset ring-emerald-700 bg-emerald-950"
+                    ? "inset-ring-1 inset-ring-emerald-700 bg-emerald-950"
                     : "bg-zinc-800"
-                } flex flex-row items-center flex-1 justify-center cursor-pointer shadow-sm/40 mt-2`}
+                } flex flex-row items-center flex-1 justify-center cursor-pointer shadow-sm/40 rounded-md mt-2`}
               >
-                <img
-                  className="size-7"
-                  src="/media/classical.png"
-                  alt=""
-                />
+                <img className="size-7" src="/media/classical.png" alt="" />
                 <span className={` text-zinc-200 text-lg `}>Daily</span>
               </div>
             </div>
@@ -220,12 +195,12 @@ export const NewGame = ({
                 {gameAlert}
               </div>
             )}
-            <div className={`flex flex-row gap-2`}>
+            <div className={`flex flex-row h-fit drop-shadow-md/50`}>
               <div
                 onClick={handleCreateRoom}
-                className={` h-15 flex flex-row items-center shadow-md/50 justify-center w-full my-2 ${
-                   !RoomType
-                    ? "bg-zinc-700 text-zinc-400 "
+                className={` h-15 flex flex-row items-center z-20 justify-center mb-3 mt-1 rounded-l-md w-full ${
+                  !RoomType
+                    ? "bg-zinc-800 text-zinc-500 "
                     : "bg-emerald-900 text-zinc-200 "
                 }`}
               >
@@ -236,8 +211,8 @@ export const NewGame = ({
                   setRoomType(!RoomType);
                   setRoomIdBox(true);
                 }}
-                className={`h-15 flex flex-row items-center shadow-md/50 justify-center w-full text-zinc-200 my-2 hover:bg-teal-900 ${
-                  !RoomType ? "bg-teal-900" : "bg-zinc-800"
+                className={`h-15 flex flex-row items-center z-20 rounded-r-md justify-center w-full text-zinc-200 mb-3 mt-1 hover:bg-teal-900 ${
+                  !RoomType ? "bg-emerald-900" : "bg-zinc-800"
                 }`}
               >
                 Join Room
@@ -279,13 +254,8 @@ export const NewGame = ({
           </div>
         </div>
 
-        <div
-        className="bg-zinc-800 playButton h-18 flex flex-row items-center justify-center cursor-pointer shadow-md/50 w-full ">
-          <img
-            className="size-8 m-1 "
-            src="/media/friends.png"
-            alt=""
-          />
+        <div className="bg-zinc-800 playButton rounded-lg h-18 flex flex-row items-center justify-center cursor-pointer shadow-md/50 w-full ">
+          <img className="size-8 m-1 " src="/media/friends.png" alt="" />
           <span className="font-serif text-zinc-100 text-lg md:text-2xl">
             Play a Bot
           </span>

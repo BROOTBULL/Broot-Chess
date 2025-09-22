@@ -2,10 +2,13 @@ import axios from "axios";
 import { GAME_RESULT, GAME_STATUS, gamedata } from "./Game";
 import { Move } from "chess.js";
 import { GameType } from "./GameManager";
+import dotenv from "dotenv";
 
+dotenv.config();
 axios.defaults.withCredentials=true;
-axios.defaults.baseURL="https://broot-chess-backend.onrender.com"
+axios.defaults.baseURL=process.env.BACKEND_URL
 type message = { sender: string; message: string };
+
 
 export const createGameInDb=async(gameData:gamedata)=>{
     console.log("igotlogged");

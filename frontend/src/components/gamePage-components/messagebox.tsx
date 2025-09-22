@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useChessContext, useUserContext } from "../hooks/contextHook";
+import { useChessContext, useUserContext } from "../../hooks/contextHook";
 import EmojiPicker from "emoji-picker-react";
 import { motion } from "motion/react";
 
@@ -7,21 +7,19 @@ export const MessageBox = () => {
   const CHAT = "chat";
 
   const [text, setText] = useState("");
-  const {user,socket}=useUserContext()
+  const { user, socket } = useUserContext();
   const { roomId, Messages } = useChessContext();
-  const sender=user?.id
+  const sender = user?.id;
   const [emojiBox, setEmojiBox] = useState(false);
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-  bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-}, [Messages]);
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [Messages]);
 
-
-
-  function handleSend(e:React.SyntheticEvent) {
+  function handleSend(e: React.SyntheticEvent) {
     e.preventDefault();
-    const message = { sender:sender , message: text };
+    const message = { sender: sender, message: text };
     socket?.send(
       JSON.stringify({
         type: CHAT,
@@ -53,10 +51,12 @@ export const MessageBox = () => {
                   : "self-start bg-zinc-500"
               } h-fit w-fit flex  p-2 rounded-2xl max-w-70 `}
             >
-              <div className="text-zinc-50 drop-shadow-sm/90 text-md ">{mesg.message}</div>
+              <div className="text-zinc-50 drop-shadow-sm/90 text-md ">
+                {mesg.message}
+              </div>
             </motion.div>
           ))}
-           <div ref={bottomRef} />
+          <div ref={bottomRef} />
         </div>
 
         <form className="flex flex-row items-center bg-zinc-800 font-[500] w-full  mt-auto p-1">

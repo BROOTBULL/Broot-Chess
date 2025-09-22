@@ -273,7 +273,7 @@ router.post("/signUpGuest", async (req: Request, res: Response) => {
   let guestUUID = ("guest-" + uuidv4()).slice(0, 14);
       const randomIndex = Math.floor(Math.random() * 21) + 1; // 1 to 21
     const fileName = `p${randomIndex}.png`;
-    const profileUrl = `http://broot-chess-backend.onrender.com/avatars/${fileName}`;// this create full url for profile pics 
+    const profileUrl = `http://chessb.arjbroot.com/avatars/${fileName}`;// this create full url for profile pics 
       //  Validate default rating
     const defaultRating: Rating = ratingSchema.parse({
       blitz: 500,

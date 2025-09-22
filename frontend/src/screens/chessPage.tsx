@@ -1,19 +1,19 @@
 import { useState } from "react";
-import { ChessBoard } from "../components/board";
-import { PlayerInfo } from "../components/playerInfos";
+import { ChessBoard } from "../components/gamePage-components/board";
+import { PlayerInfo } from "../components/gamePage-components/playerInfos";
 import { Trasition } from "../transition";
 import axios from "axios";
 import { useChessContext, useUserContext } from "../hooks/contextHook";
 import { useNavigate } from "react-router-dom";
-import { NewGame } from "../components/newGamebox";
-import { History } from "../components/historyBox";
-import { Friends } from "../components/friendsBox";
-import { Play } from "../components/playBox";
+import { NewGame } from "../components/gamePage-components/newGamebox";
+import { History } from "../components/gamePage-components/historyBox";
+import { Friends } from "../components/gamePage-components/friendsBox";
+import { Play } from "../components/gamePage-components/playBox";
 import { AnimatePresence, motion } from "motion/react";
 import { UNDO_MOVE_APPROVE } from "../context/ContextProvider";
-import { BoardAppreance } from "../components/boardAppreance";
+import { BoardAppreance } from "../components/gamePage-components/boardAppreance";
 import { LandingLoader } from "../assets/loader";
-import { DrawRequest } from "../components/drawReq";
+import { DrawRequest } from "../components/gamePage-components/drawReq";
 import { Rating } from "../context/userProvider";
 
 export const StartFen =
@@ -42,6 +42,7 @@ const ChessGame = () => {
     setUndoRequested,
   } = useChessContext();
   const { name, profile } = user!;
+
 
   const [setting, setSetting] = useState(false);
   const [showSquare, setShowSquare] = useState(false);
@@ -107,15 +108,12 @@ const ChessGame = () => {
 
   return (
     <>
-      {
-        // console.log(playerWon,color,user?.id,Opponent?.id)
-      }
 
       <div className="absolute flex flex-col xl:flex-row md:h-full w-full  ">
         <div className=" flex flex-col lg:flex-row justify-between bg-gradient-to-r  from-zinc-300 to-zinc-400 backdrop-blur-md h-fit w-full xl:w-[60%] md:h-full p-5 ">
           <div className="flex flex-row lg:flex-col justify-between items-center mb-5">
             <img
-              className="h-10 lg:h-13 lg:w-8 xl:h-20 xl:w-12 w-6 ml-2 drop-shadow-lg/40 cursor-pointer "
+              className="h-10 lg:h-13 lg:w-8 xl:h-16 xl:w-9 w-6 ml-2 drop-shadow-lg/40 cursor-pointer "
               onClick={() => navigate("/")}
               src="/media/Broot.png"
               alt="Broot"
@@ -255,7 +253,7 @@ const ChessGame = () => {
                           alt=""
                         />
                         <div className="text-[10px] text-center text-zinc-300 font-bold">
-                          {Opponent?.name.slice(0,8) || "Opponent"}
+                          {Opponent?.name.slice(0, 8) || "Opponent"}
                         </div>
                       </div>
                       <div className="text-lg text-zinc-200 font-bold mt-2">
@@ -358,7 +356,7 @@ const ChessGame = () => {
             <DrawRequest />
 
             {/* ///////////////// Reqest Denied Window Logic //////////////////////// */}
-             <DrawRequest />
+            <DrawRequest />
 
             <PlayerInfo
               name={Opponent?.name || "Opponent"}
@@ -388,8 +386,8 @@ const ChessGame = () => {
               onClick={() => setActiveTab("play")}
               className={`${
                 gameStarted ? "flex" : "hidden"
-              } text-zinc-200 font-[500] flex-col flex-1 text-center text-sm rounded-t-2xl cursor-pointer h-fit p-2 ${
-                activeTab === "play" ? "bg-zinc-700" : "bg-zinc-900"
+              } text-zinc-200 font-[500] flex-col flex-1 text-center text-sm rounded-t-xl cursor-pointer h-fit p-2 ${
+                activeTab === "play" ? "bg-zinc-700 z-3" :"bg-zinc-900/50"
               }`}
             >
               <img
@@ -401,8 +399,8 @@ const ChessGame = () => {
             </div>
             <div
               onClick={() => setActiveTab("newgame")}
-              className={` text-zinc-200 font-[500] flex flex-col flex-1 text-center text-sm rounded-t-2xl cursor-pointer h-fit p-2 ${
-                activeTab === "newgame" ? "bg-zinc-700" : "bg-zinc-900"
+              className={` text-zinc-200 font-[500] flex flex-col flex-1 text-center text-sm rounded-t-xl cursor-pointer h-fit p-2 ${
+                activeTab === "newgame" ? "bg-zinc-700 z-3" :"bg-zinc-900/50"
               }`}
             >
               <img
@@ -414,8 +412,8 @@ const ChessGame = () => {
             </div>
             <div
               onClick={() => setActiveTab("history")}
-              className={` text-zinc-200 font-[500] flex flex-col flex-1 text-center text-sm rounded-t-2xl cursor-pointer h-fit p-2 ${
-                activeTab === "history" ? "bg-zinc-700" : "bg-zinc-900"
+              className={` text-zinc-200 font-[500] flex flex-col flex-1 text-center text-sm rounded-t-xl cursor-pointer h-fit p-2 ${
+                activeTab === "history" ? "bg-zinc-700 z-3" :"bg-zinc-900/50"
               }`}
             >
               <img
@@ -427,8 +425,8 @@ const ChessGame = () => {
             </div>
             <div
               onClick={() => setActiveTab("friends")}
-              className={` text-zinc-200 font-[500] flex flex-col flex-1 text-center text-sm rounded-t-2xl cursor-pointer h-fit p-2 ${
-                activeTab === "friends" ? "bg-zinc-700" : "bg-zinc-900"
+              className={` text-zinc-200 font-[500] flex flex-col flex-1 text-center text-sm rounded-t-xl cursor-pointer h-fit p-2 ${
+                activeTab === "friends" ? "bg-zinc-700 z-3" :"bg-zinc-900/50"
               }`}
             >
               <img

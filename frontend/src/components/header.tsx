@@ -145,7 +145,7 @@ export const Header3 = () => {
       <div className="hader fixed h-full z-10 hidden md:flex ">
         <div className="flex flex-col w-full justify-between">
           <img
-            className={` h-10 w-6 md:h-14 md:w-8 lg:h-22 lg:w-12 lg:m-8 lg:mx-10 m-5 drop-shadow-lg/40 z-10 cursor-pointer ${
+            className={` h-10 w-6 md:h-14 md:w-8 lg:h-16 lg:w-9 lg:m-8 lg:mx-10 m-5 drop-shadow-lg/40 z-10 cursor-pointer ${
               theme ? "" : "invert"
             }`}
             onClick={() => navigate("/")}
@@ -224,7 +224,7 @@ export const Header3 = () => {
           </div>
           <img
             onClick={() =>  setOptionDisplay(!optionDisplay)}
-            className={`size-8 hidden md:flex m-3 lg:m-8 lg:mx-10 drop-shadow-lg/40 z-10 cursor-pointer ${optionDisplay?"rotate-90":"rotate-0"} duration-200 ${
+            className={`size-7 hidden md:flex m-3 lg:m-8 lg:mx-10 drop-shadow-lg/40 z-10 cursor-pointer ${optionDisplay?"rotate-90":"rotate-0"} duration-200 ${
               theme ? "" : "invert"
             }`}
             src={`/media/setting.png`}

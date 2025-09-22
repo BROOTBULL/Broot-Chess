@@ -1,6 +1,6 @@
 import { format } from "date-fns";
-import { useSendNotification } from "../hooks/NotificationHook";
-import { useUserContext } from "../hooks/contextHook";
+import { useSendNotification } from "../../hooks/NotificationHook";
+import { useUserContext } from "../../hooks/contextHook";
 import { useNavigate } from "react-router-dom";
 
 export const History = () => {
@@ -9,10 +9,10 @@ export const History = () => {
   const navigate=useNavigate()
 
   return (
-    <div className="p-3 h-[93%] w-full bg-zinc-700 max-w-[1000px]">
-      <div className="flex flex-col Profile h-full min-h-[500px] w-full bg-zinc-900 justify-between">
+    <div className="p-3 h-[93%] w-full bg-zinc-700 drop-shadow-[0_0_20px_black] rounded-lg max-w-[1000px]">
+      <div className="flex flex-col Profile h-full min-h-[500px] w-full bg-zinc-900 justify-between rounded-md overflow-clip">
         <div className="h-[93%] max-h-120 md:max-h-full flex flex-col">
-          <div className="font-serif flex flex-row text-zinc-200 bg-zinc-950 text-sm font-[500] p-2 gap-2 text-center">
+          <div className="font-sans flex flex-row text-zinc-200 bg-zinc-950 text-sm font-[500] p-2 gap-2 text-center">
             <div className="flex-1">
               <img className="size-5 mx-auto" src="/media/timer.png" alt="" />
             </div>
@@ -26,7 +26,7 @@ export const History = () => {
           {games.sort((a, b) => (new Date(b.startAt)).getTime() - (new Date(a.startAt)).getTime()).map((game) => (
             <div
               key={(new Date(game.startAt)).getTime()}
-              className={`flex flex-row text-zinc-200 ${game.result==="Draw"?"bg-zinc-400/20":(game.result==="Loss"?"bg-rose-600/10":"bg-emerald-600/20")} text-sm font-[500] p-2 gap-2 text-center`}
+              className={`flex flex-row text-zinc-200 ${game.result==="Draw"?"bg-zinc-400/20":(game.result==="Loss"?"bg-rose-600/10":"bg-emerald-600/20")} text-sm p-2 gap-2 items-center text-center`}
             >
               <div className="flex-1">
                 <img
@@ -46,7 +46,7 @@ export const History = () => {
               </div>
               <div
                 onClick={()=>sendNotification(game.opponent.id,"CHALLENGE","Challenged you for a Rematch")}
-                className="flex-1 bg-emerald-700 p-1 text-[10px] cursor-pointer"
+                className="flex-1 bg-emerald-900 hover:bg-emerald-800 text-shadow-2xs/90 rounded-sm p-1 text-[10px] cursor-pointer"
               >
                 Rematch
               </div>

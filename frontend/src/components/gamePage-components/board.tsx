@@ -1,12 +1,12 @@
-import { Square, SQUARES } from "chess.js";
+import { Chess, Square, SQUARES } from "chess.js";
 import { useState } from "react";
-import { useChessContext, useUserContext } from "../hooks/contextHook";
-import { boardTheme } from "../assets/boardtheme";
+import { useChessContext, useUserContext } from "../../hooks/contextHook";
+import { boardTheme } from "../../assets/boardtheme";
 
 export const ChessBoard = ({ showSquare }: { showSquare: boolean }) => {
   const MOVE = "move";
   const { socket } = useUserContext();
-  const { board, chess, color, roomId, moves, boardAppearnce } =
+  const { board, chess, color, roomId, moves, boardAppearnce,setBoard } =
     useChessContext();
 
   const rows = color === "w" ? board : [...board].reverse();
@@ -23,7 +23,35 @@ export const ChessBoard = ({ showSquare }: { showSquare: boolean }) => {
     setValidmoves(validMoves);
   }
 
+  
+    function isPromoting(chess: Chess, from: Square, to: Square) {
+      const piece = chess.get(from);
+  
+      if (!piece || piece.type !== "p") return false;
+  
+      // White pawn reaching 8th rank or black pawn reaching 1st
+      return (
+        (piece.color === "w" && to.endsWith("8")) ||
+        (piece.color === "b" && to.endsWith("1"))
+      );
+    }
+
   function sendMove(from: Square, to: Square) {
+    try {
+      if (isPromoting(chess, from as Square, to as Square)) {
+        chess.move({
+          from,
+          to,
+          promotion: "q",
+        });
+      } else {
+        chess.move({ from, to });
+      }
+    } catch (error) {
+      console.log("Error", error);
+    }
+    setBoard(chess.board());
+
     if (socket && socket.readyState === WebSocket.OPEN) {
       socket.send(
         JSON.stringify({
@@ -74,14 +102,11 @@ export const ChessBoard = ({ showSquare }: { showSquare: boolean }) => {
         return (
           <div key={i} className="flex">
             {cols.map((square, j) => {
-              const squareIndex =
-                color === "w" ? i * 8 + j : 63 - (i * 8 + j);
+              const squareIndex = color === "w" ? i * 8 + j : 63 - (i * 8 + j);
               const squareId = SQUARES[squareIndex];
               const inCheck = chess.inCheck();
 
-              const theme = boardTheme.find(
-                (t) => t.theme === boardAppearnce
-              );
+              const theme = boardTheme.find((t) => t.theme === boardAppearnce);
               const lastMove = moves.length && moves[moves.length - 1].to;
 
               return (

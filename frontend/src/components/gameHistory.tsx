@@ -16,7 +16,7 @@ export const GameHistory = ({games}:{games:GamesData[]}) => {
 
 
   return (
-    <div className="flex flex-col Profile h-full w-full mt-5 bg-zinc-800 rounded-lg pb-2 ring-1 ring-zinc-900">
+    <div className="flex flex-col Profile h-full w-full mt-5 bg-zinc-800 rounded-lg pb-2 ring-1 ring-zinc-900 drop-shadow-2xl">
       <div className="flex text-zinc-200 text-md lg:text-2xl lg:p-2 font-bold m-2 cursor-default">
         Game History
       </div>
