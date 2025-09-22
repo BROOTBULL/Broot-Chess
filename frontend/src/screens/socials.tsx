@@ -191,7 +191,7 @@ const Socials = () => {
               />
             </button>
           </form>
-          <div className="text-lg text-zinc-800 min-h-30 h-fit w-full flex flex-col mt-3 items-center rounded-lg overflow-hidden">
+          <div className="text-lg text-zinc-800 min-h-30 h-fit w-full flex flex-col mt-3 items-center rounded-lg">
             {searchedPlayers && searchedPlayers.length > 0 && search !== "" ? (
               searchedPlayers.map((player, i) => {
                 return (
@@ -270,17 +270,16 @@ const Socials = () => {
                       </div>
                       <div
                         onClick={() => OpenMessage(friend.id)}
-                        className="hover:bg-zinc-700 cursor-pointer md:p-1 interact-btn rounded-md flex justify-center duration-200"
+                        className="hover:bg-zinc-700 cursor-pointer md:p-1 interact-btn rounded-md flex justify-center relative duration-200"
                       >
                         <img
                           className="size-7 md:size-8"
                           src="./media/message.png"
                           alt=""
                         />
-                      </div>
-                      <form
+                         <form
                         id={friend.id}
-                        className={`h-20 w-60 md:w-90 mt-28 md:mt-33 absolute hidden my-auto mx-auto mr-27 `}
+                        className={`h-20 w-60 md:w-90 top-10 absolute hidden `}
                       >
                         <textarea
                           name="message"
@@ -293,7 +292,6 @@ const Socials = () => {
                           onClick={(e) => {
                             if (user)
                               handleMessageSent(e, friend, "MESSAGE")
-
                           }}
                           className=" rounded size-8 absolute ml-auto cursor-pointer bg-emerald-900 hover:bg-emerald-800 mt-1"
                         >
@@ -304,6 +302,7 @@ const Socials = () => {
                           />
                         </button>
                       </form>
+                      </div>
                       <div className="hover:bg-zinc-700 cursor-pointer p-1 interact-btn rounded-full flex justify-center duration-200 size-8 items-center">
                         <div className="size-2.5 bg-green-500 rounded-full online"></div>
                       </div>
