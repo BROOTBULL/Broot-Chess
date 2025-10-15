@@ -37,7 +37,7 @@ export const GameButtons = () => {
               navigate("/game");
               setActiveTab("friends");
             }}
-            className={` ${theme?" bg-zinc-800":" bg-zinc-900"} rounded-lg playButton h-15 md:h-18 flex flex-row items-center justify-center cursor-pointer shadow-md/50 w-[50%] lg:w-full`}
+            className={` ${theme?" bg-zinc-800":" bg-zinc-900"} rounded-lg playButton h-15 md:h-18 flex flex-1 flex-row items-center justify-center cursor-pointer shadow-md/50 w-[50%] lg:w-full`}
           >
             <img className="size-8 m-1 " src="/media/friends.png" alt="" />
             <div className="font-serif text-zinc-100 text-md md:text-2xl">
@@ -48,7 +48,7 @@ export const GameButtons = () => {
             navigate("/game")
             setActiveTab("chessBot");
             setPlayAgainstBot(true)
-          }} className={` ${theme?" bg-zinc-800":" bg-zinc-900"} rounded-lg cursor-pointer playButton h-15 md:h-18 flex flex-row items-center justify-center shadow-md/50 lg:w-full`}>
+          }} className={` ${theme?" bg-zinc-800":" bg-zinc-900"} rounded-lg cursor-pointer playButton h-15 flex-1 md:h-18 flex flex-row items-center justify-center shadow-md/50 lg:w-full`}>
             <img className="size-7 m-1 mb-2" src="/media/bot.png" alt="" />
             <div className="font-serif text-zinc-100 text-md md:text-2xl ">
               Play Bot
