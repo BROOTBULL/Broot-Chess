@@ -24,7 +24,9 @@ interface ChessContextType {
   setOpponent: React.Dispatch<React.SetStateAction<User | null>>;
   gameType: GameType;
   setGameType: React.Dispatch<React.SetStateAction<GameType>>;
-  gameStarted: boolean;
+  MultiplayerGameStarted: boolean;
+  setMultiplayerGameStarted: React.Dispatch<React.SetStateAction<boolean>>;
+  GameStarted: boolean;
   setGameStarted: React.Dispatch<React.SetStateAction<boolean>>;
   connecting: boolean;
   setConnecting: React.Dispatch<React.SetStateAction<boolean>>;
@@ -64,11 +66,16 @@ interface ChessContextType {
   setDrawRequested: React.Dispatch<React.SetStateAction<boolean>>;
   drawBox: boolean;
   setDrawBox: React.Dispatch<React.SetStateAction<boolean>>;
+  playAgainstBot: boolean;
+  setPlayAgainstBot: React.Dispatch<React.SetStateAction<boolean>>;
+  showHint: boolean;
+  setShowHint: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
 
 type GameType = "blitz" | "rapid" | "daily";
 type Message = { sender: string; message: string };
-type Tab = "newgame" | "history" | "friends" | "play";
+type Tab = "newgame" | "history" | "friends" | "play" | "chessBot";
 export type DBMoves = {
   to: string;
   from: string;
@@ -92,7 +99,9 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
   const [Opponent, setOpponent] = useState<User | null>(null);
   const [connecting, setConnecting] = useState<boolean>(false);
   const [gameType, setGameType] = useState<GameType>("rapid");
-  const [gameStarted, setGameStarted] = useState(false);
+  const [MultiplayerGameStarted, setMultiplayerGameStarted] = useState(false);
+  const [GameStarted, setGameStarted] = useState(false);
+  const [playAgainstBot, setPlayAgainstBot] = useState(false);
   const [Messages, setMessages] = useState<Message[]>([]);
   const [activeTab, setActiveTab] = useState<Tab>("newgame");
   const [color, setColor] = useState("w");
@@ -106,6 +115,7 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
   const [undoRequested, setUndoRequested] = useState(false);
   const [undoBox, setUndoBox] = useState<boolean>(false);
   const [waitingResponse, setWaitingResponse] = useState<boolean>(false);
+  const [showHint,setShowHint]=useState(false)
   const [boardAppearnce, setBoardAppearnce] = useState<string>(
     (localStorage.getItem("boardAppearance") as string) || "zinc"
   );
@@ -117,7 +127,7 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
       (gameType === "blitz" ? 5 : gameType === "rapid" ? 15 : 60) * 60 * 1000,
     blackTimeLeft:
       (gameType === "blitz" ? 5 : gameType === "rapid" ? 15 : 60) * 60 * 1000,
-    abandonedDeadline: gameType!=="daily"?120000:600000,
+    abandonedDeadline: gameType !== "daily" ? 120000 : 600000,
   });
 
   function sumTimeTaken(moves: DBMoves[]) {
@@ -156,7 +166,8 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
               setChess(newGame);
               setBoard(newGame.board());
               setConnecting(false);
-              setGameStarted(true);
+              setMultiplayerGameStarted(true);
+              setGameStarted(true)
               setOpponent(isUser ? payload.BlackPlayer : payload.WhitePlayer); //Opponent userId and users user.id are correct backend ids opponent id is randomId from socket
               setRoomId(payload.RoomId);
               setMessages([]);
@@ -185,7 +196,7 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
               setTimers({
                 whiteTimeLeft: payload.whiteTimeLeft,
                 blackTimeLeft: payload.blackTimeLeft,
-                abandonedDeadline:gameType!=="daily"?120000:600000,
+                abandonedDeadline: gameType !== "daily" ? 120000 : 600000,
               });
               chess.load(payload.fen);
               const newBoard = chess.board();
@@ -197,6 +208,7 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
               const isUser = payload.WhitePlayer.id === user?.id;
               setActiveTab("play");
               setConnecting(false);
+              setMultiplayerGameStarted(true);
               setGameStarted(true);
               setOpponent(isUser ? payload.BlackPlayer : payload.WhitePlayer);
               setRoomId(payload.RoomId);
@@ -235,9 +247,10 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
           case GAME_ENDED:
             {
               let wonBy;
+              setMultiplayerGameStarted(false);
               setGameStarted(false);
               setGameEnded(true);
-              setReloadData(!reloadData)
+              setReloadData(!reloadData);
               if (payload.result !== "DRAW") {
                 setPlayerWon(
                   payload.result.slice(0, 1) === color
@@ -288,7 +301,7 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
                   (gameType === "blitz" ? 5 : gameType === "rapid" ? 15 : 60) *
                   60 *
                   1000,
-                abandonedDeadline: gameType!=="daily"?120000:600000,
+                abandonedDeadline: gameType !== "daily" ? 120000 : 600000,
               });
             }
             break;
@@ -321,12 +334,12 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
             break;
           case UNDO_MOVE_APPROVE:
             {
-              if(payload.choice){
-              chess.load(payload.revertedfen);
-              const newBoard = chess.board();
-              setBoard(newBoard);
-              const moveTo = payload.moves;
-              setMoves(moveTo);
+              if (payload.choice) {
+                chess.load(payload.revertedfen);
+                const newBoard = chess.board();
+                setBoard(newBoard);
+                const moveTo = payload.moves;
+                setMoves(moveTo);
               }
               setWaitingResponse(false);
               setUndoBox(false);
@@ -373,7 +386,9 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
         setOpponent,
         gameType,
         setGameType,
-        gameStarted,
+        MultiplayerGameStarted,
+        setMultiplayerGameStarted,
+        GameStarted,
         setGameStarted,
         connecting,
         setConnecting,
@@ -413,6 +428,10 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
         setDrawBox,
         drawRequested,
         setDrawRequested,
+        playAgainstBot,
+        setPlayAgainstBot,
+        showHint,
+        setShowHint
       }}
     >
       {children}

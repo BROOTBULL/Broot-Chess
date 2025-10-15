@@ -93,7 +93,7 @@ const LogInPage = () => {
   }
 
   return (
-    <>
+    <div className="h-screen w-full relative">
       <img
         onClick={() => navigate("/")}
         className="absolute h-6 w-6 md:h-8 md:w-8 lg:size-6 m-5 drop-shadow-lg z-10 cursor-pointer"
@@ -109,7 +109,7 @@ const LogInPage = () => {
             </div>
           )}
           <img
-            className="lg:h-16 lg:w-10 md:h-18 md:w-12 h-14 w-10 mx-4"
+            className="lg:h-16 lg:w-10 md:h-18 md:w-12 h-14 w-9 mb-5 mx-4"
             src="/media/Broot.png"
             alt="Broot"
           />
@@ -203,7 +203,7 @@ const LogInPage = () => {
         </div>
         <div className="hidden md:flex h-full md:w-[50%] bg-black/70"></div>
       </div>
-    </>
+    </div>
   );
 };
 

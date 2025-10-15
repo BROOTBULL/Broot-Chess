@@ -15,8 +15,14 @@ export const PlayerInfo = ({
   profile: string | null;
   playerColor: string;
 }) => {
-  const { gameEnded, moves, gameType, timers, gameStarted, playerWon } =
-    useChessContext();
+  const {
+    gameEnded,
+    moves,
+    gameType,
+    timers,
+    MultiplayerGameStarted,
+    playerWon,
+  } = useChessContext();
 
   const displayName = name.length > 12 ? name.slice(0, -8) + "..." : name;
 
@@ -40,7 +46,7 @@ export const PlayerInfo = ({
   }, [playerWon, name, gameEnded]);
 
   useEffect(() => {
-    if (!gameStarted) {
+    if (!MultiplayerGameStarted) {
       const initialTime =
         gameType === "blitz"
           ? 5 * 60
@@ -57,17 +63,17 @@ export const PlayerInfo = ({
           : rating.rapid
       );
     }
-  }, [gameType, gameStarted, rating]);
+  }, [gameType, MultiplayerGameStarted, rating]);
 
   useEffect(() => {
-    if (gameStarted) {
+    if (MultiplayerGameStarted) {
       const mainTime =
         playerColor === "w" ? timers.whiteTimeLeft : timers.blackTimeLeft;
       setGameTimer(Math.floor(mainTime / 1000));
       if (turn) setPerMoveTimer(Math.floor(timers.abandonedDeadline / 1000));
       else setPerMoveTimer(gameType !== "daily" ? 120 : 600);
     }
-  }, [timers, gameStarted, playerColor, turn, gameType]);
+  }, [timers, MultiplayerGameStarted, playerColor, turn, gameType]);
 
   useEffect(() => {
     clearInterval(gameTimerRef.current);
@@ -126,7 +132,9 @@ export const PlayerInfo = ({
 
       <div
         className={`${
-          turn && gameStarted ? "bg-emerald-900" : "bg-zinc-600 brightness-50"
+          turn && MultiplayerGameStarted
+            ? "bg-emerald-900"
+            : "bg-zinc-600 brightness-50"
         } ml-auto text-end ${
           gameTimer <= 60 && gameTimer % 2 === 0
             ? "text-rose-700"

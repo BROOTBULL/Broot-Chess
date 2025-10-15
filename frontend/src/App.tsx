@@ -28,44 +28,87 @@ const RedirectIfAuth = ({ children }: { children: ReactNode }) => {
   return <>{children}</>;
 };
 
-
-
-
 function App() {
   const location = useLocation();
-  const {loading} = useUserContext(); // Optional: show spinner while auth check runs
+  const { loading,theme } = useUserContext(); // Optional: show spinner while auth check runs
   const piecePaths = [
-  "/media/pieces/bb.png",
-  "/media/pieces/bw.png",
-  "/media/pieces/kb.png",
-  "/media/pieces/kw.png",
-  "/media/pieces/nb.png",
-  "/media/pieces/nw.png",
-  "/media/pieces/pb.png",
-  "/media/pieces/pw.png",
-  "/media/pieces/qb.png",
-  "/media/pieces/qw.png",
-  "/media/pieces/rb.png",
-  "/media/pieces/rw.png",
-];
+    "/media/pieces/bb.png",
+    "/media/pieces/bw.png",
+    "/media/pieces/kb.png",
+    "/media/pieces/kw.png",
+    "/media/pieces/nb.png",
+    "/media/pieces/nw.png",
+    "/media/pieces/pb.png",
+    "/media/pieces/pw.png",
+    "/media/pieces/qb.png",
+    "/media/pieces/qw.png",
+    "/media/pieces/rb.png",
+    "/media/pieces/rw.png",
+  ];
 
-  usePreloadImages(piecePaths);// preload the pieces in the html caches so that on reload it doest re-download it 
-  
+  usePreloadImages(piecePaths); // preload the pieces in the html caches so that on reload it doest re-download it
 
   if (loading) {
-    return <LandingLoader />; // Replace with spinner or splash screen
+
+    return (
+      <div className={`w-full h-screen flex items-center justify-center bg-radial ${theme?"from-zinc-200 to-zinc-500":"from-zinc-900 to-zinc-950"} `}>
+        <LandingLoader />
+      </div>
+    ); 
   }
 
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/signup" element={<RedirectIfAuth><SignUpPage /></RedirectIfAuth>} />
-        <Route path="/login" element={<RedirectIfAuth><LogInPage /></RedirectIfAuth>} />
-        <Route path="/home" element={<RequireAuth><HomePage /></RequireAuth>} />
-        <Route path={`/profile/:playerId`} element={<RequireAuth><ProfilePage /></RequireAuth>} />
-        <Route path={`/game`} element={<RequireAuth><ChessGame /></RequireAuth>} />
-        <Route path={`/social`} element={<RequireAuth><Socials/></RequireAuth>} />
+        <Route
+          path="/signup"
+          element={
+            <RedirectIfAuth>
+              <SignUpPage />
+            </RedirectIfAuth>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <RedirectIfAuth>
+              <LogInPage />
+            </RedirectIfAuth>
+          }
+        />
+        <Route
+          path="/home"
+          element={
+            <RequireAuth>
+              <HomePage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path={`/profile/:playerId`}
+          element={
+            <RequireAuth>
+              <ProfilePage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path={`/game`}
+          element={
+            <RequireAuth>
+              <ChessGame />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path={`/social`}
+          element={
+            <RequireAuth>
+              <Socials />
+            </RequireAuth>
+          }
+        />
       </Routes>
     </AnimatePresence>
   );

@@ -12,19 +12,21 @@ import { Play } from "../components/gamePage-components/playBox";
 import { AnimatePresence, motion } from "motion/react";
 import { UNDO_MOVE_APPROVE } from "../context/ContextProvider";
 import { BoardAppreance } from "../components/gamePage-components/boardAppreance";
-import { LandingLoader } from "../assets/loader";
 import { DrawRequest } from "../components/gamePage-components/drawReq";
 import { Rating } from "../context/userProvider";
+import { ChessBot } from "../components/gamePage-components/chessBot";
 
 export const StartFen =
   "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
 const ChessGame = () => {
   const navigate = useNavigate();
-  const { user, setUser, socket, Ratings } = useUserContext();
+  const { user, setUser, socket, Ratings, isPlayingBot, setIsPlayingBot } =
+    useUserContext();
   const {
     roomId,
-    gameStarted,
+    playAgainstBot,
+    MultiplayerGameStarted,
     Opponent,
     setOpponent,
     activeTab,
@@ -40,9 +42,10 @@ const ChessGame = () => {
     setGameAlert,
     undoRequested,
     setUndoRequested,
+    setPlayAgainstBot,
+    setGameStarted,
   } = useChessContext();
   const { name, profile } = user!;
-
 
   const [setting, setSetting] = useState(false);
   const [showSquare, setShowSquare] = useState(false);
@@ -59,14 +62,12 @@ const ChessGame = () => {
     switch (activeTab) {
       case "newgame":
         return (
-          socket && (
-            <NewGame
-              setGameAlert={setGameAlert}
-              gameAlert={gameAlert}
-              setActiveTab={setActiveTab}
-              socket={socket}
-            />
-          )
+          <NewGame
+            setGameAlert={setGameAlert}
+            gameAlert={gameAlert}
+            setActiveTab={setActiveTab}
+            socket={socket!}
+          />
         );
       case "history":
         return <History />;
@@ -74,6 +75,8 @@ const ChessGame = () => {
         return <Friends />;
       case "play":
         return <Play />;
+      case "chessBot":
+        return <ChessBot />;
       default:
         return null;
     }
@@ -104,11 +107,19 @@ const ChessGame = () => {
     console.log(responce);
   }
 
-  if (!socket) return <LandingLoader />;
+  // if (!socket)
+  //   return (
+  //     <div
+  //       className={`w-full h-screen flex items-center justify-center bg-radial ${
+  //         theme ? "from-zinc-200 to-zinc-500" : "from-zinc-900 to-zinc-950"
+  //       } `}
+  //     >
+  //       <LandingLoader />
+  //     </div>
+  //   );
 
   return (
     <>
-
       <div className="absolute flex flex-col xl:flex-row md:h-full w-full  ">
         <div className=" flex flex-col lg:flex-row justify-between bg-gradient-to-r  from-zinc-300 to-zinc-400 backdrop-blur-md h-fit w-full xl:w-[60%] md:h-full p-5 ">
           <div className="flex flex-row lg:flex-col justify-between items-center mb-5">
@@ -228,7 +239,7 @@ const ChessGame = () => {
                       src="./media/closeOption.png"
                       alt=""
                     />
-                    <div className="flex flex-row justify-center items-center mt-3">
+                    <div className="flex flex-row justify-center items-center mt-3 gap-1">
                       <div className="flex flex-col">
                         <img
                           className={`absolute size-7 drop-shadow-sm/90 -rotate-25 heartbeat ${
@@ -249,11 +260,17 @@ const ChessGame = () => {
                         />
                         <img
                           className="size-18"
-                          src={Opponent?.profile || "/media/userW.png"}
+                          src={
+                            isPlayingBot
+                              ? "/media/bot.png"
+                              : Opponent?.profile || "/media/userW.png"
+                          }
                           alt=""
                         />
                         <div className="text-[10px] text-center text-zinc-300 font-bold">
-                          {Opponent?.name.slice(0, 8) || "Opponent"}
+                          {isPlayingBot
+                            ? "ChessBot"
+                            : Opponent?.name.slice(0, 8) || "Opponent"}
                         </div>
                       </div>
                       <div className="text-lg text-zinc-200 font-bold mt-2">
@@ -294,6 +311,10 @@ const ChessGame = () => {
                         setGameEnded(false);
                         const newBoard = chess.board();
                         setBoard(newBoard);
+                        setActiveTab("newgame");
+                        setPlayAgainstBot(false);
+                        setGameStarted(false);
+                        setIsPlayingBot(false);
                       }}
                       className="text-lg text-zinc-200 font-bold m-3 rounded-md text-center bg-emerald-900 w-[80%] flex mx-auto justify-center p-2 cursor-pointer playButton"
                     >
@@ -358,25 +379,31 @@ const ChessGame = () => {
             {/* ///////////////// Reqest Denied Window Logic //////////////////////// */}
             <DrawRequest />
 
-            <PlayerInfo
-              name={Opponent?.name || "Opponent"}
-              rating={
-                Opponent
-                  ? (Opponent.rating as Rating)
-                  : ({ rapid: 500, blitz: 600, daily: 700 } as Rating)
-              }
-              playerColor={color === "w" ? "b" : "w"}
-              turn={!isMyTurn}
-              profile={Opponent?.profile || "/media/userW.png"}
-            />
-            <ChessBoard showSquare={showSquare} />
-            <PlayerInfo
-              name={name}
-              rating={Ratings as Rating}
-              playerColor={color}
-              turn={isMyTurn}
-              profile={profile || "/media/userW.png"}
-            />
+            {!isPlayingBot ? (
+              <>
+                <PlayerInfo
+                  name={Opponent?.name || "Opponent"}
+                  rating={
+                    Opponent
+                      ? (Opponent.rating as Rating)
+                      : ({ rapid: 500, blitz: 600, daily: 700 } as Rating)
+                  }
+                  playerColor={color === "w" ? "b" : "w"}
+                  turn={!isMyTurn}
+                  profile={Opponent?.profile || "/media/userW.png"}
+                />
+                <ChessBoard showSquare={showSquare} />
+                <PlayerInfo
+                  name={name}
+                  rating={Ratings as Rating}
+                  playerColor={color}
+                  turn={isMyTurn}
+                  profile={profile || "/media/userW.png"}
+                />
+              </>
+            ) : (
+              <ChessBoard showSquare={showSquare} />
+            )}
           </div>
         </div>
 
@@ -385,9 +412,9 @@ const ChessGame = () => {
             <div
               onClick={() => setActiveTab("play")}
               className={`${
-                gameStarted ? "flex" : "hidden"
+                MultiplayerGameStarted ? "flex" : "hidden"
               } text-zinc-200 font-[500] flex-col flex-1 text-center text-sm rounded-t-xl cursor-pointer h-fit p-2 ${
-                activeTab === "play" ? "bg-zinc-700 z-3" :"bg-zinc-900/50"
+                activeTab === "play" ? "bg-zinc-700 z-3" : "bg-zinc-900/50"
               }`}
             >
               <img
@@ -398,9 +425,29 @@ const ChessGame = () => {
               Play
             </div>
             <div
-              onClick={() => setActiveTab("newgame")}
+              onClick={() => setActiveTab("chessBot")}
+              className={`${
+                !MultiplayerGameStarted && playAgainstBot ? "flex" : "hidden"
+              } text-zinc-200 font-[500] flex flex-col flex-1 text-center text-sm rounded-t-xl cursor-pointer h-fit p-2 ${
+                activeTab === "chessBot" ? "bg-zinc-700 z-3" : "bg-zinc-900/50"
+              }`}
+            >
+              <img
+                className="size-5 self-center"
+                src="/media/chessBot.png"
+                alt=""
+              />
+              Chess-Bot
+            </div>
+            <div
+              onClick={() => {
+                setActiveTab("newgame");
+                setPlayAgainstBot(false);
+                setGameStarted(false);
+                setIsPlayingBot(false);
+              }}
               className={` text-zinc-200 font-[500] flex flex-col flex-1 text-center text-sm rounded-t-xl cursor-pointer h-fit p-2 ${
-                activeTab === "newgame" ? "bg-zinc-700 z-3" :"bg-zinc-900/50"
+                activeTab === "newgame" ? "bg-zinc-700 z-3" : "bg-zinc-900/50"
               }`}
             >
               <img
@@ -413,7 +460,7 @@ const ChessGame = () => {
             <div
               onClick={() => setActiveTab("history")}
               className={` text-zinc-200 font-[500] flex flex-col flex-1 text-center text-sm rounded-t-xl cursor-pointer h-fit p-2 ${
-                activeTab === "history" ? "bg-zinc-700 z-3" :"bg-zinc-900/50"
+                activeTab === "history" ? "bg-zinc-700 z-3" : "bg-zinc-900/50"
               }`}
             >
               <img
@@ -426,7 +473,7 @@ const ChessGame = () => {
             <div
               onClick={() => setActiveTab("friends")}
               className={` text-zinc-200 font-[500] flex flex-col flex-1 text-center text-sm rounded-t-xl cursor-pointer h-fit p-2 ${
-                activeTab === "friends" ? "bg-zinc-700 z-3" :"bg-zinc-900/50"
+                activeTab === "friends" ? "bg-zinc-700 z-3" : "bg-zinc-900/50"
               }`}
             >
               <img

@@ -87,6 +87,13 @@ body {
   box-shadow: inset 0 0 20px rgb(228, 30, 30);
 }
 
+.bestMoveTo {
+  box-shadow: inset 0 0 40px rgba(255, 251, 0, 1);
+}
+.bestMoveFrom {
+  box-shadow: inset 0 0 40px rgba(255, 255, 0, 0.615);
+}
+
 .emailInput {
   background: url("../public/media/at.png") no-repeat left center;
   background-size: 20px 20px;
@@ -203,68 +210,75 @@ body {
   transform-style: preserve-3d;
 }
 
-@keyframes diagonalMove {
+
+@keyframes diagonalAnimation {
   0% {
-    transform: translate(-100px, 100px) rotateX(46deg) rotate(45deg);
+    transform: translate(-100px, 70px) rotateX(46deg) rotateZ(45deg);
     opacity: 0;
   }
   40% {
-    transform: translate(0px, 0px) rotateX(46deg) rotate(45deg);
+    transform: translate(0px, 0px) rotateX(46deg) rotateZ(45deg);
     opacity: 1;
   }
   50% {
-    transform: translate(0px, 0px) rotateX(46deg) rotate(45deg);
+    transform: translate(0px, 0px) rotateX(46deg) rotateZ(45deg);
     opacity: 1;
   }
   60% {
-    transform: translate(0px, 0px) rotateX(46deg) rotate(45deg);
+    transform: translate(0px, 0px) rotateX(46deg) rotateZ(45deg);
     opacity: 1;
   }
   100% {
-    transform: translate(-100px, 50px) rotateX(46deg) rotate(45deg);
+    transform: translate(-100px, 70px) rotateX(46deg) rotateZ(45deg);
     opacity: 0;
   }
 }
 
-@keyframes fallingMove {
+@keyframes fallingAnimation {
   0% {
-    transform: translate(0px, -50px) rotateX(46deg) rotate(45deg);
+    transform: translate(0px, -50px) rotateX(46deg) rotateZ(45deg);
     opacity: 0;
   }
   40% {
-    transform: translate(0, 0px) rotateX(46deg) rotate(45deg);
+    transform: translate(0px, 0px) rotateX(46deg) rotateZ(45deg);
     opacity: 1;
   }
   50% {
-    transform: translate(0, 0px) rotateX(46deg) rotate(45deg);
+    transform: translate(0px, 0px) rotateX(46deg) rotateZ(45deg);
     opacity: 1;
   }
   60% {
-    transform: translate(0, 0px) rotateX(46deg) rotate(45deg);
+    transform: translate(0px, 0px) rotateX(46deg) rotateZ(45deg);
     opacity: 1;
   }
   100% {
-    transform: translate(0px, 50px) rotateX(46deg) rotate(45deg);
+    transform: translate(0px, 50px) rotateX(46deg) rotateZ(45deg);
     opacity: 0;
   }
 }
 
-.landingloader {
-  animation: fallingMove 4s ease-in-out infinite;
+.loadingTile
+{
+  animation:diagonalAnimation 4s ease-in-out infinite ;
   animation-fill-mode: both;
   animation-delay: 0.4s;
 }
-.landingloader1 {
-  animation: fallingMove 4s ease-in-out infinite;
-  animation-fill-mode: both;
-}
-.landingloader2 {
-  animation: diagonalMove 4s ease-in-out infinite;
-  animation-fill-mode: both;
-  animation-delay: 0.4s;
-}
-.landingloader3 {
-  animation: diagonalMove 4s ease-in-out infinite;
-  animation-fill-mode: both;
+.loadingTile2
+{
+  animation:diagonalAnimation 4s ease-in-out infinite ;
   animation-delay: 0.6s;
+  animation-fill-mode: both;
 }
+
+.loadingFallingTile
+{
+  animation:fallingAnimation 4s ease-in-out infinite ;
+  animation-fill-mode: both;
+  animation-delay: 0.4s;
+}
+.loadingFallingTile2
+{
+  animation:fallingAnimation 4s ease-in-out infinite ;
+  animation-fill-mode: both;
+}
+

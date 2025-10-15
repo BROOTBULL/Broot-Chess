@@ -27,7 +27,7 @@ export type GameResult="BLACK WINS"|"WHITE WINS"|"DRAW"
 
 export type GamesData={
                 id: string,
-              opponent: {
+                opponent: {
                   id: string,
                   username: string,
                   name: string,
@@ -60,6 +60,8 @@ interface UserContextProviderType {
   setTheme:React.Dispatch<React.SetStateAction<boolean>>
   Ratings:Rating;
   setRatings:React.Dispatch<React.SetStateAction<Rating>>
+  isPlayingBot:boolean;
+  setIsPlayingBot:React.Dispatch<React.SetStateAction<boolean>>
 }
 
 
@@ -76,7 +78,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
   const [reloadData,setReloadData] = useState(false);
   const [theme,setTheme] = useState<boolean>(localStorage.getItem("theme")==="false");
   const [Ratings,setRatings]=useState<Rating>({rapid:500,blitz:500,daily:500})
-
+  const [isPlayingBot,setIsPlayingBot]=useState(false)
 
   
 
@@ -183,7 +185,9 @@ useEffect(() => {
         theme,
         setTheme,
         Ratings,
-        setRatings
+        setRatings,
+        isPlayingBot,
+        setIsPlayingBot,
       }}
     >
       {children}

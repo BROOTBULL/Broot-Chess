@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useChessContext } from "../../hooks/contextHook";
 
-type Tab = "newgame" | "history" | "friends" | "play";
+type Tab = "newgame" | "history" | "friends" | "play" | "chessBot";
 type Props = {
   setActiveTab: React.Dispatch<React.SetStateAction<Tab>>;
   socket: WebSocket;
@@ -19,8 +19,15 @@ export const NewGame = ({
   const JOINROOM = "joinroom";
   // const NOTIFICATION="notification"
 
-  const { gameType, setGameType, connecting, setConnecting, roomId } =
-    useChessContext();
+  const {
+    gameType,
+    setGameType,
+    connecting,
+    setConnecting,
+    roomId,
+    setPlayAgainstBot,
+    MultiplayerGameStarted,
+  } = useChessContext();
 
   const [playFriend, setPlayFriend] = useState(false);
   const [roomIdBox, setRoomIdBox] = useState(false);
@@ -95,7 +102,7 @@ export const NewGame = ({
               } flex flex-row items-center flex-1 justify-center cursor-pointer shadow-sm/40 rounded-md`}
             >
               <img className="size-7" src="/media/blitz.png" alt="" />
-              <span className={` text-zinc-200 text-lg `}>Blitz</span>
+              <div className={` text-zinc-200 text-lg `}>Blitz</div>
             </button>
             <button
               onClick={() => setGameType("rapid")}
@@ -106,7 +113,7 @@ export const NewGame = ({
               } flex flex-row items-center flex-1 justify-center cursor-pointer shadow-sm/40 rounded-md`}
             >
               <img className="size-7" src="./media/rapid.png" alt="" />
-              <span className={` text-zinc-200 text-lg `}>Rapid</span>
+              <div className={` text-zinc-200 text-lg `}>Rapid</div>
             </button>
             <button
               onClick={() => setGameType("daily")}
@@ -117,7 +124,7 @@ export const NewGame = ({
               } flex flex-row items-center flex-1 justify-center cursor-pointer shadow-sm/40 rounded-md `}
             >
               <img className="size-7" src="/media/classical.png" alt="" />
-              <span className={` text-zinc-200 text-lg `}>Daily</span>
+              <div className={` text-zinc-200 text-lg `}>Daily</div>
             </button>
           </div>
           {gameAlert && (
@@ -127,11 +134,11 @@ export const NewGame = ({
           )}
           <button
             onClick={() => handleStartGame()}
-            className={`bg-emerald-900 w-full rounded-md text-zinc-200 duration-200 h-18 flex flex-row items-center justify-center cursor-pointer px-4 shadow-md/50 my-3`}
+            className={`bg-emerald-900 hover:bg-emerald-900/80 w-full rounded-md text-zinc-200 duration-200 h-18 flex flex-row items-center justify-center cursor-pointer px-4 shadow-md/50 my-3`}
           >
-            <span className={`font-serif font-bold text-3xl drop-shadow-sm`}>
+            <div className={`font-serif font-bold text-3xl drop-shadow-sm`}>
               Start Game
-            </span>
+            </div>
           </button>
         </div>
         <div className="bg-zinc-900 h-fit mt-5 flex flex-col items-center justify-center cursor-pointer w-full rounded-lg ">
@@ -165,7 +172,7 @@ export const NewGame = ({
                 } flex flex-row items-center flex-1 justify-center cursor-pointer shadow-sm/40 rounded-md mt-2`}
               >
                 <img className="size-7" src="/media/blitz.png" alt="" />
-                <span className={` text-zinc-200 text-lg `}>Blitz</span>
+                <div className={` text-zinc-200 text-lg `}>Blitz</div>
               </div>
               <div
                 onClick={() => setGameType("rapid")}
@@ -176,7 +183,7 @@ export const NewGame = ({
                 } flex flex-row items-center flex-1 justify-center cursor-pointer shadow-sm/40 rounded-md mt-2`}
               >
                 <img className="size-7" src="/media/rapid.png" alt="" />
-                <span className={` text-zinc-200 text-lg `}>Rapid</span>
+                <div className={` text-zinc-200 text-lg `}>Rapid</div>
               </div>
               <div
                 onClick={() => setGameType("daily")}
@@ -187,7 +194,7 @@ export const NewGame = ({
                 } flex flex-row items-center flex-1 justify-center cursor-pointer shadow-sm/40 rounded-md mt-2`}
               >
                 <img className="size-7" src="/media/classical.png" alt="" />
-                <span className={` text-zinc-200 text-lg `}>Daily</span>
+                <div className={` text-zinc-200 text-lg `}>Daily</div>
               </div>
             </div>
             {gameAlert && (
@@ -254,12 +261,20 @@ export const NewGame = ({
           </div>
         </div>
 
-        <div className="bg-zinc-800 playButton rounded-lg h-18 flex flex-row items-center justify-center cursor-pointer shadow-md/50 w-full ">
+        <button
+          onClick={() => {
+            if (!MultiplayerGameStarted) {
+              setActiveTab("chessBot");
+              setPlayAgainstBot(true);
+            }
+          }}
+          className="bg-zinc-800 playButton rounded-lg h-18 flex flex-row items-center justify-center cursor-pointer shadow-md/50 w-full "
+        >
           <img className="size-8 m-1 " src="/media/friends.png" alt="" />
-          <span className="font-serif text-zinc-100 text-lg md:text-2xl">
+          <div className="font-serif text-zinc-100 text-lg md:text-2xl">
             Play a Bot
-          </span>
-        </div>
+          </div>
+        </button>
       </div>
     </>
   );

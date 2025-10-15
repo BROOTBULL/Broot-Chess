@@ -3,7 +3,7 @@ import { useChessContext, useUserContext } from "../hooks/contextHook";
 
 export const GameButtons = () => {
   const navigate = useNavigate();
-  const { setGameType, setActiveTab } = useChessContext();
+  const { setGameType, setActiveTab ,setPlayAgainstBot} = useChessContext();
   const {theme}=useUserContext()
 
   return (
@@ -44,9 +44,13 @@ export const GameButtons = () => {
               Play a Friend
             </div>
           </div>
-          <div className={` ${theme?" bg-zinc-800":" bg-zinc-900"} rounded-lg playButton h-15 md:h-18 flex flex-row items-center justify-center cursor-no-drop shadow-md/50 w-[50%] lg:w-full`}>
+          <div onClick={()=>{
+            navigate("/game")
+            setActiveTab("chessBot");
+            setPlayAgainstBot(true)
+          }} className={` ${theme?" bg-zinc-800":" bg-zinc-900"} rounded-lg cursor-pointer playButton h-15 md:h-18 flex flex-row items-center justify-center shadow-md/50 lg:w-full`}>
             <img className="size-7 m-1 mb-2" src="/media/bot.png" alt="" />
-            <div className="font-serif text-zinc-100 text-md md:text-2xl brightness-30 ">
+            <div className="font-serif text-zinc-100 text-md md:text-2xl ">
               Play Bot
             </div>
           </div>

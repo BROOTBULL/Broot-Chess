@@ -72,20 +72,36 @@ export const SearchingLoader = () => {
   );
 };
 
-export const LandingLoader = () => {
-  const {theme}=useUserContext()
+// export const LandingLoader = () => {
+//   const {theme}=useUserContext()
+//   return (
+//     <div className={`w-full h-full flex justify-center items-center brightness-95 ${theme?"":"invert"} `}>
+//       <div className="absolute w-full h-full bg-white -z-10" />
+//       <div className="absolute w-50 h-100 bg-white z-10 mr-70 " />
+//       <div className="persp">
+//         <div className="aspact-square size-30 absolute shape rounded-sm border-3 border-l-transparent border-b-transparent border-t-zinc-600 border-r-zinc-300 bg-black ml-7 landingloader2 drop-shadow-lg/90" />
+//         <div className="aspact-square w-13 h-29 ml-20 shape rounded-sm border-3 border-l-transparent border-b-transparent border-t-zinc-600 border-r-zinc-300 bg-black mt-21  mr-32 landingloader3 drop-shadow-lg/90" />
+//       </div>
+//       <div className="persp absolute ml-18">
+//         <div className="aspact-square size-10 shape rounded-sm border-3 border-l-transparent border-b-transparent border-t-zinc-600 border-r-zinc-300 bg-black mt-13 mb-5 landingloader drop-shadow-lg/90" />
+//         <div className="aspact-square size-10 shape rounded-sm border-3 border-l-transparent border-b-transparent border-t-zinc-600 border-r-zinc-300 bg-black landingloader1 drop-shadow-lg/90" />
+//       </div>
+//     </div>
+//   );
+// };
+
+export function LandingLoader() {
+    const {theme}=useUserContext()
   return (
-    <div className={`w-full h-full flex justify-center items-center brightness-95 ${theme?"":"invert"} `}>
-      <div className="absolute w-full h-full bg-white -z-10" />
-      <div className="absolute w-50 h-100 bg-white z-10 mr-70 " />
-      <div className="persp">
-        <div className="aspact-square size-30 absolute shape rounded-sm border-3 border-l-transparent border-b-transparent border-t-zinc-600 border-r-zinc-300 bg-black ml-7 landingloader2 drop-shadow-lg/90" />
-        <div className="aspact-square w-13 h-29 ml-20 shape rounded-sm border-3 border-l-transparent border-b-transparent border-t-zinc-600 border-r-zinc-300 bg-black mt-21  mr-32 landingloader3 drop-shadow-lg/90" />
+    <div className={` ${theme?"":"invert"} flex items-center justify-center h-fit scale-50 lg:scale-80 w-fit`}>
+      <div className=" h-60 w-30 perspective-[1000px] relative overflow-clip ml-4 ">
+        <div className="loadingTile bg-linear-to-br from-black to-zinc-600 border-3 border-t-transparent border-l-transparent border-b-zinc-950 border-r-zinc-800 absolute size-30 -left-16 top-1"></div>
+        <div className="loadingTile2 bg-linear-to-br from-black to-zinc-600 border-3 border-t-transparent border-l-transparent border-b-zinc-950 border-r-zinc-800 absolute h-29 w-13 -left-3 top-22"></div>
       </div>
-      <div className="persp absolute ml-18">
-        <div className="aspact-square size-10 shape rounded-sm border-3 border-l-transparent border-b-transparent border-t-zinc-600 border-r-zinc-300 bg-black mt-13 mb-5 landingloader drop-shadow-lg/90" />
-        <div className="aspact-square size-10 shape rounded-sm border-3 border-l-transparent border-b-transparent border-t-zinc-600 border-r-zinc-300 bg-black landingloader1 drop-shadow-lg/90" />
+      <div className="h-60 w-10 perspective-[1000px] absolute ml-14 ">
+        <div className="loadingFallingTile bg-linear-to-br from-black to-zinc-600 border-3 border-t-transparent border-l-transparent border-b-zinc-950 border-r-zinc-800 absolute size-10 top-20"></div>
+        <div className="loadingFallingTile2 bg-linear-to-br from-black to-zinc-600 border-3 border-t-transparent border-l-transparent border-b-zinc-950 border-r-zinc-800 absolute size-10 top-35"></div>
       </div>
     </div>
   );
-};
+}

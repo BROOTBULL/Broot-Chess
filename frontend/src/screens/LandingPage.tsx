@@ -14,7 +14,7 @@ const LandingPage = () => {
   }
 
   return (
-    <div className="flex h-full w-full">
+    <div onClick={() => handlePlay()} className="flex h-screen relative w-full">
       <img
         className="absolute h-12 w-7 md:h-22 md:w-13 lg:h-24 lg:w-13 m-3 md:m-10 drop-shadow-lg/40 "
         src="/media/Broot.png"
@@ -22,7 +22,7 @@ const LandingPage = () => {
       />
       <button
         onClick={() => handlePlay()}
-        className="absolute flex justify-end w-full h-fit self-end  "
+        className="absolute flex justify-end w-full h-fit bottom-0  "
       >
         <div className="playButton play text-[20px] md:text-[30px] lg:text-[45px] md:px-15 lg:px-20  flex h-fit items-center  bg-white px-9 py-3 m-3 shadow-lg/30 text-zinc-700 font-serif cursor-pointer hover:shadow-white gap-1">
           Play

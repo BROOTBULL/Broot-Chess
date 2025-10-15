@@ -9,6 +9,7 @@ import { initPassport } from "./passport"; // contains GoogleStrategy
 import authRoute from "./auth/auth";
 import gameRoute from "./auth/gameData";
 import interactionRoute from "./auth/userInteraction";
+import stockfishRouter from "./auth/stockfish";
 
 // Initialize
 dotenv.config();
@@ -49,6 +50,7 @@ app.use(passport.initialize());
 app.use("/auth", authRoute); // includes Google login + JWT token issuing
 app.use("/gameData", gameRoute);
 app.use("/social", interactionRoute);
+app.use("/stockfish",stockfishRouter);
 
 // Health check route
 app.get("/", (req, res) => {

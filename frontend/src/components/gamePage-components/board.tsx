@@ -1,17 +1,80 @@
 import { Chess, Square, SQUARES } from "chess.js";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useChessContext, useUserContext } from "../../hooks/contextHook";
 import { boardTheme } from "../../assets/boardtheme";
+import { useGetBestMove } from "../../hooks/getBestMove";
 
 export const ChessBoard = ({ showSquare }: { showSquare: boolean }) => {
   const MOVE = "move";
-  const { socket } = useUserContext();
-  const { board, chess, color, roomId, moves, boardAppearnce,setBoard } =
-    useChessContext();
+  const { socket, isPlayingBot,user } = useUserContext();
+  const { getBestMove } = useGetBestMove();
+  const {
+    board,
+    chess,
+    color,
+    roomId,
+    moves,
+    boardAppearnce,
+    setBoard,
+    GameStarted,
+    MultiplayerGameStarted,
+    showHint,
+    setShowHint,
+    setGameEnded,
+    setGameStarted,
+    setPlayerWon,
+    setGameStatus,
+  } = useChessContext();
 
+  type BestMove = {
+    from: string;
+    to: string;
+    p: string;
+  };
   const rows = color === "w" ? board : [...board].reverse();
   const [validmoves, setValidmoves] = useState<Square[]>([]);
   const [from, setFrom] = useState<null | Square>(null);
+  const [bestMove, setBestMove] = useState<BestMove | null>();
+
+  useEffect(() => {
+    const fetchAndPlayBotMove = async () => {
+      if (!chess || !GameStarted) return;
+
+      const fen = chess.fen();
+      const move = (await getBestMove(fen)) as BestMove;
+
+      if (!move) return;
+      console.log("Best move :", move);
+
+      setBestMove(move);
+      if (chess.turn() !== color && isPlayingBot && !MultiplayerGameStarted) {
+        if (isPromoting(chess, move.from as Square, move.to as Square)) {
+          chess.move({ from: move.from, to: move.to, promotion: "q" });
+        } else {
+          chess.move({ from: move.from, to: move.to });
+        }
+
+        setBoard(chess.board());
+        if (chess.isCheckmate()) {
+          setGameStatus("Checkmate");
+          setPlayerWon("Opponent");
+          gameEnded()
+        } else if (chess.isDraw()) {
+          setPlayerWon("Draw");
+          setGameStatus("Draw");
+          gameEnded()
+        }
+      }
+    };
+
+    fetchAndPlayBotMove();
+  }, [board, isPlayingBot]);
+
+  function gameEnded() {
+    setGameStarted(false);
+    setGameEnded(true);
+    chess.reset();
+  }
 
   function setMove(clickedSquare: Square) {
     const rawMoves = chess.moves({
@@ -23,20 +86,19 @@ export const ChessBoard = ({ showSquare }: { showSquare: boolean }) => {
     setValidmoves(validMoves);
   }
 
-  
-    function isPromoting(chess: Chess, from: Square, to: Square) {
-      const piece = chess.get(from);
-  
-      if (!piece || piece.type !== "p") return false;
-  
-      // White pawn reaching 8th rank or black pawn reaching 1st
-      return (
-        (piece.color === "w" && to.endsWith("8")) ||
-        (piece.color === "b" && to.endsWith("1"))
-      );
-    }
+  function isPromoting(chess: Chess, from: Square, to: Square) {
+    const piece = chess.get(from);
 
-  function sendMove(from: Square, to: Square) {
+    if (!piece || piece.type !== "p") return false;
+
+    // White pawn reaching 8th rank or black pawn reaching 1st
+    return (
+      (piece.color === "w" && to.endsWith("8")) ||
+      (piece.color === "b" && to.endsWith("1"))
+    );
+  }
+
+  async function sendMove(from: Square, to: Square) {
     try {
       if (isPromoting(chess, from as Square, to as Square)) {
         chess.move({
@@ -45,25 +107,42 @@ export const ChessBoard = ({ showSquare }: { showSquare: boolean }) => {
           promotion: "q",
         });
       } else {
-        chess.move({ from, to });
+        const abc = chess.move({ from, to });
+        console.log(abc);
       }
     } catch (error) {
       console.log("Error", error);
     }
     setBoard(chess.board());
+    setShowHint(false);
+    //Bot Logic
+    if (isPlayingBot) {
+      if (chess.isCheckmate()) {
+        setGameStatus("Checkmate");
+        setPlayerWon(user?.name)
+        gameEnded()
+      } else if (chess.isDraw()) {
+        setGameStatus("Draw");
+        setPlayerWon("Draw")
+        gameEnded()
+      }
+    }
 
-    if (socket && socket.readyState === WebSocket.OPEN) {
-      socket.send(
-        JSON.stringify({
-          type: MOVE,
-          payload: {
-            gameId: roomId,
-            move: { from, to },
-          },
-        })
-      );
-    } else {
-      console.warn("WebSocket is not open.");
+    // Multiplayer Logic
+    else {
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(
+          JSON.stringify({
+            type: MOVE,
+            payload: {
+              gameId: roomId,
+              move: { from, to },
+            },
+          })
+        );
+      } else {
+        console.warn("WebSocket is not open.");
+      }
     }
   }
 
@@ -130,7 +209,14 @@ export const ChessBoard = ({ showSquare }: { showSquare: boolean }) => {
                     inCheck
                       ? " alert"
                       : ""
-                  }`}
+                  } ${
+                    bestMove?.to === squareId && showHint ? " bestMoveTo " : ""
+                  }
+                      ${
+                        bestMove?.from === squareId && showHint
+                          ? " bestMoveFrom "
+                          : ""
+                      }`}
                 >
                   {showSquare && (
                     <div className="absolute text-[6px] md:text-[7px] text-zinc-800 font-[900] ml-[2px] pointer-events-none">
