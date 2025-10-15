@@ -70,10 +70,12 @@ interface ChessContextType {
   setPlayAgainstBot: React.Dispatch<React.SetStateAction<boolean>>;
   showHint: boolean;
   setShowHint: React.Dispatch<React.SetStateAction<boolean>>;
+  stockFishDepth: number;
+  setStockFishDepth: React.Dispatch<React.SetStateAction<number>>;
 }
 
 
-type GameType = "blitz" | "rapid" | "daily";
+type GameType = "blitz" | "rapid" | "daily" | string;
 type Message = { sender: string; message: string };
 type Tab = "newgame" | "history" | "friends" | "play" | "chessBot";
 export type DBMoves = {
@@ -121,6 +123,7 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
   );
   const [drawRequested, setDrawRequested] = useState(false);
   const [drawBox, setDrawBox] = useState<boolean>(false);
+  const [stockFishDepth,setStockFishDepth]=useState(12);
 
   const [timers, setTimers] = useState<Timer>({
     whiteTimeLeft:
@@ -431,7 +434,9 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
         playAgainstBot,
         setPlayAgainstBot,
         showHint,
-        setShowHint
+        setShowHint,
+        setStockFishDepth,
+        stockFishDepth
       }}
     >
       {children}

@@ -1,5 +1,6 @@
 import { Chess } from "chess.js";
 import { useChessContext, useUserContext } from "../../hooks/contextHook";
+import { useState } from "react";
 
 export const ChessBot = () => {
   const {
@@ -14,9 +15,19 @@ export const ChessBot = () => {
     setPlayerWon,
     chess,
     setShowHint,
+    setStockFishDepth,
   } = useChessContext();
   const { isPlayingBot, setIsPlayingBot } = useUserContext();
-
+  const trophies = [
+    "bronz",
+    "silver",
+    "gold",
+    "diamond",
+    "platinum",
+    "crown",
+    "legend",
+  ];
+  const [selectedLevel, setSelectedLevel] = useState(1);
   const handleHint = () => {
     setShowHint(true);
 
@@ -72,7 +83,7 @@ export const ChessBot = () => {
               </button>
             </div>
             <div className="flex flex-col mt-auto Profile flex-1 min-h-[300px] w-full bg-zinc-900 rounded-md overflow-clip ">
-              <div className="flex flex-row items-center bg-zinc-800 text-sm font-[500] text-center ">
+              <div className="flex flex-row items-center bg-zinc-800 text-sm font-[500] text-center  ">
                 <div className="flex items-center justify-center h-8 text-sm   text-zinc-200 flex-5">
                   White Moves
                 </div>
@@ -103,34 +114,42 @@ export const ChessBot = () => {
             </div>
           </>
         ) : (
-          <div className="bg-zinc-900 rounded-lg px-2 overflow-hidden duration-300 w-full h-fit">
-            <div className="flex flex-row items-center gap-2 m-2">
-              <div className="text-zinc-200 text-lg">Play as :</div>
+          <div className="bg-zinc-900 rounded-lg px-2 overflow-hidden duration-300 w-full h-full">
+            <div className="flex flex-col gap-2 h-fit ring-1 ring-zinc-700 rounded-md mt-2 p-2 ">
+              <div className="text-zinc-200 text-base">Play As :</div>
 
-              <div className="flex flex-row gap-2 my-2 ">
+              <div className="flex flex-row gap-3 my-2 justify-center ">
                 <button
                   onClick={() => setColor("w")}
-                  className={`size-14 bg-zinc-600 inset-ring-green-700 ${
-                    color === "w" ? "inset-ring-4" : ""
-                  } flex items-center justify-center cursor-pointer shadow-sm/40 rounded-lg hover:bg-zinc-500 duration-200`}
+                  className={`size-30 flex-col inset-ring-green-500 ${
+                    color === "w" ? "inset-ring-1 bg-green-700/10" : ""
+                  } flex items-center justify-center cursor-pointer border-1 border-zinc-700 shadow-sm/40 rounded-lg hover:scale-102 duration-200`}
                 >
                   <img
                     src="/media/pieces/kw.png"
-                    className="size-11.5 p-1.5 drop-shadow-sm/90 ring-2  ring-zinc-400 rounded-sm"
+                    className="size-11.5 p-1.5 drop-shadow-[0_0_20px_white] rounded-sm"
                     alt=""
                   />
+                  <div className="text-zinc-100 font-bold text-sm text-shadow-sm/50">
+                    White
+                  </div>
+                  <div className="text-zinc-500 text-[8px]">First Move</div>
                 </button>
                 <button
                   onClick={() => setColor("b")}
-                  className={`size-14 bg-zinc-600 flex items-center inset-ring-green-700 ${
-                    color === "b" ? "inset-ring-4" : ""
-                  }  justify-center cursor-pointer shadow-sm/40 rounded-lg hover:bg-zinc-500 duration-200`}
+                  className={`size-30 flex-col border-1 border-zinc-700 flex items-center inset-ring-green-500 ${
+                    color === "b" ? "inset-ring-1 bg-green-700/10" : ""
+                  }  justify-center cursor-pointer shadow-sm/40 rounded-lg hover:scale-102 duration-200`}
                 >
                   <img
                     src="/media/pieces/kb.png"
-                    className="size-11.5 p-1.5 drop-shadow-sm/30 ring-2 ring-zinc-900 rounded-sm"
+                    className="size-11.5 p-1.5 drop-shadow-[0_0_20px_white] rounded-sm"
                     alt=""
                   />
+                  <div className="text-zinc-100 font-bold text-sm text-shadow-sm/50">
+                    Black
+                  </div>
+                  <div className="text-zinc-500 text-[8px]">Second Move</div>
                 </button>
               </div>
             </div>
@@ -143,12 +162,46 @@ export const ChessBot = () => {
                 setChess(newGame);
                 setBoard(newGame.board());
               }}
-              className={`bg-emerald-900 w-full rounded-md hover:bg-emerald-900/80 text-zinc-200 duration-200 h-18 flex flex-row items-center justify-center cursor-pointer px-4 shadow-md/50 my-3`}
+              className={`bg-emerald-800 w-full rounded-md hover:bg-emerald-900/80 text-white duration-200 h-18 flex flex-row items-center justify-center cursor-pointer px-4 shadow-md/50 my-3`}
             >
-              <div className={`font-serif font-bold text-3xl drop-shadow-sm`}>
+              <div className={`font-bold text-3xl drop-shadow-sm`}>
                 Start Game
               </div>
             </button>
+
+            <div className="flex flex-col gap-2 h-fit ring-1 ring-zinc-700 rounded-md mt-2 p-2 ">
+              <div className="text-zinc-200 text-base">Difficulty Level :</div>
+
+              <div className="flex flex-row gap-2 my-2 flex-wrap  justify-center ">
+                {Array.from({ length: 7 }).map((_, i) => {
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => {
+                        setSelectedLevel(i);
+                        setStockFishDepth((i + 1) * 3);
+                      }}
+                      className={`h-20 w-40 flex-row inset-ring-green-500 ${i==selectedLevel?"inset-ring-1 bg-green-700/10":"bg-radial from-zinc-800 to-zinc-900"} drop-shadow-xl/10 flex items-center justify-center cursor-pointer border-1 border-zinc-700 shadow-sm/40 rounded-lg hover:scale-102 duration-200`}
+                    >
+                      <img
+                        src={`/media/${trophies[i]}.png`}
+                        className="size-11.5 p-1.5 rounded-sm"
+                        alt=""
+                      />
+                      <div className="flex flex-col ">
+                        <div className="text-zinc-100 font-bold text-sm text-shadow-sm/50">
+                          {"Level : "}
+                          {i + 1}
+                        </div>
+                        <div className="text-zinc-500 text-[10px]">
+                          {`${(1 + i) * 200} - ${(1 + i) * 200 + 200}`}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         )}
       </div>

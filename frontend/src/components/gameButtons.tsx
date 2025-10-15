@@ -31,7 +31,7 @@ export const GameButtons = () => {
           </div>
         </div>
 
-        <div className="playOptions flex flex-row lg:flex-col gap-2.5  ">
+        <div className="playOptions flex flex-row gap-2.5  ">
           <div
             onClick={() => {
               navigate("/game");

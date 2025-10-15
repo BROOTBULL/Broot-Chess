@@ -51,7 +51,7 @@ function App() {
   if (loading) {
 
     return (
-      <div className={`w-full h-screen flex items-center justify-center bg-radial ${theme?"from-zinc-200 to-zinc-500":"from-zinc-900 to-zinc-950"} `}>
+      <div className={`w-full h-screen flex items-center justify-center bg-radial ${theme?"from-zinc-200 to-zinc-300":"from-zinc-900 to-zinc-950"} `}>
         <LandingLoader />
       </div>
     ); 

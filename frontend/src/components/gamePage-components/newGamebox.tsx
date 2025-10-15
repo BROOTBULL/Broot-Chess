@@ -19,6 +19,8 @@ export const NewGame = ({
   const JOINROOM = "joinroom";
   // const NOTIFICATION="notification"
 
+  const GameModes = ["Blitz", "Rapid", "Daily"];
+
   const {
     gameType,
     setGameType,
@@ -92,40 +94,30 @@ export const NewGame = ({
             !playFriend ? "max-h-100" : "max-h-0"
           } overflow-hidden duration-300`}
         >
-          <div className="flex flex-row gap-2 my-2">
-            <button
-              onClick={() => setGameType("blitz")}
-              className={` h-12 ${
-                gameType === "blitz"
-                  ? "inset-ring-1 inset-ring-emerald-700 bg-emerald-950"
-                  : "bg-zinc-800"
-              } flex flex-row items-center flex-1 justify-center cursor-pointer shadow-sm/40 rounded-md`}
-            >
-              <img className="size-7" src="/media/blitz.png" alt="" />
-              <div className={` text-zinc-200 text-lg `}>Blitz</div>
-            </button>
-            <button
-              onClick={() => setGameType("rapid")}
-              className={` h-12 ${
-                gameType === "rapid"
-                  ? "inset-ring-1 inset-ring-emerald-700 bg-emerald-950"
-                  : "bg-zinc-800"
-              } flex flex-row items-center flex-1 justify-center cursor-pointer shadow-sm/40 rounded-md`}
-            >
-              <img className="size-7" src="./media/rapid.png" alt="" />
-              <div className={` text-zinc-200 text-lg `}>Rapid</div>
-            </button>
-            <button
-              onClick={() => setGameType("daily")}
-              className={` h-12 ${
-                gameType === "daily"
-                  ? "inset-ring-1 inset-ring-emerald-700 bg-emerald-950"
-                  : "bg-zinc-800"
-              } flex flex-row items-center flex-1 justify-center cursor-pointer shadow-sm/40 rounded-md `}
-            >
-              <img className="size-7" src="/media/classical.png" alt="" />
-              <div className={` text-zinc-200 text-lg `}>Daily</div>
-            </button>
+          <div className="flex flex-col ring-1 ring-zinc-700 rounded-md p-2 my-2">
+            <div className="text-base text-zinc-200 mb-2">Game Mode :</div>
+            <div className="flex flex-row w-full h-fit gap-2 my-2 justify-center">
+              {GameModes.map((mode, i) => {
+                return (
+                  <button
+                    key={i}
+                    onClick={() => setGameType(mode.toLowerCase())}
+                    className={`${
+                      gameType === mode.toLowerCase()
+                        ? "inset-ring-1 inset-ring-green-500 bg-green-700/10 "
+                        : ""
+                    } flex flex-col border-1 border-zinc-700 items-center overflow-clip hover:scale-102 duration-200 size-35 justify-center cursor-pointer shadow-sm/40 rounded-md`}
+                  >
+                    <img
+                      className="size-16 drop-shadow-[0_0_30px_rgb(250_250_250_/.5)]"
+                      src={`/media/${mode.toLowerCase()}.png`}
+                      alt=""
+                    />
+                    <div className={` text-zinc-200 text-lg `}>{mode}</div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
           {gameAlert && (
             <div className="text-red-500 text-sm w-full text-center h-5">
@@ -134,9 +126,9 @@ export const NewGame = ({
           )}
           <button
             onClick={() => handleStartGame()}
-            className={`bg-emerald-900 hover:bg-emerald-900/80 w-full rounded-md text-zinc-200 duration-200 h-18 flex flex-row items-center justify-center cursor-pointer px-4 shadow-md/50 my-3`}
+            className={`bg-emerald-700 hover:bg-emerald-900/80 w-full rounded-md text-white duration-200 h-18 flex flex-row items-center justify-center cursor-pointer px-4 shadow-md/50 my-3`}
           >
-            <div className={`font-serif font-bold text-3xl drop-shadow-sm`}>
+            <div className={`font-bold text-3xl drop-shadow-sm`}>
               Start Game
             </div>
           </button>
@@ -149,52 +141,42 @@ export const NewGame = ({
             } playButton duration-300`}
           >
             <img className="size-8 m-1 " src="/media/friends.png" alt="" />
-            <div className="font-serif text-zinc-100 text-lg md:text-2xl">
+            <div className=" text-zinc-100 text-lg md:text-2xl">
               Play a Friend
             </div>
           </div>
           <div
             className={` w-full flex flex-col justify-around px-2 gap-2 ${
-              playFriend ? "max-h-50" : "max-h-0"
+              playFriend ? "max-h-100" : "max-h-0"
             } overflow-hidden duration-300`}
           >
             <div
-              className={`flex flex-row gap-2 ${
-                RoomType ? "max-h-50" : "max-h-0"
+              className={`flex flex-col ring-1 ring-zinc-700 rounded-md p-2 mt-2  ${
+                RoomType ? "max-h-100" : "max-h-0"
               } overflow-hidden duration-300 drop-shadow-sm/40`}
             >
-              <div
-                onClick={() => setGameType("blitz")}
-                className={` h-12 ${
-                  gameType === "blitz"
-                    ? "inset-ring-1 inset-ring-emerald-700 bg-emerald-950"
-                    : "bg-zinc-800"
-                } flex flex-row items-center flex-1 justify-center cursor-pointer shadow-sm/40 rounded-md mt-2`}
-              >
-                <img className="size-7" src="/media/blitz.png" alt="" />
-                <div className={` text-zinc-200 text-lg `}>Blitz</div>
-              </div>
-              <div
-                onClick={() => setGameType("rapid")}
-                className={` h-12 ${
-                  gameType === "rapid"
-                    ? "inset-ring-1 inset-ring-emerald-700 bg-emerald-950"
-                    : "bg-zinc-800"
-                } flex flex-row items-center flex-1 justify-center cursor-pointer shadow-sm/40 rounded-md mt-2`}
-              >
-                <img className="size-7" src="/media/rapid.png" alt="" />
-                <div className={` text-zinc-200 text-lg `}>Rapid</div>
-              </div>
-              <div
-                onClick={() => setGameType("daily")}
-                className={` h-12 ${
-                  gameType === "daily"
-                    ? "inset-ring-1 inset-ring-emerald-700 bg-emerald-950"
-                    : "bg-zinc-800"
-                } flex flex-row items-center flex-1 justify-center cursor-pointer shadow-sm/40 rounded-md mt-2`}
-              >
-                <img className="size-7" src="/media/classical.png" alt="" />
-                <div className={` text-zinc-200 text-lg `}>Daily</div>
+              <div className="text-base text-zinc-200 mb-2">Game Mode :</div>
+              <div className="flex flex-row w-full h-fit gap-2 my-2 justify-center">
+                {GameModes.map((mode, i) => {
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => setGameType(mode.toLowerCase())}
+                      className={`${
+                        gameType === mode.toLowerCase()
+                          ? "inset-ring-1 inset-ring-green-500 bg-green-700/10 "
+                          : ""
+                      } flex flex-col border-1 border-zinc-700 items-center overflow-clip hover:scale-102 duration-200 size-35 justify-center cursor-pointer shadow-sm/40 rounded-md`}
+                    >
+                      <img
+                        className="size-16 drop-shadow-[0_0_30px_rgb(250_250_250_/.5)]"
+                        src={`/media/${mode.toLowerCase()}.png`}
+                        alt=""
+                      />
+                      <div className={` text-zinc-200 text-lg `}>{mode}</div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
             {gameAlert && (
@@ -205,10 +187,10 @@ export const NewGame = ({
             <div className={`flex flex-row h-fit drop-shadow-md/50`}>
               <div
                 onClick={handleCreateRoom}
-                className={` h-15 flex flex-row items-center z-20 justify-center mb-3 mt-1 rounded-l-md w-full ${
+                className={` h-15 flex flex-row items-center z-20 justify-center mb-3 mt-1 rounded-l-md w-full text-base font-bold ${
                   !RoomType
                     ? "bg-zinc-800 text-zinc-500 "
-                    : "bg-emerald-900 text-zinc-200 "
+                    : "bg-emerald-800 text-zinc-200 "
                 }`}
               >
                 Create Room
@@ -218,7 +200,7 @@ export const NewGame = ({
                   setRoomType(!RoomType);
                   setRoomIdBox(true);
                 }}
-                className={`h-15 flex flex-row items-center z-20 rounded-r-md justify-center w-full text-zinc-200 mb-3 mt-1 hover:bg-teal-900 ${
+                className={`h-15 flex flex-row items-center z-20 rounded-r-md justify-center w-full text-zinc-200 mb-3 mt-1 hover:bg-zinc-700/80 duration-200 text-base font-bold ${
                   !RoomType ? "bg-emerald-900" : "bg-zinc-800"
                 }`}
               >
@@ -271,7 +253,7 @@ export const NewGame = ({
           className="bg-zinc-800 playButton rounded-lg h-18 flex flex-row items-center justify-center cursor-pointer shadow-md/50 w-full "
         >
           <img className="size-8 m-1 " src="/media/friends.png" alt="" />
-          <div className="font-serif text-zinc-100 text-lg md:text-2xl">
+          <div className=" text-zinc-100 text-lg md:text-2xl">
             Play a Bot
           </div>
         </button>
