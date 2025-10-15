@@ -179,7 +179,7 @@ export const ChessBot = () => {
                       key={i}
                       onClick={() => {
                         setSelectedLevel(i);
-                        setStockFishDepth((i + 1) * 3);
+                        setStockFishDepth((i + 1) * 2);
                       }}
                       className={`h-20 w-40 flex-row inset-ring-green-500 ${i==selectedLevel?"inset-ring-1 bg-green-700/10":"bg-radial from-zinc-800 to-zinc-900"} drop-shadow-xl/10 flex items-center justify-center cursor-pointer border-1 border-zinc-700 shadow-sm/40 rounded-lg hover:scale-102 duration-200`}
                     >

@@ -106,14 +106,14 @@ export const NewGame = ({
                       gameType === mode.toLowerCase()
                         ? "inset-ring-1 inset-ring-green-500 bg-green-700/10 "
                         : ""
-                    } flex flex-col border-1 border-zinc-700 items-center overflow-clip hover:scale-102 duration-200 size-35 justify-center cursor-pointer shadow-sm/40 rounded-md`}
+                    } flex flex-col border-1 border-zinc-700 items-center overflow-clip hover:scale-102 duration-200 size-27 lg:size-35 justify-center cursor-pointer shadow-sm/40 rounded-md`}
                   >
                     <img
-                      className="size-16 drop-shadow-[0_0_30px_rgb(250_250_250_/.5)]"
+                      className="size-15 lg:size-20 drop-shadow-[0_0_30px_rgb(250_250_250_/.5)]"
                       src={`/media/${mode.toLowerCase()}.png`}
                       alt=""
                     />
-                    <div className={` text-zinc-200 text-lg `}>{mode}</div>
+                    <div className={` text-zinc-200 text-base lg:text-lg `}>{mode}</div>
                   </button>
                 );
               })}
@@ -126,7 +126,7 @@ export const NewGame = ({
           )}
           <button
             onClick={() => handleStartGame()}
-            className={`bg-emerald-700 hover:bg-emerald-900/80 w-full rounded-md text-white duration-200 h-18 flex flex-row items-center justify-center cursor-pointer px-4 shadow-md/50 my-3`}
+            className={`bg-emerald-700 hover:bg-emerald-700/80 w-full rounded-md text-white duration-200 h-18 flex flex-row items-center justify-center cursor-pointer px-4 shadow-md/50 my-3`}
           >
             <div className={`font-bold text-3xl drop-shadow-sm`}>
               Start Game
